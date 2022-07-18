@@ -43,13 +43,11 @@ class ResnetLoader {                //用来加载特征点模型和以及人脸检测模型
 public:
           ResnetLoader();
           virtual ~ResnetLoader();
-          bool getLoaderStatus(anet_type& _net);
+          bool getLoaderStatus(anet_type*& _net);
 private:
-          void LoadResnetModel(anet_type& _net);
+          bool LoadResnetModel(anet_type*& _net);
 private:
-          std::promise<bool>m_resnet;
-          std::future<bool>m_resnet_Next;
-          std::thread m_loadThread;
+          std::future<bool>m_resnet;
 };
 
 class ModelTrain {
@@ -57,6 +55,18 @@ public:
           ModelTrain(int TranningSetting);
           virtual ~ModelTrain();
 public:
+          /*
+          * 初始化人脸模型
+          * @name: initResnetModel
+          */
+          bool initResnetModel();
+
+          /*
+          * 释放人脸模型
+          * @name: releaseResnetModel
+          */
+          void  releaseResnetModel();
+
           /*
           * 将cv::Mat人脸根据合适的参数裁剪为指定大小的dlib存储类型的人脸
           * @name: converImageStoreType
@@ -114,8 +124,8 @@ private:
 
 private:
           int tranningCount;                                                                              //初始化时训练的张数确定
-          anet_type m_Net;                                                                               //残差神经网络操作类
-          ResnetLoader m_resetLoader;                                                            //残差神经网络加载类
+          anet_type *m_Net = nullptr;                                                                               //残差神经网络操作类
+          ResnetLoader *m_resetLoader = nullptr;                                                            //残差神经网络加载类
           std::vector < dlib::matrix<dlib::rgb_pixel>>m_imageArr;                //残差神经网络输入的dlib风格的图像数组
           dlib::matrix<float, 0, 1> m_faceEncoding;                                       //残差神经网络计算人脸128D编码
           std::shared_future< dlib::matrix<float, 0, 1>> m_threadres;                 //神经网络中的线程优化

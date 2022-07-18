@@ -21,10 +21,10 @@ TakePicture::~TakePicture()
  * @param: 
  *     Ïà»ú»¥³âÁ¿: std::mutex&_cameraMutex
 */
-cv::Mat &TakePicture::getImageFrame(std::mutex& _cameraMutex)
+cv::Mat &TakePicture::getImageFrame(std::mutex& _writeMutex)
 {
           {
-                    std::lock_guard<std::mutex> m_lock(_cameraMutex);
+                    std::lock_guard<std::mutex> m_lock(_writeMutex);
                     m_videoCapture >> m_image;
           }
           return m_image;

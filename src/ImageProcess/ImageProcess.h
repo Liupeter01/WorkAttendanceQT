@@ -3,9 +3,37 @@
 #include"../TakePicture/TakePicture.h"
 #include"../ModelTrain/ModelTrain.h"
 
-class ImageProcess :public TakePicture, public FaceDetecion {
+#include<QtGui/qimage.h>
+#include<QtWidgets/qlabel.h>
+
+class ImageProcess :public TakePicture, public FaceDetecion,public ModelTrain {
 public:
-          ImageProcess();
+          ImageProcess() = delete;                           //构造函数默认含参数
+          ImageProcess(int TrainningSetting);
           virtual ~ImageProcess();
+public:
+          /*
+           * cv::Mat ----> QImage
+           * @name: mat2Qimage
+           * @function：将MAT类型转换为QT的QImage类型
+           * @param 输入原始图像  const cv::Mat& mat
+          */
+          static QImage mat2Qimage(const cv::Mat& mat);
+
 private:
+          /*
+           * 初始化图形处理类的内存
+           * @name: initImageProcess
+          */
+          bool initImageProcess();
+
+          /*
+           * 释放图形处理类的内存
+           * @name:releaseImageProcess;
+          */
+          void releaseImageProcess();
+
+private:
+          std::mutex m_cameraMutex;               //摄像机获取互斥量
+          std::vector<std::thread> m_threadPool;
 };

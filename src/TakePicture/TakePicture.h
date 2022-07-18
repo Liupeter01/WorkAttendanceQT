@@ -7,16 +7,16 @@ public:
           /*
            * 摄像头单帧获取函数
            * @name:getImageFrame
-           * @param 相机互斥量: std::mutex&_cameraMutex  
+           * @param 成员变量写入锁互斥量: std::mutex&_writeMutex
           */
-          cv::Mat& getImageFrame(std::mutex& _cameraMutex);
+          cv::Mat& getImageFrame(std::mutex& _writeMutex);
 
           /*
            * 经过处理的人脸显示函数
            * @name: displayImage
-           * @param imshow函数的互斥量: std::mutex&_cameraMutex
+           * @param 成员变量写入锁互斥量: std::mutex&_writeMutex
           */
-          void displayImage(std::mutex &_imshowMutex) =  delete;
+          void displayImage(std::mutex & _writeMutex) =  delete;
 
 private:
           cv::Mat m_image;                                    //当前的视频渲染帧

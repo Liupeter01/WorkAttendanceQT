@@ -1,14 +1,34 @@
 #include"ModelTrain.h"
 
 ModelTrain::ModelTrain(int TranningSetting)
-          :tranningCount(TranningSetting)
+          :tranningCount(TranningSetting),
+          m_Net(new anet_type),
+          m_resetLoader(new ResnetLoader)
 {
-
 }
 
 ModelTrain::~ModelTrain() 
 {
+          this->releaseResnetModel();
+}
 
+/*
+* 初始化人脸模型
+* @name: initResnetModel
+*/
+bool ModelTrain::initResnetModel()
+{
+          return m_resetLoader->getLoaderStatus(this->m_Net);
+}
+
+/*
+* 释放人脸模型
+* @name: releaseResnetModel
+*/
+void ModelTrain::releaseResnetModel()
+{
+          delete m_resetLoader;
+          delete m_Net;
 }
 
 /*
@@ -59,7 +79,7 @@ bool ModelTrain::externalInput(cv::Mat& _origin, dlib::full_object_detection& _s
 dlib::matrix<float, 0, 1>
 ModelTrain::resnetTrainning(std::vector < dlib::matrix<dlib::rgb_pixel>>& _faces)
 {
-          std::vector < dlib::matrix<float, 0, 1>> faceMatrixArray = this->m_Net(_faces);
+          std::vector < dlib::matrix<float, 0, 1>> faceMatrixArray = (*this->m_Net)(_faces);
           for (int i = 1; i < faceMatrixArray.size(); ++i) {
                     faceMatrixArray[0] += faceMatrixArray[i];
           }
@@ -78,7 +98,7 @@ ModelTrain::resnetTrainning(std::vector < dlib::matrix<dlib::rgb_pixel>>& _faces
 dlib::matrix<float, 0, 1> 
 ModelTrain::resnetEncodingCalc(dlib::matrix<dlib::rgb_pixel>& _face)
 {
-          return this->m_Net(std::vector< dlib::matrix<dlib::rgb_pixel>> { _face }).at(0);
+          return (*this->m_Net)(std::vector< dlib::matrix<dlib::rgb_pixel>> { _face }).at(0);
 }
 
 /*
@@ -109,7 +129,7 @@ bool ModelTrain::convertMatrixToString(dlib::matrix<float, 0, 1>& src, std::stri
 void ModelTrain::convertStringToMatrix(std::string& src, dlib::matrix<float, 0, 1>& dst)
 {
           std::istringstream inputStream(src);                                            //输入流
-          dlib::matrix<float, 0, 1>::iterator matrix;                                     //矩阵输入流
+          dlib::matrix<float, 0, 1>::iterator matrix = dst.begin();             //矩阵输入流
           for (std::string::iterator it = src.begin(); it != src.end() && matrix < dst.begin()+128 ;) {
                     std::string _args, comma;               //取出参数数值和逗号
                     inputStream >> _args >> comma;

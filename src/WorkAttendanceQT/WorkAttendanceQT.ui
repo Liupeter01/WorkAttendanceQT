@@ -1,25 +1,38 @@
-<UI version="4.0" >
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <class>WorkAttendanceQTClass</class>
- <widget class="QDialog" name="WorkAttendanceQTClass" >
-  <property name="objectName" >
-   <string notr="true">WorkAttendanceQTClass</string>
-  </property>
-  <property name="geometry" >
+ <widget class="QDialog" name="WorkAttendanceQTClass">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>600</width>
-    <height>400</height>
+    <width>1025</width>
+    <height>730</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="focusPolicy">
+   <enum>Qt::StrongFocus</enum>
+  </property>
+  <property name="windowTitle">
    <string>WorkAttendanceQT</string>
-  </property>$centralwidget$
+  </property>
+  <widget class="QLabel" name="VideoDisplay">
+   <property name="geometry">
+    <rect>
+     <x>160</x>
+     <y>290</y>
+     <width>431</width>
+     <height>301</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>TextLabel</string>
+   </property>
+  </widget>
  </widget>
- <layoutDefault spacing="6" margin="11" />
- <pixmapfunction></pixmapfunction>
+ <layoutdefault spacing="6" margin="11"/>
  <resources>
-   <include location="WorkAttendanceQT.qrc"/>
+  <include location="WorkAttendanceQT.qrc"/>
  </resources>
  <connections/>
-</UI>
+</ui>
