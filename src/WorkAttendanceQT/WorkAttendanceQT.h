@@ -2,28 +2,22 @@
 #include <QtWidgets/QDialog>
 #include "ui_WorkAttendanceQT.h"
 #include<qdebug.h>
-#include"../ImageProcess/ImageProcess.h"
+#include"../Interface/Interface.h"
 
-class WorkAttendanceQT : public QDialog
+class WorkAttendanceQT : public QDialog,public  Interface
 {
           Q_OBJECT
 
 public:
           WorkAttendanceQT(QWidget* parent = nullptr);
           ~WorkAttendanceQT();
-          //void test() 
-          //{
-          //          while (1) {
-          //                    QImage pp = mat2Qimage(getImageFrame(this->m_cameraMutex));
-          //                    pp = pp.scaled(ui.VideoDisplay->width(), ui.VideoDisplay->height());             //×ª»»·Ö±æÂÊ
-          //                    ui.VideoDisplay->setPixmap(QPixmap::fromImage(pp));
-
-          //          }
-          //}
           
+private slots:
+          void slot1() {
+                    this->Videoclose();
+          }
+
 private:
           Ui::WorkAttendanceQTClass ui;
-          //std::mutex m_cameraMutex;
-          //std::thread th1;
-          ImageProcess* p = nullptr;
+          std::thread m_test;
 }; 

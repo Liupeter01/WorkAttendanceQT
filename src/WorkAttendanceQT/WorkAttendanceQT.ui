@@ -29,10 +29,43 @@
     <string>TextLabel</string>
    </property>
   </widget>
+  <widget class="QPushButton" name="Exit">
+   <property name="geometry">
+    <rect>
+     <x>830</x>
+     <y>560</y>
+     <width>111</width>
+     <height>61</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>PushButton</string>
+   </property>
+  </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources>
   <include location="WorkAttendanceQT.qrc"/>
  </resources>
- <connections/>
+ <connections>
+  <connection>
+   <sender>Exit</sender>
+   <signal>clicked()</signal>
+   <receiver>WorkAttendanceQTClass</receiver>
+   <slot>slot1()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>889</x>
+     <y>596</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>974</x>
+     <y>673</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>slot1()</slot>
+ </slots>
 </ui>

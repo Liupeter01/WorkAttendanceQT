@@ -7,7 +7,7 @@ ImageProcess::ImageProcess(int TrainningSetting)
 
 ImageProcess::~ImageProcess()
 {
-          this->releaseImageProcess();
+          //this->releaseImageProcess();
           for (auto& i : m_threadPool) {
                     if (i.joinable()) {
                               i.join();
@@ -21,8 +21,7 @@ ImageProcess::~ImageProcess()
 */
 bool ImageProcess::initImageProcess()
 {
-          this->initFaceDetection();
-          this->initResnetModel();
+          return this->initFaceDetection() && this->initResnetModel();
 }
 
 /*
@@ -71,4 +70,17 @@ QImage ImageProcess::mat2Qimage(const cv::Mat& mat)
                     break;
           }
           return QImage();
+}
+
+/*
+ * 在默认没有摁键操作的情况下，默认检测人脸
+ * @name: detectFaceScaleOnly
+ * @function：用户在没有操作的情况下默认显示的界面
+ * @param  1. 图像修改读写锁  std::mutex& _writeMutex
+ *                  2. 输入原始图像   cv::Mat& mat
+*/
+void ImageProcess::detectFaceScaleOnly(std::mutex& _writeMutex, cv::Mat& image)
+{
+          dlib::rectangle temp(this->getFaceRectangle(image));
+          this->drawGeometryOnImage(_writeMutex, temp, "");
 }

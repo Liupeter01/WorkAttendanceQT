@@ -47,30 +47,30 @@ public:
          * 生成专属图像的灰度图(用于算法加速)
          * @name: ConvertBGR2GRAY
          * @function：将图像转换为dlib的灰度图像提升人脸检测的速度
-         * @param 输入原始图像  cv::Mat  _origin
+         * @param 输入原始图像  cv::Mat  &_origin
         */
-          inline dlib::cv_image<unsigned char> ConvertBGR2GRAY(cv::Mat _origin);
+          inline dlib::cv_image<unsigned char> ConvertBGR2GRAY(cv::Mat &_origin);
 
-          /*
-           * 将FaceDetecion类转换为Rect
-           * @name:   operator cv::Rect
-          */
-          operator cv::Rect();
+protected:
 
           /*
           * 外部函数获取内部的人脸位置数据
           * @name: getFaceRectangle
-          * @param : 获取人脸所在的位置dlib::rectangle* &rect
+          * @param : 输入图像的原始图cv::Mat& _origin
+          * @retValue：返回分配在栈dlib::rectangle
           */
-          void getFaceRectangle(dlib::rectangle *&rect);
+          dlib::rectangle getFaceRectangle(cv::Mat& _origin);
 
           /*
           * 外部函数获取内部的人脸特征点数据
-          * @name: 获取特征点所在的位置dlib::full_object_detection *& _landmark
+          * @name:  getFaceLandmark
+          * @param: 1.输入图像的原始图cv::Mat& _origin
+          *                 2. 人脸所在图像的位置dlib::rectangle& _rect
+          *
+          * @retValue : 返回分配在栈dlib::full_object_detection
           */
-          void getFaceLandmark(dlib::full_object_detection *& _landmark);
+          dlib::full_object_detection getFaceLandmark(cv::Mat& _origin, dlib::rectangle& _rect);
 
-protected:
           /*
           * 人脸检测类的初始化函数
           * @name: initFaceDetection
@@ -87,33 +87,23 @@ protected:
           * 从输入图像中获取人脸所在坐标存于内部数据结构
           * @name: findRectFromImage
           * @param 输入原始图像  cv::Mat & _origin
-          * @retValue: true = 识别到一张人脸;false =识别到多张非法人脸          
+          * @retValue: true = 识别到一张人脸;false =识别到多张非法人脸
+          * @Correct: 2022-7-18 修复检测逻辑错误
+          *                   2022-7-19 此模块废弃，所有的返回值无需在当前类中缓存
           */
-          bool findRectFromImage(cv::Mat& _origin);
+          bool findRectFromImage(cv::Mat& _origin) = delete;
 
           /*
           * 从输入图像中获取人脸图像的特征点存于内部数据结构
           * @name: findLandmarkFromImage
           * @param 输入原始图像  cv::Mat & _origin
           * @retValue: true = 识别到一张人脸;false =识别到多张非法人脸
+          * @Correct: 2022-7-19 此模块废弃，所有的返回值无需在当前类中缓存
           */
-          void findLandmarkFromImage(cv::Mat& _origin);
-private:
-          /*
-          * 清除矩形坐标(用于算法加速)
-          * @name:  cleanRectangle
-          */
-          inline void cleanRectangle();
-
-          /*
-          * 清除特征点(用于算法加速)
-          * @name: cleanGrayImage
-          */
-          inline void cleanLandmark();
+          void findLandmarkFromImage(cv::Mat& _origin) =  delete;
 
 public:
-          dlib::rectangle *m_facePos = nullptr;                                              //人脸的矩形坐标
-          dlib::full_object_detection *m_faceLandmark = nullptr;               //人脸的特征点
+          cv::Mat m_grayImage;                                                                    //存储灰度图
 private:
           FrontFaceLoader *m_landmarkLoader = nullptr;
           dlib::frontal_face_detector *m_faceDetector = nullptr;                 //人脸所在矩形检测器

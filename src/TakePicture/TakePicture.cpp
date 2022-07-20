@@ -31,8 +31,20 @@ cv::Mat &TakePicture::getImageFrame(std::mutex& _writeMutex)
 }
 
 /*
- * 经过处理的人脸显示函数
- * @name: displayImage
- * @param imshow函数的互斥量: std::mutex&_cameraMutex
+ * 将经过识别和匹配的人脸上绘制相关图形
+ * @name: drawGeometryOnImage
+ * @param  1.写入锁互斥量: std::mutex&_writeMutex
+ *                 2.人脸位置  dlib::rectangle& m_facePos
+ *                 3. 识别人名显示  std::string m_targetName = ""
 */
-//void TakePicture::displayImage(std::mutex& _imshowMutex) 
+void TakePicture::drawGeometryOnImage(std::mutex& _writeMutex, dlib::rectangle& m_facePos, std::string m_targetName ) {
+          cv::Rect face(
+                    cv::Point(m_facePos.left(), m_facePos.top()),
+                    cv::Point(m_facePos.right(), m_facePos.bottom())
+          );
+          {
+                    std::unique_lock<std::mutex> _lckg(_writeMutex);
+                    cv::putText(m_image, m_targetName, cv::Point(face.x, face.y + face.height + 20), cv::FONT_HERSHEY_PLAIN, 2, cv::Scalar(0, 0, 255), 1, 8);
+                    cv::rectangle(m_image, cv::Point(face.x, face.y), cv::Point(face.x + face.width, face.y + face.height), cv::Scalar(0, 255, 0), 2, 8);                   //左上角右下角
+          }
+}
