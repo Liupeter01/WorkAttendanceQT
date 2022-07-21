@@ -48,15 +48,13 @@ inline dlib::cv_image<unsigned char> FaceDetecion::ConvertBGR2GRAY(cv::Mat &_ori
 * 外部函数获取内部的人脸位置数据
 * @name: getFaceRectangle
 * @param : 输入图像的原始图cv::Mat& _origin
-* @retValue：返回分配在栈dlib::rectangle
+* @retValue：返回分配dlib::rectangle的引用
 */
-dlib::rectangle FaceDetecion::getFaceRectangle(cv::Mat& _origin)
+dlib::rectangle &FaceDetecion::getFaceRectangle(cv::Mat& _origin)
 {
           std::vector<dlib::rectangle> temp = (*this->m_faceDetector)(ConvertBGR2GRAY(_origin));
-          if (temp.size() != 1) {
-                    return dlib::rectangle();
-          }
-          return  dlib::rectangle(temp.at(0));
+          this->m_imageFaceScale = ((temp.size() != 1) ? dlib::rectangle() : temp.at(0));                               //判断是否仅有一张人脸
+          return  this->m_imageFaceScale;
 }
 
 /*

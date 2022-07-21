@@ -24,7 +24,6 @@ public:
                     std::string m_targetName = "");
 
 private:
-          //std::atomic<cv::Mat> m_image;
-          cv::Mat m_image;                                    //当前的视频渲染帧
+          cv::Mat m_imageFrameStore;                 //当前视频渲染帧临时存储器
           cv::VideoCapture m_videoCapture;         //摄像头类
 };

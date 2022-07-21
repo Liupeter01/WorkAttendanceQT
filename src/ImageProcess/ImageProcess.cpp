@@ -39,48 +39,29 @@ void ImageProcess::releaseImageProcess()
  * @name: mat2Qimage
  * @function：将MAT类型转换为QT的QImage类型
  * @param 输入原始图像  const cv::Mat& mat
+ * @retValue : 返回位于本类中QImage&引用类型
+ * @Correction: 2022-7-21 在类内部引入QImage临时存储结构，可以使用引用加速
+ *                        2022-7-21 删除函数中多余的部分，仅仅保留CV8U_C3下的处理方式，并引入内联函数
 */
-QImage ImageProcess::mat2Qimage(const cv::Mat& mat)
+inline QImage& ImageProcess::mat2Qimage(const cv::Mat& mat)
 {
-          switch (mat.type()){
-                    case CV_8UC4:                   // 8-bit, 4 channel
-                    {
-                              QImage image(mat.data, mat.cols, mat.rows, mat.step, QImage::Format_RGB32);
-                              return image;
-                    }
-                    case CV_8UC3:                            // 8-bit, 3 channel
-                    {
-                              QImage image(mat.data, mat.cols, mat.rows, mat.step, QImage::Format_RGB888);
-                              return image.rgbSwapped();
-                    }
-                    case CV_8UC1:                              // 8-bit, 1 channel
-                    {
-                              static QVector<QRgb>  sColorTable;                    // only create our color table once
-                              if (sColorTable.isEmpty()) {
-                                        for (int i = 0; i < 256; ++i)
-                                                  sColorTable.push_back(qRgb(i, i, i));
-                              }
-                              QImage image(mat.data, mat.cols, mat.rows, mat.step, QImage::Format_Indexed8);
-                              image.setColorTable(sColorTable);
-                              return image;
-                    }
-
-          default:
-                    qDebug("Image format is not supported: depth=%d and %d channels\n", mat.depth(), mat.channels());
-                    break;
-          }
-          return QImage();
+          return  (m_qimageFrameStore = QImage(mat.data, mat.cols, mat.rows, mat.step, QImage::Format_RGB888).rgbSwapped());
 }
 
 /*
- * 在默认没有摁键操作的情况下，默认检测人脸
- * @name: detectFaceScaleOnly
- * @function：用户在没有操作的情况下默认显示的界面
+ * 实时摄像头图像+人脸检测+人脸识别输出显示接口
+ * @name: realTimeFacialDisplay
+ * @function：其他的功能调用通过与该程序连接的线程进行操作
  * @param  1. 图像修改读写锁  std::mutex& _writeMutex
  *                  2. 输入原始图像   cv::Mat& mat
+ * 
+ * @retValue: QImage &
 */
-void ImageProcess::detectFaceScaleOnly(std::mutex& _writeMutex, cv::Mat& image)
+QImage &ImageProcess::realTimeFacialDisplay()
 {
-          dlib::rectangle temp(this->getFaceRectangle(image));
-          this->drawGeometryOnImage(_writeMutex, temp, "");
+          this->m_sharedData.first = this->getImageFrame(this->m_imageRWLock);             //共享人脸图像
+          this->m_sharedData.second = this->getFaceRectangle(this->m_sharedData.first);    //共享人脸位置
+          //信号设置
+          this->drawGeometryOnImage(this->m_imageRWLock, this->m_sharedData.second);
+          return mat2Qimage(this->m_sharedData.first);
 }

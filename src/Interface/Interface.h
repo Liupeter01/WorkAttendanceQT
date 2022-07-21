@@ -25,13 +25,11 @@ private:
            *  QLabel图层覆写函数
            * @name: setLabelImage
            * @function：将MAT类型转换为QT的QImage类型并覆盖到QLabel容器中
-           * @param 1.输入QImage
+           * @param 1.输入右值类型的 QImage&
            *                2.输入显示图层的指针_qlabel
           */
-          void setLabelImage(QLabel*& _qlabel);
+          void setLabelImage(QImage& _qimage, QLabel*& _qlabel);
 
 private:
-          std::atomic<bool> m_videoFlag = false;
-          std::mutex m_writeLock;                 //图像更新写入锁
-          std::mutex m_cameraMutex;           //读取相机的互斥量
+          std::atomic<bool> m_videoFlag = false;                      //视频开关
 };

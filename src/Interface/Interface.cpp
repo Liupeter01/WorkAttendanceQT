@@ -14,18 +14,13 @@ Interface::~Interface()
  *  QLabel图层覆写函数
  * @name: setLabelImage
  * @function：将MAT类型转换为QT的QImage类型并覆盖到QLabel容器中
- * @param 1.输入QImage
+ * @param 1.输入右值类型的 QImage&
  *                2.输入显示图层的指针_qlabel
 */
-void Interface::setLabelImage(QLabel*& _qlabel)
+void Interface::setLabelImage(QImage& _qimage, QLabel*& _qlabel)
 {
-          cv::Mat& r_image(this->getImageFrame(this->m_writeLock));
-          if (true) {
-                    this->detectFaceScaleOnly(m_writeLock, r_image);                        //在默认没有摁键操作的情况下检测人脸
-          }
-          QImage _display = mat2Qimage(r_image);
-          _display = _display.scaled(_qlabel->width(), _qlabel->height());                 //适配控件分辨率
-          _qlabel->setPixmap(QPixmap::fromImage(_display));
+          _qimage = _qimage.scaled(_qlabel->width(), _qlabel->height());                 //适配控件分辨率
+          _qlabel->setPixmap(QPixmap::fromImage(_qimage));
 }
 
 /*
@@ -36,7 +31,7 @@ void Interface::setLabelImage(QLabel*& _qlabel)
 void Interface::QTVideoOutput(QLabel*& _qlabel)
 {
           while (!m_videoFlag) {
-                    this->setLabelImage(_qlabel);                                                     //适配控件分辨率
+                    this->setLabelImage(realTimeFacialDisplay(), _qlabel);                       //适配控件分辨率
           }
           _qlabel->clear();
 }

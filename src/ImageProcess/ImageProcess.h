@@ -17,18 +17,23 @@ public:
            * @name: mat2Qimage
            * @function：将MAT类型转换为QT的QImage类型
            * @param 输入原始图像  const cv::Mat& mat
+           * @retValue : 返回位于本类中QImage&引用类型
+           * @Correction: 2022-7-21 在类内部引入QImage临时存储结构，可以使用引用加速
+           *                        2022-7-21 删除函数中多余的部分，仅仅保留CV8U_C3下的处理方式，并引入内联函数
           */
-          static QImage mat2Qimage(const cv::Mat& mat);
+          inline QImage &mat2Qimage(const cv::Mat& mat);
 
 protected:
           /*
-           * 在默认没有摁键操作的情况下，默认检测人脸
-           * @name: detectFaceScaleOnly
-           * @function：用户在没有操作的情况下默认显示的界面
+           * 实时摄像头图像+人脸检测+人脸识别输出显示接口
+           * @name: realTimeFacialDisplay
+           * @function：其他的功能调用通过与该程序连接的线程进行操作
            * @param  1. 图像修改读写锁  std::mutex& _writeMutex
            *                  2. 输入原始图像   cv::Mat& mat
+           *
+           * @retValue: QImage &
           */
-          void detectFaceScaleOnly(std::mutex& _writeMutex, cv::Mat& image);
+          QImage& realTimeFacialDisplay();
 
 private:
           /*
@@ -44,6 +49,8 @@ private:
           void releaseImageProcess();
 
 private:
-          //std::mutex m_cameraMutex;               //摄像机获取互斥量
-          std::vector<std::thread> m_threadPool;
+          QImage m_qimageFrameStore;                        //类内部引入QImage存储结构
+          std::mutex m_imageRWLock;                           //图像更新写入锁
+          std::pair<cv::Mat, dlib::rectangle> m_sharedData;  //线程共享人脸及其位置
+          std::vector<std::thread> m_threadPool;            //线程池(包含初始化等等操作)
 };

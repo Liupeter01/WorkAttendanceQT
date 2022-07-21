@@ -120,6 +120,7 @@ bool ModelTrain::convertMatrixToString(dlib::matrix<float, 0, 1>& src, std::stri
           for (auto i : src) {
                     outputStream << i << ",";
           }
+          return true;
 }
 
 /*

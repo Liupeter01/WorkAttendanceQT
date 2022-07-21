@@ -57,9 +57,9 @@ protected:
           * 外部函数获取内部的人脸位置数据
           * @name: getFaceRectangle
           * @param : 输入图像的原始图cv::Mat& _origin
-          * @retValue：返回分配在栈dlib::rectangle
+          * @retValue：返回分配dlib::rectangle的引用
           */
-          dlib::rectangle getFaceRectangle(cv::Mat& _origin);
+          dlib::rectangle& getFaceRectangle(cv::Mat& _origin);
 
           /*
           * 外部函数获取内部的人脸特征点数据
@@ -105,6 +105,7 @@ protected:
 public:
           cv::Mat m_grayImage;                                                                    //存储灰度图
 private:
+          dlib::rectangle m_imageFaceScale;                                                 //当前视频人脸坐标
           FrontFaceLoader *m_landmarkLoader = nullptr;
           dlib::frontal_face_detector *m_faceDetector = nullptr;                 //人脸所在矩形检测器
           dlib::shape_predictor *m_faceFeaturePoint = nullptr;                    //68个特征点寻找器

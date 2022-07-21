@@ -23,11 +23,9 @@ TakePicture::~TakePicture()
 */
 cv::Mat &TakePicture::getImageFrame(std::mutex& _writeMutex)
 {
-          {
-                    std::lock_guard<std::mutex> m_lock(_writeMutex);
-                    m_videoCapture >> m_image;
-          }
-          return m_image;
+          std::lock_guard<std::mutex> m_lock(_writeMutex);
+          m_videoCapture >> m_imageFrameStore;
+          return m_imageFrameStore;
 }
 
 /*
@@ -42,9 +40,7 @@ void TakePicture::drawGeometryOnImage(std::mutex& _writeMutex, dlib::rectangle& 
                     cv::Point(m_facePos.left(), m_facePos.top()),
                     cv::Point(m_facePos.right(), m_facePos.bottom())
           );
-          {
-                    std::unique_lock<std::mutex> _lckg(_writeMutex);
-                    cv::putText(m_image, m_targetName, cv::Point(face.x, face.y + face.height + 20), cv::FONT_HERSHEY_PLAIN, 2, cv::Scalar(0, 0, 255), 1, 8);
-                    cv::rectangle(m_image, cv::Point(face.x, face.y), cv::Point(face.x + face.width, face.y + face.height), cv::Scalar(0, 255, 0), 2, 8);                   //左上角右下角
-          }
+          std::unique_lock<std::mutex> _lckg(_writeMutex);                                                                                                                                                                            //写入图像时为图像加锁
+          cv::putText(this->m_imageFrameStore, m_targetName, cv::Point(face.x, face.y + face.height + 20), cv::FONT_HERSHEY_PLAIN, 2, cv::Scalar(0, 0, 255), 1, 8);
+          cv::rectangle(this->m_imageFrameStore, cv::Point(face.x, face.y), cv::Point(face.x + face.width, face.y + face.height), cv::Scalar(0, 255, 0), 2, 8);                   //左上角右下角
 }
