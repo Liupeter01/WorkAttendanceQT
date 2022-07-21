@@ -85,14 +85,13 @@ public:
           */
            bool externalInput(cv::Mat& _origin, dlib::full_object_detection& _shapeInfo);
 
-private:
+protected:
           /*
           * 根据dlib存储的多张人脸模型计算128D人脸特征向量均值
           * @name:  ResnetTrainning
-          * @param 1.根据预先设定的训练次数初始化人脸  std::vector < dlib::matrix<dlib::rgb_pixel>>& _faces
           * @retValue:  返回一个初次保存的人脸的128D的人脸特征向量的平均值用于
           */
-          OUT dlib::matrix<float, 0, 1> resnetTrainning(std::vector < dlib::matrix<dlib::rgb_pixel>>& _faces);
+          OUT dlib::matrix<float, 0, 1> resnetTrainning();
 
           /*
           * 根据实时输入的视频模块计算当前人脸对应的编码
@@ -101,6 +100,7 @@ private:
           * @retValue:  返回一个描述人脸的128D的人脸特征向量
           */
           OUT dlib::matrix<float, 0, 1> resnetEncodingCalc(dlib::matrix<dlib::rgb_pixel>& _face);
+          OUT dlib::matrix<float, 0, 1> resnetEncodingCalc(cv::Mat & _face);
 
           /*
           * 将128D人脸特征向量转换为数据库字符类型
@@ -127,6 +127,5 @@ private:
           anet_type *m_Net = nullptr;                                                                               //残差神经网络操作类
           ResnetLoader *m_resetLoader = nullptr;                                                            //残差神经网络加载类
           std::vector < dlib::matrix<dlib::rgb_pixel>>m_imageArr;                //残差神经网络输入的dlib风格的图像数组
-          dlib::matrix<float, 0, 1> m_faceEncoding;                                       //残差神经网络计算人脸128D编码
           std::shared_future< dlib::matrix<float, 0, 1>> m_threadres;                 //神经网络中的线程优化
 };

@@ -10,5 +10,6 @@ WorkAttendanceQT::WorkAttendanceQT(QWidget *parent)
 
 WorkAttendanceQT::~WorkAttendanceQT()
 {
+          this->Videoclose();
           m_test.join();
 }

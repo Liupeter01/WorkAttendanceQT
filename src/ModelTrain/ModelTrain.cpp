@@ -58,28 +58,22 @@ ModelTrain::converImageStoreType(
 */
 bool ModelTrain::externalInput(cv::Mat& _origin, dlib::full_object_detection& _shapeInfo)
 {
-          if (this->m_imageArr.size() == this->tranningCount) {
-                    //m_threadres = std::async(&ModelTrain::resnetTrainning, this, std::ref(this->m_imageArr));
-                    //m_threadres.wait();
-                    //m_faceEncoding = m_threadres.get();
-                    m_faceEncoding = this->resnetTrainning(this->m_imageArr);
-                    this->m_imageArr.erase(m_imageArr.begin(), m_imageArr.end());                   //清空容器
-                    return false;
+          if (this->m_imageArr.size() != this->tranningCount) {
+                    this->m_imageArr.push_back(converImageStoreType(_origin, _shapeInfo));                    //压入容器
+                    return true;                                                                                                                             //还可以继续输入图像
           }
-          this->m_imageArr.insert(this->m_imageArr.end(), converImageStoreType(_origin, _shapeInfo));
-          return true;
+          return false;                                                                                                                                     //严禁图像的再次输入
 }
 
 /*
 * 根据dlib存储的多张人脸模型计算128D人脸特征向量均值
 * @name:  ResnetTrainning
-* @param 1.根据预先设定的训练次数初始化人脸  std::vector < dlib::matrix<dlib::rgb_pixel>>& _faces
 * @retValue:  返回一个初次保存的人脸的128D的人脸特征向量的平均值用于
 */
-dlib::matrix<float, 0, 1>
-ModelTrain::resnetTrainning(std::vector < dlib::matrix<dlib::rgb_pixel>>& _faces)
+dlib::matrix<float, 0, 1> ModelTrain::resnetTrainning()
 {
-          std::vector < dlib::matrix<float, 0, 1>> faceMatrixArray = (*this->m_Net)(_faces);
+          std::vector < dlib::matrix<float, 0, 1>> faceMatrixArray = (*this->m_Net)(this->m_imageArr);
+          this->m_imageArr.erase(m_imageArr.begin(), m_imageArr.end());                   //清空容器
           for (int i = 1; i < faceMatrixArray.size(); ++i) {
                     faceMatrixArray[0] += faceMatrixArray[i];
           }
@@ -99,6 +93,14 @@ dlib::matrix<float, 0, 1>
 ModelTrain::resnetEncodingCalc(dlib::matrix<dlib::rgb_pixel>& _face)
 {
           return (*this->m_Net)(std::vector< dlib::matrix<dlib::rgb_pixel>> { _face }).at(0);
+}
+
+dlib::matrix<float, 0, 1> 
+ModelTrain::resnetEncodingCalc(cv::Mat& _face)
+{
+          dlib::matrix< dlib::rgb_pixel> imageConvert;                                                                  //转换为DLIB专属的RGB矩阵
+          dlib::assign_image(imageConvert, dlib::cv_image<dlib::rgb_pixel>(_face));
+          return resnetEncodingCalc(imageConvert);
 }
 
 /*
