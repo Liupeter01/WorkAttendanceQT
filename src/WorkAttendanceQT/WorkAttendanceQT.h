@@ -13,8 +13,11 @@ public:
           ~WorkAttendanceQT();
           
 private slots:
-          void slot1() {
+         void videoStreamClose() {
                     this->Videoclose();
+          }
+         void takePictureForTranning() {
+                    
           }
 
 private:

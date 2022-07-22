@@ -19,8 +19,8 @@
   <widget class="QLabel" name="VideoDisplay">
    <property name="geometry">
     <rect>
-     <x>220</x>
-     <y>30</y>
+     <x>230</x>
+     <y>40</y>
      <width>571</width>
      <height>371</height>
     </rect>
@@ -566,6 +566,45 @@
     <string>登录系统</string>
    </property>
   </widget>
+  <widget class="QPushButton" name="ConfirmTranningSet">
+   <property name="geometry">
+    <rect>
+     <x>830</x>
+     <y>370</y>
+     <width>111</width>
+     <height>61</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>保存当前图像</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="IgnoreTranningSet">
+   <property name="geometry">
+    <rect>
+     <x>830</x>
+     <y>440</y>
+     <width>111</width>
+     <height>61</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>舍弃当前图像</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="TakePicture">
+   <property name="geometry">
+    <rect>
+     <x>830</x>
+     <y>300</y>
+     <width>111</width>
+     <height>61</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>拍摄照片</string>
+   </property>
+  </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources>
@@ -588,8 +627,25 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>TakePicture</sender>
+   <signal>clicked()</signal>
+   <receiver>WorkAttendanceQTClass</receiver>
+   <slot>slot2()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>895</x>
+     <y>335</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>998</x>
+     <y>329</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>slot1()</slot>
+  <slot>slot2()</slot>
  </slots>
 </ui>

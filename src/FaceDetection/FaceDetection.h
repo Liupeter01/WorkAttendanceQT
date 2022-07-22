@@ -56,10 +56,12 @@ protected:
           /*
           * 外部函数获取内部的人脸位置数据
           * @name: getFaceRectangle
-          * @param : 输入图像的原始图cv::Mat& _origin
+          * @param :  1.输入图像的原始图cv::Mat& _origin
+          *                   2.人脸位置更新锁std::mutex & _writeMutex
+          * 
           * @retValue：返回分配dlib::rectangle的引用
           */
-          dlib::rectangle& getFaceRectangle(cv::Mat& _origin);
+          dlib::rectangle& getFaceRectangle(cv::Mat& _origin,std::mutex & _writeMutex);
 
           /*
           * 外部函数获取内部的人脸特征点数据
