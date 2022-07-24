@@ -1,6 +1,6 @@
 #include"ImageProcess.h"
 
-/*
+/*------------------------------------------------------------------------------------------------------
  * cv::Mat ----> QImage
  * @name: mat2Qimage
  * @function：将MAT类型转换为QT的QImage类型
@@ -8,7 +8,7 @@
  * @retValue : 返回位于本类中QImage&引用类型
  * @Correction: 2022-7-21 在类内部引入QImage临时存储结构，可以使用引用加速
  *                        2022-7-21 删除函数中多余的部分，仅仅保留CV8U_C3下的处理方式，并引入内联函数
-*/
+*------------------------------------------------------------------------------------------------------*/
 inline QImage& ImageProcess::mat2Qimage(const cv::Mat& mat)
 {
           return  (m_qimageFrameStore = QImage(mat.data, mat.cols, mat.rows, mat.step, QImage::Format_RGB888).rgbSwapped());
@@ -18,12 +18,10 @@ inline QImage& ImageProcess::mat2Qimage(const cv::Mat& mat)
  * 实时摄像头图像+人脸检测+人脸识别输出显示接口
  * @name: realTimeFacialDisplay
  * @function：其他的功能调用通过与该程序连接的线程进行操作
- * @param  1. 图像修改读写锁  std::mutex& _writeMutex
- *                  2. 输入原始图像   cv::Mat& mat
- * 
+ * @param : 输出窗口接口：QTextBrowser*& _systemOutput
  * @retValue: QImage &
 */
-QImage &ImageProcess::realTimeFacialDisplay()
+QImage &ImageProcess::realTimeFacialDisplay(QTextBrowser*& _systemOutput)
 {
           [=]() {               //条件变量设置：可能需要等待其他模块的信号，才可以继续进行执行
                     std::unique_lock<std::mutex> _lckg(this->m_videoDisplaySync);
@@ -46,10 +44,12 @@ QImage &ImageProcess::realTimeFacialDisplay()
  * 通过摄像头图像进行实时人脸训练功能模块
  * @name: realTimeFacialDisplay
  * @function：和实时摄像头图像协同进行人脸训练功能
- * @param:  视频开关 std::atomic<bool> &
+ * @param:  1. 视频开关 std::atomic<bool> &
+ *                  2. 输出窗口接口：QTextBrowser*& _systemOutput
+ * 
  * @Correction: 2022-7-24 添加函数参数修复防止线程无法正确的停止运转
 */
-void ImageProcess::videoSyncFacialTranning(std::atomic<bool>& _videoFlag)
+void ImageProcess::videoSyncFacialTranning(std::atomic<bool>& _videoFlag, QTextBrowser*& _systemOutput)
 {
           while (!_videoFlag)
           {
@@ -108,21 +108,36 @@ void ImageProcess::videoSyncFacialTranning(std::atomic<bool>& _videoFlag)
  * 启动人脸的显示线程
  * @name:  startVideoDisplay
  * @function: 实时摄像头图像+人脸检测+人脸识别输出显示接口
+ * @param: 输出窗口接口：QTextBrowser*& _systemOutput
  * @retValue: QImage &
 */
-QImage& ImageProcess::startVideoDisplay()
+QImage& ImageProcess::startVideoDisplay(QTextBrowser*& _systemOutput)
 {
-          return this->realTimeFacialDisplay();
+          return this->realTimeFacialDisplay(_systemOutput);
 }
 
 /*
  * 启动人脸训练程序
  * @name:  startVideoRegister
  * @function: 开启当前视频拍摄，启动人脸训练程序
- * @param:  视频开关 std::atomic<bool> &
+ * @param:  1.视频开关 std::atomic<bool> &
+ *                  2.输出窗口接口：QTextBrowser*& _systemOutput
+ *
  * @Correction: 2022-7-24 添加函数参数修复防止线程无法正确的停止运转
 */
-void  ImageProcess::startVideoRegister(std::atomic<bool>& _videoFlag)
+void  ImageProcess::startVideoRegister(std::atomic<bool>& _videoFlag, QTextBrowser*& _systemOutput)
 {
-          this->m_threadPool.emplace_back(&ImageProcess::videoSyncFacialTranning, this, std::ref(_videoFlag));
+          this->m_threadPool.emplace_back(&ImageProcess::videoSyncFacialTranning, this, std::ref(_videoFlag), std::ref(_systemOutput));
+}
+
+/*
+ * 将启动日志信息输出到SystemStatusInfo窗口中
+ * @name:  printOnTextBroswer
+ * @function: 将启动日志信息输出到SystemStatusInfo窗口中
+ * @param:  1. 输出窗口接口：QTextBrowser*& _systemOutput
+ *                  2. 输出的wstring的字符串：const std::wstring& _wstring
+*/
+inline void ImageProcess::printOnTextBroswer(QTextBrowser*& _systemOutput, const std::wstring& _wstring)
+{
+          _systemOutput->insertPlainText(QString::fromStdWString(_wstring));
 }

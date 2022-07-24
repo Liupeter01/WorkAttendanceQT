@@ -4,21 +4,17 @@
 #include<qdebug.h>
 #include"../Interface/Interface.h"
 
-class WorkAttendanceQT : public QDialog,public  Interface
-{
+class WorkAttendanceQT : public QDialog,public  Interface{
           Q_OBJECT
-
 public:
           WorkAttendanceQT(QWidget* parent = nullptr);
           ~WorkAttendanceQT();
-          
 private slots:
           void videoStreamClose();                          //πÿ±’ ”∆µ¡˜
           void takePictureForTranning();                 //≈ƒ…„’’∆¨
           void savePicture();                                    //±£¥Ê’’∆¨
           void ignorePicture();                                 //∫ˆ¬‘’’∆¨
           void registerEmployee();                           //∆Ù∂Ø—µ¡∑œﬂ≥Ã
-
 private:
           Ui::WorkAttendanceQTClass ui;
           std::thread m_test;

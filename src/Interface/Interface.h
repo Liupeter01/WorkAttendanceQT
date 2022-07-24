@@ -39,9 +39,10 @@ public:
            *  QTWidget层视频连续输出函数
            * @name: QTVideoOutput
            * @function：连续更新显示图层所显示的图像
-           * @param: 1.输入QImage
+           * @param: 1. 视频输出pixmap : QLabel*& _qlabel
+           *                 2. 输出窗口接口：QTextBrowser*& _systemOutput
           */
-          void QTVideoOutput(QLabel*& _qlabel);
+          void QTVideoOutput(QLabel*& _qlabel, QTextBrowser*& _systemOutput);
 
 private:
           /*

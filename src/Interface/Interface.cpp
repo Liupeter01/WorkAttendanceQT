@@ -67,11 +67,13 @@ void Interface::setLabelImage(QImage& _qimage, QLabel*& _qlabel)
  *  QTWidget层视频连续输出函数
  * @name: QTVideoOutput
  * @function：连续更新显示图层所显示的图像
+ * @param: 1. 视频输出pixmap : QLabel*& _qlabel
+ *                 2. 输出窗口接口：QTextBrowser*& _systemOutput
 */
-void Interface::QTVideoOutput(QLabel*& _qlabel)
+void Interface::QTVideoOutput(QLabel*& _qlabel, QTextBrowser*& _systemOutput)
 {
           while (!m_videoFlag) {
-                    this->setLabelImage(this->startVideoDisplay(), _qlabel);                       //适配控件分辨率
+                    this->setLabelImage(this->startVideoDisplay(_systemOutput), _qlabel);                       //适配控件分辨率
           }
           _qlabel->clear();
 }
