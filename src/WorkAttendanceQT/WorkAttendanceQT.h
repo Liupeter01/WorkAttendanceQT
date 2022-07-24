@@ -14,11 +14,16 @@ public:
           
 private slots:
          void videoStreamClose() {
-                    this->Videoclose();
+                    this->videoClose();
           }
          void takePictureForTranning() {
-                    
+                   this->videoCameraShooting();
           }
+
+         void registerEmployee()
+         {
+
+         }
 
 private:
           Ui::WorkAttendanceQTClass ui;

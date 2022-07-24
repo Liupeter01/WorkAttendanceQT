@@ -11,6 +11,26 @@ Interface::~Interface()
 }
 
 /*
+ *  QTWidget层视频关闭函数
+ * @name: QTVideoOutput
+ * @function：本质是关闭视频中的循环参数
+*/
+void  Interface::videoClose()
+{
+          m_videoFlag = true;
+}
+
+/*
+ *  QTWidget层开启当前帧拍着操作
+ * @name: CameraShooting
+ * @function：本质是拍摄当前的单帧人脸
+*/
+void  Interface::videoCameraShooting()
+{
+          this->enableCameraShooting();
+}
+
+/*
  *  QLabel图层覆写函数
  * @name: setLabelImage
  * @function：将MAT类型转换为QT的QImage类型并覆盖到QLabel容器中

@@ -7,10 +7,19 @@ public:
           Interface(int TrainningSetting);
           virtual ~Interface();
 
+          /*
+           *  QTWidget层视频关闭函数
+           * @name: QTVideoOutput
+           * @function：本质是关闭视频中的循环参数
+          */
+          void  videoClose(); 
 
-          void Videoclose() {
-                    m_videoFlag = true;
-          }
+          /*
+           *  QTWidget层开启当前帧拍着操作
+           * @name: CameraShooting
+           * @function：本质是拍摄当前的单帧人脸
+          */
+          void  videoCameraShooting();
 
           /*
            *  QTWidget层视频连续输出函数

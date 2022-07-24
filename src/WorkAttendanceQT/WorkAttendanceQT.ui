@@ -19,8 +19,8 @@
   <widget class="QLabel" name="VideoDisplay">
    <property name="geometry">
     <rect>
-     <x>230</x>
-     <y>40</y>
+     <x>210</x>
+     <y>50</y>
      <width>571</width>
      <height>371</height>
     </rect>
@@ -610,40 +610,7 @@
  <resources>
   <include location="WorkAttendanceQT.qrc"/>
  </resources>
- <connections>
-  <connection>
-   <sender>Exit</sender>
-   <signal>clicked()</signal>
-   <receiver>WorkAttendanceQTClass</receiver>
-   <slot>slot1()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>889</x>
-     <y>596</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>974</x>
-     <y>673</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>TakePicture</sender>
-   <signal>clicked()</signal>
-   <receiver>WorkAttendanceQTClass</receiver>
-   <slot>slot2()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>895</x>
-     <y>335</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>998</x>
-     <y>329</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
  <slots>
   <slot>slot1()</slot>
   <slot>slot2()</slot>
