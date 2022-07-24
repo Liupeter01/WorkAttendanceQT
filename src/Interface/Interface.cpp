@@ -21,13 +21,33 @@ void  Interface::videoClose()
 }
 
 /*
- *  QTWidget层开启当前帧拍着操作
+ *  QTWidget层开启当前帧拍照操作
  * @name: CameraShooting
  * @function：本质是拍摄当前的单帧人脸
 */
 void  Interface::videoCameraShooting()
 {
           this->enableCameraShooting();
+}
+
+/*
+ *  QTWidget层开启当前帧的保存操作
+ * @name: videoFrameSavingProcess
+ * @function：本质是保存当前的单帧人脸
+*/
+void  Interface::videoFrameSavingProcess()
+{
+          this->enableSavingProcess();
+}
+
+/*
+ *  QTWidget层开启当前帧的舍弃操作
+ * @name: videoFrameIgnoreProcess
+ * @function：本质是舍弃当前的单帧人脸
+*/
+void  Interface::videoFrameIgnoreProcess()
+{
+          this->enableIgnoreProcess();
 }
 
 /*
@@ -51,7 +71,7 @@ void Interface::setLabelImage(QImage& _qimage, QLabel*& _qlabel)
 void Interface::QTVideoOutput(QLabel*& _qlabel)
 {
           while (!m_videoFlag) {
-                    this->setLabelImage(realTimeFacialDisplay(), _qlabel);                       //适配控件分辨率
+                    this->setLabelImage(this->startVideoDisplay(), _qlabel);                       //适配控件分辨率
           }
           _qlabel->clear();
 }

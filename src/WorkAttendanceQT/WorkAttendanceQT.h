@@ -13,17 +13,11 @@ public:
           ~WorkAttendanceQT();
           
 private slots:
-         void videoStreamClose() {
-                    this->videoClose();
-          }
-         void takePictureForTranning() {
-                   this->videoCameraShooting();
-          }
-
-         void registerEmployee()
-         {
-
-         }
+          void videoStreamClose();                          //πÿ±’ ”∆µ¡˜
+          void takePictureForTranning();                 //≈ƒ…„’’∆¨
+          void savePicture();                                    //±£¥Ê’’∆¨
+          void ignorePicture();                                 //∫ˆ¬‘’’∆¨
+          void registerEmployee();                           //∆Ù∂Ø—µ¡∑œﬂ≥Ã
 
 private:
           Ui::WorkAttendanceQTClass ui;

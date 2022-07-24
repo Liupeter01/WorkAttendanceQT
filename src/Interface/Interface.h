@@ -15,11 +15,25 @@ public:
           void  videoClose(); 
 
           /*
-           *  QTWidget层开启当前帧拍着操作
+           *  QTWidget层开启当前帧拍照操作
            * @name: CameraShooting
            * @function：本质是拍摄当前的单帧人脸
           */
           void  videoCameraShooting();
+
+          /*
+           *  QTWidget层开启当前帧的保存操作
+           * @name: videoFrameSavingProcess
+           * @function：本质是保存当前的单帧人脸
+          */
+          void  videoFrameSavingProcess();
+
+          /*
+           *  QTWidget层开启当前帧的舍弃操作
+           * @name: videoFrameIgnoreProcess
+           * @function：本质是舍弃当前的单帧人脸
+          */
+          void  videoFrameIgnoreProcess();
 
           /*
            *  QTWidget层视频连续输出函数
@@ -39,6 +53,6 @@ private:
           */
           void setLabelImage(QImage& _qimage, QLabel*& _qlabel);
 
-private:
+protected:
           std::atomic<bool> m_videoFlag = false;                      //视频开关
 };

@@ -48,38 +48,42 @@ public:
 
 protected:
           /*
-           * 开启摄像头的拍照功能
-           * @name: enableCameraShooting
-           * @function: 开启当前帧的视频拍摄功能
-          */
-          void enableCameraShooting();
-
-          /*
-           * 读取摄像头是否已经被开启
-           * @name: readCameraStatus
-           * @function: 读取摄像拍照的数据
-           * @RetValue:1.true : 允许拍照
-           *                    2.false: 不允许拍照
-          */
-          bool readCameraStatus();
-
-          /*
-           * 实时摄像头图像+人脸检测+人脸识别输出显示接口
-           * @name: realTimeFacialDisplay
-           * @function：其他的功能调用通过与该程序连接的线程进行操作
-           * @param  1. 图像修改读写锁  std::mutex& _writeMutex
-           *                  2. 输入原始图像   cv::Mat& mat
-           *
+           * 启动人脸的显示线程
+           * @name:  startVideoDisplay
+           * @function: 实时摄像头图像+人脸检测+人脸识别输出显示接口
            * @retValue: QImage &
           */
-          QImage& realTimeFacialDisplay();
+          QImage& startVideoDisplay();
 
           /*
-           * 通过摄像头图像进行实时人脸训练功能模块
-           * @name: realTimeFacialDisplay
-           * @function：和实时摄像头图像协同进行人脸训练功能
+           * 启动人脸训练程序
+           * @name:  startVideoRegister
+           * @function: 开启当前视频拍摄，启动人脸训练程序
+           * @param:  视频开关 std::atomic<bool> &
+           * @Correction: 2022-7-24 添加函数参数修复防止线程无法正确的停止运转
           */
-          void videoSyncFacialTranning();
+          void startVideoRegister(std::atomic<bool>& _videoFlag);
+
+          /*
+           * 命令保存功能启动
+           * @name:  enableSavingProcess
+           * @function: 开启当前视频拍摄，用户根据相关图像进行保存
+          */
+          void enableSavingProcess();
+
+          /*
+           * 命令舍弃功能启动
+           * @name:  enableSavingProcess
+           * @function: 开启当前视频拍摄，用户根据相关图像进行舍弃
+          */
+          void enableIgnoreProcess();
+
+          /*
+           * 命令摄像头进行拍照
+           * @name: enableCameraShooting
+           * @function: 开启当前视频拍摄，拍着某一张图像
+          */
+          void enableCameraShooting();
 
 private:
           /*
@@ -93,6 +97,23 @@ private:
            * @name:releaseImageProcess;
           */
           void releaseImageProcess();
+
+          /*
+           * 实时摄像头图像+人脸检测+人脸识别输出显示接口
+           * @name: realTimeFacialDisplay
+           * @function：其他的功能调用通过与该程序连接的线程进行操作
+           * @retValue: QImage &
+          */
+          QImage& realTimeFacialDisplay();
+
+          /*
+           * 通过摄像头图像进行实时人脸训练功能模块
+           * @name: realTimeFacialDisplay
+           * @function：和实时摄像头图像协同进行人脸训练功能
+           * @param:  视频开关 std::atomic<bool> &
+           * @Correction: 2022-7-24 添加函数参数修复防止线程无法正确的停止运转
+          */
+          void videoSyncFacialTranning(std::atomic<bool> & _videoFlag);
 
 private:
           /*
@@ -171,24 +192,23 @@ private:
           */
           bool isVideoPaused();
 
+          /*
+           * 其他线程判断摄像头是否启动拍照
+           * @name: getCameraState
+           * @function: 判断摄像头拍照
+           * @RetValue:1.true : 允许拍照
+           *                    2.false: 不允许拍照
+          */
+          bool getCameraState();
 
-          ///*
-          // * 设置当前开启拍照已经被线程模块同步
-          // * @name: setCameraSwitchSignal
-          // * @function: 如果开启拍照功能则暂停摄像线程
-          // * @sequence：该函数需要在保存摁键时进行调用
-          //*/
-          //void setCameraSwitchSignal();
-
-          ///*
-          // * 获取当前的开启拍照是否被同步
-          // * @name: getCameraSwitchStatus
-          // * @function: 如果开启拍照功能则暂停摄像线程
-          // * @sequence：该函数需要在保存摁键时进行调用
-          // * @retValue: 1.true : 当前数据的状态为旧状态
-          // *                    2.false: 当前数据的状态为新状态
-          //*/
-          //bool getCameraSwitchStatus();
+          /*
+           * 其他线程判断保存功能是否启动
+           * @name: getImageSavingState
+           * @function: 判断摄像头拍照
+           * @RetValue:1.true : 得到用户的确认(无论保存或舍弃)
+           *                    2.false: 没有得到用户的确认
+          */
+          bool getImageSavingState();
 
 private:
           /*--------------------------------------------------通用数据结构------------------------------------------------*/
@@ -199,11 +219,9 @@ private:
           /*--------------------------------------------------画面显示线程------------------------------------------------*/
           std::pair<cv::Mat, std::mutex> m_imageSync;                 //图像更新+图像更新的互斥量mutex
           std::pair<dlib::rectangle, std::mutex> m_faceRectSync;  //人脸位置更新+人脸位置更新的互斥量mutex
-          std::mutex m_videoDisplaySync;                                      //视频暂停和继续的互斥量mutex
-
+       
           std::atomic<bool>  m_imageReadySign;                        //设置人脸就绪信号
           std::atomic<bool> m_faceRectReadySign;                      //设置人脸位置就绪信号
-          std::atomic<bool> m_videoDisplaySign;                        //设置视频暂停和继续
 
           std::condition_variable m_videoDisplayCtrl;                           //暂停视频线程的条件变量
           /*--------------------------------------------------------------------------------------------------------------------*/
@@ -212,14 +230,19 @@ private:
           cv::Mat m_copiedImage;                                             //拷贝的人脸图像
           dlib::rectangle m_copiedfaceRect;                               //拷贝的人脸位置
           dlib::full_object_detection m_faceLandmark;             //人脸的特征点临时存储
+          CameraSwitch m_camera;                                            //拷贝的拍照控制状态机
+          SavingSwitch m_saving;                                               //拷贝的保存控制状态机
+
+          std::mutex m_videoDisplaySync;                                      //视频暂停和继续的互斥量mutex
+          std::atomic<bool> m_videoDisplaySign;                        //设置视频暂停和继续
 
           std::pair<CameraSwitch, std::mutex> m_cameraSwitchSync;       //拍照开关系统+拍照开关系统的原子状态
           std::pair<SavingSwitch, std::mutex> m_savingSwitchSync;         //保存开关系统+保存开关系统的原子状态
 
           std::condition_variable m_cameraCtrl;                                           //拍照开关条件变量
-          std::condition_variable m_savingCtrl;                                            //保存开关条件变量
           std::condition_variable m_imageReady;                         //等待图像数据是否准备就绪条件变量
           std::condition_variable m_rectReady;                             //等待人脸数据是否准备就绪条件变量
+          std::condition_variable m_savingCtrl;                                            //保存开关条件变量
           /*--------------------------------------------------------------------------------------------------------------------*/
 
           /*--------------------------------------------------人脸识别线程------------------------------------------------*/
