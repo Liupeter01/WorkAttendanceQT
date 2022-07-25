@@ -15,12 +15,11 @@ TakePicture::~TakePicture()
           }
 }
 
-/*
+/*------------------------------------------------------------------------------------------------------
  * 摄像头单帧获取函数
  * @name:getImageFrame
- * @param: 
- *     相机互斥量: std::mutex&_cameraMutex
-*/
+ * @param 成员变量写入锁互斥量: std::mutex&_writeMutex
+*------------------------------------------------------------------------------------------------------*/
 cv::Mat &TakePicture::getImageFrame(std::mutex& _writeMutex)
 {
           std::lock_guard<std::mutex> m_lock(_writeMutex);
@@ -28,13 +27,13 @@ cv::Mat &TakePicture::getImageFrame(std::mutex& _writeMutex)
           return m_imageFrameStore;
 }
 
-/*
+/*------------------------------------------------------------------------------------------------------
  * 将经过识别和匹配的人脸上绘制相关图形
  * @name: drawGeometryOnImage
  * @param  1.写入锁互斥量: std::mutex&_writeMutex
  *                 2.人脸位置  dlib::rectangle& m_facePos
  *                 3. 识别人名显示  std::string m_targetName = ""
-*/
+*------------------------------------------------------------------------------------------------------*/
 void TakePicture::drawGeometryOnImage(std::mutex& _writeMutex, dlib::rectangle& m_facePos, std::string m_targetName ) {
           cv::Rect face(
                     cv::Point(m_facePos.left(), m_facePos.top()),

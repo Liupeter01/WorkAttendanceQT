@@ -1,5 +1,24 @@
 #include"ImageProcess.h"
 
+ImageProcess::ImageProcess(int TrainningSetting)
+          :FaceDetecion(), ModelTrain(TrainningSetting), TakePicture()
+{
+          m_threadPool.emplace_back(&ImageProcess::initImageProcess, this);
+          this->setvideoContinue();                                                                            //视频的连续播放
+          this->m_cameraSwitchSync.first = CameraSwitch::NO_INPUT;              //单次拍照--当前没有输入
+          this->m_savingSwitchSync.first = SavingSwitch::DEFAULT;                  //保存人脸--当前没有操作
+}
+
+ImageProcess::~ImageProcess()
+{
+          for (auto& i : m_threadPool) {
+                    if (i.joinable()) {
+                              i.join();
+                    }
+          }
+}
+
+/*-----------------------------------------程序的通用工具---------------------------------------*/
 /*------------------------------------------------------------------------------------------------------
  * cv::Mat ----> QImage
  * @name: mat2Qimage
@@ -14,41 +33,56 @@ inline QImage& ImageProcess::mat2Qimage(const cv::Mat& mat)
           return  (m_qimageFrameStore = QImage(mat.data, mat.cols, mat.rows, mat.step, QImage::Format_RGB888).rgbSwapped());
 }
 
-/*
+/*------------------------------------------------------------------------------------------------------
+ * 将启动日志信息输出到SystemStatusInfo窗口中
+ * @name:  printOnTextBroswer
+ * @function: 将启动日志信息输出到SystemStatusInfo窗口中
+ * @param:  1. 输出窗口接口：QTextBrowser*& _systemOutput
+ *                  2. 输出的wstring的字符串：const std::wstring& _wstring
+*------------------------------------------------------------------------------------------------------*/
+inline void ImageProcess::printOnTextBroswer(
+          QTextBrowser*& _systemOutput,
+          const std::wstring& _wstring
+)
+{
+          _systemOutput->insertPlainText(QString::fromStdWString(_wstring));
+}
+
+/*-------------------------------为内部函数提供的IxternalAPI------------------------------*/
+/*------------------------------------------------------------------------------------------------------
  * 实时摄像头图像+人脸检测+人脸识别输出显示接口
  * @name: realTimeFacialDisplay
  * @function：其他的功能调用通过与该程序连接的线程进行操作
  * @param : 输出窗口接口：QTextBrowser*& _systemOutput
  * @retValue: QImage &
-*/
-QImage &ImageProcess::realTimeFacialDisplay(QTextBrowser*& _systemOutput)
+ *------------------------------------------------------------------------------------------------------*/
+QImage& ImageProcess::realTimeFacialDisplay(QTextBrowser*& _systemOutput)
 {
           [=]() {               //条件变量设置：可能需要等待其他模块的信号，才可以继续进行执行
                     std::unique_lock<std::mutex> _lckg(this->m_videoDisplaySync);
-                    this->m_videoDisplayCtrl.wait(_lckg, [=]() 
-                    {
-                              return this->isVideoPaused();                               //视频是否开启暂停状态
-                    });
-          }();                     
+                    this->m_videoDisplayCtrl.wait(_lckg, [=]()
+                              {
+                                        return this->isVideoPaused();                               //视频是否开启暂停状态
+                              });
+          }();
           this->resetDataSyncSignal();                                                                                                                                        //重置数据就绪信号
           this->m_imageSync.first = this->getImageFrame(this->m_imageSync.second);                                                        //共享人脸图像
           this->setImageSyncSignal();                                                                                                                                         //当前的人脸图像已经更新
-          this->m_faceRectSync.first= this->getFaceRectangle(this->m_imageSync.first, this->m_faceRectSync.second);    //共享人脸位置
+          this->m_faceRectSync.first = this->getFaceRectangle(this->m_imageSync.first, this->m_faceRectSync.second);    //共享人脸位置
           this->setRectSyncSignal();                                                                                                                                           //当前的人脸位置已经更新
           this->drawGeometryOnImage(this->m_imageSync.second, this->m_faceRectSync.first, "");
-          return mat2Qimage(this->m_imageSync.first);
+          return this->mat2Qimage(this->m_imageSync.first);                                                                                                     //需要修改！！！
 }
 
-
-/*
+/*------------------------------------------------------------------------------------------------------
  * 通过摄像头图像进行实时人脸训练功能模块
  * @name: realTimeFacialDisplay
  * @function：和实时摄像头图像协同进行人脸训练功能
  * @param:  1. 视频开关 std::atomic<bool> &
  *                  2. 输出窗口接口：QTextBrowser*& _systemOutput
- * 
+ *
  * @Correction: 2022-7-24 添加函数参数修复防止线程无法正确的停止运转
-*/
+*------------------------------------------------------------------------------------------------------*/
 void ImageProcess::videoSyncFacialTranning(std::atomic<bool>& _videoFlag, QTextBrowser*& _systemOutput)
 {
           while (!_videoFlag)
@@ -57,28 +91,28 @@ void ImageProcess::videoSyncFacialTranning(std::atomic<bool>& _videoFlag, QTextB
                     [=]() {
                               std::unique_lock<std::mutex> _lckg(this->m_cameraSwitchSync.second);
                               this->m_cameraCtrl.wait(_lckg, [=]() {
-                                                  return this->getCameraState();
-                              });
+                                        return this->getCameraState();
+                                        });
                     }();
 
                     this->setvideoPause();                                                                                                         //暂停显示线程的正常输出
 
                     /*检查人脸图像是否准备好，避免死锁情况的发生*/
-                    [=]() {            
+                    [=]() {
                               std::unique_lock<std::mutex> _lckg(this->m_imageSync.second);
-                              this->m_imageReady.wait(_lckg, [=](){
-                                                  return this->getImageSyncStatus();
-                              });
+                              this->m_imageReady.wait(_lckg, [=]() {
+                                        return this->getImageSyncStatus();
+                                        });
                               this->m_copiedImage = this->m_imageSync.first;
                     }();
                     this->resetImageSyncStatus();                                                                                             //取消人脸图像的就绪状态
 
                     /*检查人脸位置是否准备好，避免死锁情况的发生*/
-                    [=]() {              
+                    [=]() {
                               std::unique_lock<std::mutex> _lckg(this->m_faceRectSync.second);
                               this->m_rectReady.wait(_lckg, [=]() {
-                                                  return this->getRectSyncStatus();
-                              });
+                                        return this->getRectSyncStatus();
+                                        });
                               this->m_copiedfaceRect = this->m_faceRectSync.first;
                     }();
                     this->resetRectSyncStatus();                                                                                              //取消人脸位置的就绪状态
@@ -87,9 +121,9 @@ void ImageProcess::videoSyncFacialTranning(std::atomic<bool>& _videoFlag, QTextB
                     [=]() {
                               std::unique_lock<std::mutex> _lckg(this->m_savingSwitchSync.second);
                               this->m_saving = this->m_savingSwitchSync.first;                                                 //保存当前控制状态机
-                              this->m_savingCtrl.wait(_lckg, [=]()  {
-                                                  return this->getImageSavingState();
-                               });
+                              this->m_savingCtrl.wait(_lckg, [=]() {
+                                        return this->getImageSavingState();
+                                        });
                     }();
 
                     this->setvideoContinue();                                                                                                  //恢复显示线程的正常输出
@@ -102,42 +136,4 @@ void ImageProcess::videoSyncFacialTranning(std::atomic<bool>& _videoFlag, QTextB
                               }
                     }
           }
-}
-
-/*
- * 启动人脸的显示线程
- * @name:  startVideoDisplay
- * @function: 实时摄像头图像+人脸检测+人脸识别输出显示接口
- * @param: 输出窗口接口：QTextBrowser*& _systemOutput
- * @retValue: QImage &
-*/
-QImage& ImageProcess::startVideoDisplay(QTextBrowser*& _systemOutput)
-{
-          return this->realTimeFacialDisplay(_systemOutput);
-}
-
-/*
- * 启动人脸训练程序
- * @name:  startVideoRegister
- * @function: 开启当前视频拍摄，启动人脸训练程序
- * @param:  1.视频开关 std::atomic<bool> &
- *                  2.输出窗口接口：QTextBrowser*& _systemOutput
- *
- * @Correction: 2022-7-24 添加函数参数修复防止线程无法正确的停止运转
-*/
-void  ImageProcess::startVideoRegister(std::atomic<bool>& _videoFlag, QTextBrowser*& _systemOutput)
-{
-          this->m_threadPool.emplace_back(&ImageProcess::videoSyncFacialTranning, this, std::ref(_videoFlag), std::ref(_systemOutput));
-}
-
-/*
- * 将启动日志信息输出到SystemStatusInfo窗口中
- * @name:  printOnTextBroswer
- * @function: 将启动日志信息输出到SystemStatusInfo窗口中
- * @param:  1. 输出窗口接口：QTextBrowser*& _systemOutput
- *                  2. 输出的wstring的字符串：const std::wstring& _wstring
-*/
-inline void ImageProcess::printOnTextBroswer(QTextBrowser*& _systemOutput, const std::wstring& _wstring)
-{
-          _systemOutput->insertPlainText(QString::fromStdWString(_wstring));
 }

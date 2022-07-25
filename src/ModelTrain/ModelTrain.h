@@ -34,18 +34,31 @@ using anet_type = dlib::loss_metric< dlib::fc_no_bias<128, dlib::avg_pool_everyt
           alevel0< alevel1<alevel2< alevel3<alevel4<
           dlib::max_pool<3, 3, 2, 2, dlib::relu<dlib::affine<dlib::con<32, 7, 7, 2, 2, dlib::input_rgb_image_sized<150>>>>>>>>>>>>>;
 
-/*
+/*------------------------------------------------------------------------------------------------------
  *残差神经网络加载类
- * @name:class FrontFaceLoader
-* @function：加速人脸模型的加载速度
-*/
-class ResnetLoader {                //用来加载特征点模型和以及人脸检测模型
+ * @name:class ResnetLoader
+* @function：加速残差神经网络模型加载速度
+*------------------------------------------------------------------------------------------------------*/
+class ResnetLoader {             
 public:
           ResnetLoader();
           virtual ~ResnetLoader();
+
+          /*------------------------------------------------------------------------------------------------------
+           * 获取人脸残差神经模型的加载状态
+           * @name:getLoaderStatus
+           * @param  残差神经网络操作类 anet_type*& _net
+          *------------------------------------------------------------------------------------------------------*/
           bool getLoaderStatus(anet_type*& _net);
+
 private:
+          /*------------------------------------------------------------------------------------------------------
+           * 加载人脸残差神经模型Resnet
+           * @name: LoadResnetModel
+           * @param 残差神经网络操作类 anet_type*& _net
+          *------------------------------------------------------------------------------------------------------*/
           bool LoadResnetModel(anet_type*& _net);
+
 private:
           std::future<bool>m_resnet;
 };
@@ -54,72 +67,76 @@ class ModelTrain {
 public:
           ModelTrain(int TranningSetting);
           virtual ~ModelTrain();
+
 public:
-          /*
-          * 初始化人脸模型
-          * @name: initResnetModel
-          */
-          bool initResnetModel();
-
-          /*
-          * 释放人脸模型
-          * @name: releaseResnetModel
-          */
-          void  releaseResnetModel();
-
-          /*
+          /*---------------------------------ModelTrain的通用工具接口--------------------------------*/
+          /*------------------------------------------------------------------------------------------------------
           * 将cv::Mat人脸根据合适的参数裁剪为指定大小的dlib存储类型的人脸
           * @name: converImageStoreType
           * @param 1.输入原始图像  cv::Mat & _origin
           * @           2.人脸的特征点的存储结构：dlib::full_object_detection & _shapeInfo
           * @retValue:  dlib::matrix<dlib::rgb_pixel> 返回一个用于训练神经网络的人脸
-          */
-          static dlib::matrix<dlib::rgb_pixel> converImageStoreType(cv::Mat &_origin, dlib::full_object_detection& _shapeInfo);
+          *------------------------------------------------------------------------------------------------------*/
+          static dlib::matrix<dlib::rgb_pixel> converImageStoreType(cv::Mat& _origin, dlib::full_object_detection& _shapeInfo);
 
-           /*
+protected:
+          /*-----------------------------ModelTrain的初始化的函数接口----------------------------*/
+          /*------------------------------------------------------------------------------------------------------
+          * 初始化人脸模型
+          * @name: initResnetModel
+          *------------------------------------------------------------------------------------------------------*/
+          bool initResnetModel();
+
+          /*------------------------------------------------------------------------------------------------------
+          * 释放人脸模型
+          * @name: releaseResnetModel
+          *------------------------------------------------------------------------------------------------------*/ 
+          void  releaseResnetModel();
+
+protected:
+          /*--------------------------ModelTrain的数据输入和训练函数接口------------------------*/
+          /*------------------------------------------------------------------------------------------------------
           * 当输入达到需求的训练图像数量时开启训练
           * @name: externalInput
           * @param 1.输入原始图像  cv::Mat & _origin
           * @           2.人脸的特征点的存储结构：dlib::full_object_detection & _shapeInfo
           * @RetValue : true : 可以继续输入图像 false 不可以输入
-          */
-           bool externalInput(cv::Mat& _origin, dlib::full_object_detection& _shapeInfo);
+          *------------------------------------------------------------------------------------------------------*/
+          bool externalInput(cv::Mat& _origin, dlib::full_object_detection& _shapeInfo);
 
-protected:
-          /*
+          /*------------------------------------------------------------------------------------------------------
           * 根据dlib存储的多张人脸模型计算128D人脸特征向量均值
           * @name:  ResnetTrainning
           * @retValue:  返回一个初次保存的人脸的128D的人脸特征向量的平均值用于
-          */
+          *------------------------------------------------------------------------------------------------------*/
           OUT dlib::matrix<float, 0, 1> resnetTrainning();
 
-          /*
+          /*------------------------------------------------------------------------------------------------------
           * 根据实时输入的视频模块计算当前人脸对应的编码
           * @name:  resnetEncodingCalc
           * @param 1.传递实时输入的人脸  dlib::matrix<dlib::rgb_pixel>>& _face
           * @retValue:  返回一个描述人脸的128D的人脸特征向量
-          */
+          *------------------------------------------------------------------------------------------------------*/
           OUT dlib::matrix<float, 0, 1> resnetEncodingCalc(dlib::matrix<dlib::rgb_pixel>& _face);
           OUT dlib::matrix<float, 0, 1> resnetEncodingCalc(cv::Mat & _face);
 
-          /*
+          /*------------------------------------------------------------------------------------------------------
           * 将128D人脸特征向量转换为数据库字符类型
           * @name:   convertMatrixToString
           * @param 1.传递的128D的人脸特征向量  dlib::matrix<float, 0, 1>& src
           *                2.传递接收人脸特征向量的字符串的地址std::string& dst
           * 
           * @retValue:  返回一个转换是否成功
-          */
+          *------------------------------------------------------------------------------------------------------*/
           bool convertMatrixToString(dlib::matrix<float, 0, 1>& src, std::string& dst);
 
-          /*
+          /*------------------------------------------------------------------------------------------------------
           * 将人脸数据库字符转换为特征向量类型128D
           * @name:   convertStringToMatrix
           * @param 1.传递接收人脸特征向量的字符串的地址std::string& src
           *                   2.传递的128D的人脸特征向量  dlib::matrix<float, 0, 1>& dst
           *
-          * @retValue:  返回一个转换是否成功
-          */
+          *------------------------------------------------------------------------------------------------------*/
           void convertStringToMatrix(std::string& src, dlib::matrix<float, 0, 1>& dst);
 
 private:
