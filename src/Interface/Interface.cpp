@@ -10,6 +10,38 @@ Interface::~Interface()
 {
 }
 
+/*-------------------------------QTWidget层对外的封装接口----------------------------------*/
+/*------------------------------------------------------------------------------------------------------
+ *  QTWidget层视频连续输出函数
+ * @name: QTVideoOutput
+ * @function：连续更新显示图层所显示的图像
+ * @param: 1. 视频输出pixmap : QLabel*& _qlabel
+ *                 2. 输出窗口接口：QTextBrowser*& _systemOutput
+*-----------------------------------------------------------------------------------------------------*/
+void Interface::setLabelImage(QImage& _qimage, QLabel*& _qlabel)
+{
+          _qimage = _qimage.scaled(_qlabel->width(), _qlabel->height());                 //适配控件分辨率
+          _qlabel->setPixmap(QPixmap::fromImage(_qimage));
+}
+
+/*------------------------------------------------------------------------------------------------------
+ *  QLCDNumber图层的时限显示函数
+ * @name: setLabelImage
+ * @function：将QTimer类型作为事件数据类型传入到容器QLCDNumber中
+ * @param 1.数据显示数据类型 QLCDNumber*& _qlcd
+*-----------------------------------------------------------------------------------------------------*/
+void Interface::setLcdTimer(QLCDNumber*& _qlcd)
+{
+          _qlcd->setDigitCount(10);                                                //设置晶体管控件QLCDNumber能显示的位数
+          _qlcd->setMode(QLCDNumber::Dec);                            //设置显示的模式为十进制
+          _qlcd->setSegmentStyle(QLCDNumber::Flat);               //设置显示方式
+          while(!this->m_videoFlag) 
+          {
+                    _qlcd->display(QTime::currentTime().toString("hh:mm:ss"));
+          }
+}
+
+/*-------------------------------QTWidget层对外的操作接口----------------------------------*/
 /*------------------------------------------------------------------------------------------------------
  *  QTWidget层视频关闭函数
  * @name: QTVideoOutput
@@ -48,19 +80,6 @@ void  Interface::videoFrameSavingProcess()
 void  Interface::videoFrameIgnoreProcess()
 {
           this->enableIgnoreProcess();
-}
-
-/*------------------------------------------------------------------------------------------------------
- *  QTWidget层视频连续输出函数
- * @name: QTVideoOutput
- * @function：连续更新显示图层所显示的图像
- * @param: 1. 视频输出pixmap : QLabel*& _qlabel
- *                 2. 输出窗口接口：QTextBrowser*& _systemOutput
-*-----------------------------------------------------------------------------------------------------*/
-void Interface::setLabelImage(QImage& _qimage, QLabel*& _qlabel)
-{
-          _qimage = _qimage.scaled(_qlabel->width(), _qlabel->height());                 //适配控件分辨率
-          _qlabel->setPixmap(QPixmap::fromImage(_qimage));
 }
 
 /*------------------------------------------------------------------------------------------------------

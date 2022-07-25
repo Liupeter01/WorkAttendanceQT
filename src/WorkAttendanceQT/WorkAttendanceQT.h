@@ -1,7 +1,6 @@
 #pragma once
-#include <QtWidgets/QDialog>
 #include "ui_WorkAttendanceQT.h"
-#include<qdebug.h>
+#include <QtWidgets/QDialog>
 #include"../Interface/Interface.h"
 
 class WorkAttendanceQT : public QDialog,public  Interface{
@@ -17,5 +16,5 @@ private slots:
           void registerEmployee();                           //Æô¶¯ÑµÁ·Ïß³Ì
 private:
           Ui::WorkAttendanceQTClass ui;
-          std::thread m_test;
+          std::vector<std::thread> m_threadPool;
 }; 

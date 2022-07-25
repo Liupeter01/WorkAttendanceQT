@@ -9,13 +9,18 @@ WorkAttendanceQT::WorkAttendanceQT(QWidget* parent)
           QObject::connect(ui.Register, SIGNAL(clicked()), this, SLOT(registerEmployee()));                            //人脸训练功能模块
           QObject::connect(ui.ConfirmTranningSet, SIGNAL(clicked()), this, SLOT(savePicture()));        //保存人脸
           QObject::connect(ui.IgnoreTranningSet, SIGNAL(clicked()), this, SLOT(ignorePicture()));           //舍弃人脸
-          m_test = std::thread(&Interface::QTVideoOutput, this, std::ref(this->ui.VideoDisplay), std::ref(this->ui.SystemStatusInfo));
+          this->m_threadPool.emplace_back(&Interface::QTVideoOutput, this, std::ref(this->ui.VideoDisplay), std::ref(this->ui.SystemStatusInfo));
+          this->m_threadPool.emplace_back(&Interface::setLcdTimer, this, std::ref(this->ui.lcdNumber));
 }
 
 WorkAttendanceQT::~WorkAttendanceQT()
 {
           this->videoClose();
-          m_test.join();
+          for (auto& i : this->m_threadPool) {
+                    if (i.joinable()) {
+                              i.join();
+                    }
+          }
 }
 
 void WorkAttendanceQT::videoStreamClose() 

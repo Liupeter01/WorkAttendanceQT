@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1251</width>
-    <height>680</height>
+    <width>1259</width>
+    <height>661</height>
    </rect>
   </property>
   <property name="focusPolicy">
@@ -20,7 +20,7 @@
    <property name="geometry">
     <rect>
      <x>290</x>
-     <y>40</y>
+     <y>30</y>
      <width>541</width>
      <height>341</height>
     </rect>
@@ -474,9 +474,9 @@
   <widget class="QPushButton" name="Exit">
    <property name="geometry">
     <rect>
-     <x>930</x>
+     <x>1130</x>
      <y>590</y>
-     <width>131</width>
+     <width>121</width>
      <height>61</height>
     </rect>
    </property>
@@ -488,7 +488,7 @@
    <property name="geometry">
     <rect>
      <x>280</x>
-     <y>441</y>
+     <y>410</y>
      <width>561</width>
      <height>201</height>
     </rect>
@@ -543,9 +543,9 @@
   <widget class="QPushButton" name="ConfirmTranningSet">
    <property name="geometry">
     <rect>
-     <x>930</x>
-     <y>450</y>
-     <width>131</width>
+     <x>870</x>
+     <y>590</y>
+     <width>121</width>
      <height>61</height>
     </rect>
    </property>
@@ -556,9 +556,9 @@
   <widget class="QPushButton" name="IgnoreTranningSet">
    <property name="geometry">
     <rect>
-     <x>930</x>
-     <y>520</y>
-     <width>131</width>
+     <x>1000</x>
+     <y>590</y>
+     <width>121</width>
      <height>61</height>
     </rect>
    </property>
@@ -572,7 +572,7 @@
      <x>20</x>
      <y>480</y>
      <width>231</width>
-     <height>41</height>
+     <height>31</height>
     </rect>
    </property>
    <property name="text">
@@ -585,7 +585,7 @@
      <x>270</x>
      <y>10</y>
      <width>581</width>
-     <height>401</height>
+     <height>371</height>
     </rect>
    </property>
    <property name="font">
@@ -651,9 +651,9 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>530</y>
+     <y>520</y>
      <width>231</width>
-     <height>41</height>
+     <height>31</height>
     </rect>
    </property>
    <property name="text">
@@ -684,9 +684,9 @@
    <property name="geometry">
     <rect>
      <x>270</x>
-     <y>420</y>
+     <y>390</y>
      <width>581</width>
-     <height>241</height>
+     <height>231</height>
     </rect>
    </property>
    <property name="font">
@@ -700,6 +700,81 @@
    <property name="title">
     <string>识别结果</string>
    </property>
+  </widget>
+  <widget class="QProgressBar" name="progressBar">
+   <property name="geometry">
+    <rect>
+     <x>280</x>
+     <y>630</y>
+     <width>571</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="value">
+    <number>24</number>
+   </property>
+  </widget>
+  <widget class="QGroupBox" name="groupBox_4">
+   <property name="geometry">
+    <rect>
+     <x>860</x>
+     <y>10</y>
+     <width>381</width>
+     <height>281</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Times New Roman</family>
+     <pointsize>10</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="title">
+    <string>登录列表：</string>
+   </property>
+   <widget class="QTableView" name="tableView">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>20</y>
+      <width>361</width>
+      <height>251</height>
+     </rect>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QGroupBox" name="groupBox_5">
+   <property name="geometry">
+    <rect>
+     <x>860</x>
+     <y>300</y>
+     <width>381</width>
+     <height>281</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Times New Roman</family>
+     <pointsize>10</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="title">
+    <string>打卡记录：</string>
+   </property>
+   <widget class="QTableView" name="tableView_2">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>20</y>
+      <width>361</width>
+      <height>251</height>
+     </rect>
+    </property>
+   </widget>
   </widget>
   <zorder>groupBox_3</zorder>
   <zorder>groupBox_2</zorder>
@@ -717,6 +792,9 @@
   <zorder>TakePicture_2</zorder>
   <zorder>calendarWidget</zorder>
   <zorder>lcdNumber</zorder>
+  <zorder>progressBar</zorder>
+  <zorder>groupBox_4</zorder>
+  <zorder>groupBox_5</zorder>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources>

@@ -5,7 +5,9 @@
 
 #include<QtGui/qimage.h>
 #include<QtWidgets/qlabel.h>
+#include<QtWidgets/qdatetimeedit.h>
 #include<QtWidgets/qtextbrowser.h>
+#include<QtWidgets/qlcdnumber.h>
 
 /*------------------------------------------------------------------------------------------------------
  * 控制ImageProcess层的拍照控制状态机
