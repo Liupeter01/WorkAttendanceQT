@@ -137,3 +137,22 @@ void ImageProcess::videoSyncFacialTranning(std::atomic<bool>& _videoFlag, QTextB
                     }
           }
 }
+
+/*------------------------------------------------------------------------------------------------------
+ * 启动人脸注册运行训练程序
+ * @name:  modelSetTranning
+ * @function: 启动人脸注册之后，运行训练程序
+ * @param:  1.视频开关 std::atomic<bool> &
+ *                  2. 用户ID的输入  const std::string& _userID
+ *                  3. 用户姓名的输入    const std::string& _userName
+ *                  4. 输出窗口接口：QTextBrowser*& _systemOutput
+*------------------------------------------------------------------------------------------------------*/
+void ImageProcess::modelSetTranning(
+          std::atomic<bool>& _videoFlag,
+          const std::string& _userID,
+          const std::string& _userName,
+          QTextBrowser*& _systemOutput
+)
+{
+
+}

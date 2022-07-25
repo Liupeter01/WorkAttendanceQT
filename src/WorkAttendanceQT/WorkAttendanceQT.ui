@@ -647,7 +647,7 @@
     </property>
    </widget>
   </widget>
-  <widget class="QPushButton" name="TakePicture_2">
+  <widget class="QPushButton" name="InitTranning">
    <property name="geometry">
     <rect>
      <x>20</x>
@@ -789,7 +789,7 @@
   <zorder>ConfirmTranningSet</zorder>
   <zorder>IgnoreTranningSet</zorder>
   <zorder>TakePicture</zorder>
-  <zorder>TakePicture_2</zorder>
+  <zorder>InitTranning</zorder>
   <zorder>calendarWidget</zorder>
   <zorder>lcdNumber</zorder>
   <zorder>progressBar</zorder>

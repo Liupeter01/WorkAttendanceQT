@@ -23,27 +23,67 @@ WorkAttendanceQT::~WorkAttendanceQT()
           }
 }
 
+/*------------------------------------------------------------------------------------------------------
+* 视频流的关闭开关
+* @name : videoStreamClose
+* @funtion : 提供操作槽SLOT供给signal信号调用
+*------------------------------------------------------------------------------------------------------*/
 void WorkAttendanceQT::videoStreamClose() 
 {
           this->videoClose();
 }
 
-void WorkAttendanceQT::registerEmployee()                          //启动训练线程
-{
-          this->startVideoRegister(this->m_videoFlag, this->ui.SystemStatusInfo);
-}
-
-void WorkAttendanceQT::takePictureForTranning() 
+/*------------------------------------------------------------------------------------------------------
+ * 在训练模型时作为训练集的拍照开关
+ * @name : takePictureForTranning
+ * @funtion : 提供操作槽SLOT供给signal信号调用
+ *------------------------------------------------------------------------------------------------------*/
+void WorkAttendanceQT::takePictureForTranning()
 {
           this->videoCameraShooting();
 }
 
-void WorkAttendanceQT::savePicture()                                    //保存照片
+/*------------------------------------------------------------------------------------------------------
+ * 开始使用训练模型进行训练集的训练
+ * @name : initModelTranning
+ * @funtion : 提供操作槽SLOT供给signal信号调用
+ *------------------------------------------------------------------------------------------------------*/
+void WorkAttendanceQT::initModelTranning()
+{
+          this->startResnetModelTranning(
+                    this->m_videoFlag, 
+                    this->ui.UserID->document()->toRawText().toStdString(), 
+                    this->ui.NameInput->document()->toRawText().toStdString(),
+                    this->ui.SystemStatusInfo
+          );
+}
+
+/*------------------------------------------------------------------------------------------------------
+ * 保存当前的照片图像
+ * @name : savePicture
+ * @funtion : 提供操作槽SLOT供给signal信号调用
+ *------------------------------------------------------------------------------------------------------*/
+void WorkAttendanceQT::savePicture()
 {
           this->videoFrameSavingProcess();
 }
 
-void WorkAttendanceQT::ignorePicture()                                 //忽略照片
+/*------------------------------------------------------------------------------------------------------
+ * 舍弃当前的照片图像
+ * @name : ignorePicture
+ * @funtion : 提供操作槽SLOT供给signal信号调用
+ *------------------------------------------------------------------------------------------------------*/
+void WorkAttendanceQT::ignorePicture()
 {
           this->videoFrameIgnoreProcess();
+}
+
+/*------------------------------------------------------------------------------------------------------
+ * 摁下当前开关启动人脸的训练程序
+ * @name : registerEmployee
+ * @funtion : 提供操作槽SLOT供给signal信号调用
+ *------------------------------------------------------------------------------------------------------*/
+void WorkAttendanceQT::registerEmployee()                          //启动训练线程
+{
+          this->startVideoRegister(this->m_videoFlag, this->ui.SystemStatusInfo);
 }

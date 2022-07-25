@@ -65,7 +65,7 @@ public:
 protected:  
           /*------------------------------为外部函数提供的ExternalAPI--------------------------------*/
           /*------------------------------------------------------------------------------------------------------
-           * 启动人脸的显示线程
+           * 启动视频的显示线程(与外部GUI连接)
            * @name:  startVideoDisplay
            * @function: 实时摄像头图像+人脸检测+人脸识别输出显示接口
            * @param: 输出窗口接口：QTextBrowser*& _systemOutput
@@ -74,7 +74,7 @@ protected:
           QImage& startVideoDisplay(QTextBrowser*& _systemOutput);
 
           /*------------------------------------------------------------------------------------------------------
-           * 启动人脸训练程序
+           * 启动人脸注册函数(与外部GUI连接)
            * @name:  startVideoRegister
            * @function: 开启当前视频拍摄，启动人脸训练程序
            * @param:  1.视频开关 std::atomic<bool> &
@@ -82,8 +82,24 @@ protected:
            *
            * @Correction: 2022-7-24 添加函数参数修复防止线程无法正确的停止运转
           *------------------------------------------------------------------------------------------------------*/
-          void startVideoRegister(
+          void  startVideoRegister(
                     std::atomic<bool>& _videoFlag,
+                    QTextBrowser*& _systemOutput
+          );
+
+          /*------------------------------------------------------------------------------------------------------
+           * 启动人脸注册之后运行训练程序(与外部GUI连接)
+           * @name:  startResnetModelTranning
+           * @function: 启动人脸注册之后，运行训练程序
+           * @param:  1.视频开关 std::atomic<bool> &
+           *                  2. 用户ID的输入  const std::string& _userID
+           *                  3. 用户姓名的输入    const std::string& _userName
+           *                  4. 输出窗口接口：QTextBrowser*& _systemOutput
+          *------------------------------------------------------------------------------------------------------*/
+          void startResnetModelTranning(
+                    std::atomic<bool>& _videoFlag,
+                   const std::string & _userID,
+                   const std::string & _userName,
                     QTextBrowser*& _systemOutput
           );
 
@@ -120,16 +136,32 @@ protected:
           QImage& realTimeFacialDisplay(QTextBrowser*& _systemOutput);
 
           /*------------------------------------------------------------------------------------------------------
-           * 通过摄像头图像进行实时人脸训练功能模块
-           * @name: realTimeFacialDisplay
-           * @function：和实时摄像头图像协同进行人脸训练功能
-           * @param:  1. 视频开关 std::atomic<bool> &
-           *                  2. 输出窗口接口：QTextBrowser*& _systemOutput
+           * 启动人脸训练程序
+           * @name:  startVideoRegister
+           * @function: 开启当前视频拍摄，启动人脸训练程序
+           * @param:  1.视频开关 std::atomic<bool> &
+           *                  2.输出窗口接口：QTextBrowser*& _systemOutput
            *
            * @Correction: 2022-7-24 添加函数参数修复防止线程无法正确的停止运转
           *------------------------------------------------------------------------------------------------------*/
           void videoSyncFacialTranning(
                     std::atomic<bool>& _videoFlag,
+                    QTextBrowser*& _systemOutput
+          );
+
+          /*------------------------------------------------------------------------------------------------------
+           * 启动人脸注册运行训练程序
+           * @name:  modelSetTranning
+           * @function: 启动人脸注册之后，运行训练程序
+           * @param:  1.视频开关 std::atomic<bool> &
+           *                  2. 用户ID的输入  const std::string& _userID
+           *                  3. 用户姓名的输入    const std::string& _userName
+           *                  4. 输出窗口接口：QTextBrowser*& _systemOutput
+          *------------------------------------------------------------------------------------------------------*/
+          void modelSetTranning(
+                    std::atomic<bool>& _videoFlag,
+                    const std::string& _userID,
+                    const std::string& _userName,
                     QTextBrowser*& _systemOutput
           );
 
