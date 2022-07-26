@@ -137,12 +137,13 @@ bool ImageProcess::isVideoPaused()
  * @function: 判断摄像头拍照
  * @RetValue:1.true : 允许拍照
  *                    2.false: 不允许拍照
+ * 
+ * @Correction：2022-7-26 增加对人脸识别图形是否为空检测，否则无法开启拍照程序
 *------------------------------------------------------------------------------------------------------*/
 bool ImageProcess::getCameraState()
 {
           bool _retValue(false);
-          {      //读取当前摄像头视频的锁
-                    //std::lock_guard<std::mutex> _lckg(this->m_cameraSwitchSync.second);
+          if (!this->m_faceRectSync.first.is_empty()) {
                     _retValue = static_cast<bool>(this->m_cameraSwitchSync.first);                  //读取之前的数据
                     this->m_cameraSwitchSync.first = CameraSwitch::NO_INPUT;                     //重置之前的摄像机状态
           }
@@ -159,11 +160,7 @@ bool ImageProcess::getCameraState()
 *------------------------------------------------------------------------------------------------------*/
 bool ImageProcess::getImageSavingState()
 {
-          bool _retValue(false);
-          {      //读取当前摄像头视频的锁
-                    //std::lock_guard<std::mutex> _lckg(this->m_savingSwitchSync.second);
-                    _retValue = static_cast<bool>(this->m_savingSwitchSync.first);                  //读取之前的数据
-                    this->m_savingSwitchSync.first = SavingSwitch::DEFAULT;                     //重置之前的保存状态
-          }
+          bool _retValue = static_cast<bool>(this->m_savingSwitchSync.first);                  //读取之前的数据
+          this->m_savingSwitchSync.first = SavingSwitch::DEFAULT;                     //重置之前的保存状态
           return _retValue;
 }
