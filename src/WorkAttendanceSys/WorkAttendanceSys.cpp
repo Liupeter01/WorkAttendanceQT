@@ -1,6 +1,6 @@
-#include "WorkAttendanceQT.h"
+#include "WorkAttendanceSys.h"
 
-WorkAttendanceQT::WorkAttendanceQT(QWidget* parent)
+WorkAttendanceSys::WorkAttendanceSys(QWidget* parent)
           : QDialog(parent), Interface(10)
 {
           ui.setupUi(this);
@@ -13,7 +13,7 @@ WorkAttendanceQT::WorkAttendanceQT(QWidget* parent)
           this->m_threadPool.emplace_back(&Interface::setLcdTimer, this, std::ref(this->ui.lcdNumber));
 }
 
-WorkAttendanceQT::~WorkAttendanceQT()
+WorkAttendanceSys::~WorkAttendanceSys()
 {
           this->videoClose();
           for (auto& i : this->m_threadPool) {
@@ -28,7 +28,7 @@ WorkAttendanceQT::~WorkAttendanceQT()
 * @name : videoStreamClose
 * @funtion : 提供操作槽SLOT供给signal信号调用
 *------------------------------------------------------------------------------------------------------*/
-void WorkAttendanceQT::videoStreamClose() 
+void WorkAttendanceSys::videoStreamClose()
 {
           this->videoClose();
 }
@@ -38,7 +38,7 @@ void WorkAttendanceQT::videoStreamClose()
  * @name : takePictureForTranning
  * @funtion : 提供操作槽SLOT供给signal信号调用
  *------------------------------------------------------------------------------------------------------*/
-void WorkAttendanceQT::takePictureForTranning()
+void WorkAttendanceSys::takePictureForTranning()
 {
           this->videoCameraShooting();
 }
@@ -48,11 +48,11 @@ void WorkAttendanceQT::takePictureForTranning()
  * @name : initModelTranning
  * @funtion : 提供操作槽SLOT供给signal信号调用
  *------------------------------------------------------------------------------------------------------*/
-void WorkAttendanceQT::initModelTranning()
+void WorkAttendanceSys::initModelTranning()
 {
           this->startResnetModelTranning(
-                    this->m_videoFlag, 
-                    this->ui.UserID->document()->toRawText().toStdString(), 
+                    this->m_videoFlag,
+                    this->ui.UserID->document()->toRawText().toStdString(),
                     this->ui.NameInput->document()->toRawText().toStdString(),
                     this->ui.SystemStatusInfo
           );
@@ -63,7 +63,7 @@ void WorkAttendanceQT::initModelTranning()
  * @name : savePicture
  * @funtion : 提供操作槽SLOT供给signal信号调用
  *------------------------------------------------------------------------------------------------------*/
-void WorkAttendanceQT::savePicture()
+void WorkAttendanceSys::savePicture()
 {
           this->videoFrameSavingProcess();
 }
@@ -73,7 +73,7 @@ void WorkAttendanceQT::savePicture()
  * @name : ignorePicture
  * @funtion : 提供操作槽SLOT供给signal信号调用
  *------------------------------------------------------------------------------------------------------*/
-void WorkAttendanceQT::ignorePicture()
+void WorkAttendanceSys::ignorePicture()
 {
           this->videoFrameIgnoreProcess();
 }
@@ -83,7 +83,7 @@ void WorkAttendanceQT::ignorePicture()
  * @name : registerEmployee
  * @funtion : 提供操作槽SLOT供给signal信号调用
  *------------------------------------------------------------------------------------------------------*/
-void WorkAttendanceQT::registerEmployee()                          //启动训练线程
+void WorkAttendanceSys::registerEmployee()                          //启动训练线程
 {
           this->startVideoRegister(this->m_videoFlag, this->ui.SystemStatusInfo);
 }

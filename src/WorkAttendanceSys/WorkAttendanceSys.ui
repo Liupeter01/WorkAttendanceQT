@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>WorkAttendanceQTClass</class>
- <widget class="QDialog" name="WorkAttendanceQTClass">
+ <class>WorkAttendanceSys</class>
+ <widget class="QDialog" name="WorkAttendanceSys">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -798,7 +798,7 @@
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources>
-  <include location="WorkAttendanceQT.qrc"/>
+  <include location="WorkAttendanceSys.qrc"/>
  </resources>
  <connections/>
  <slots>

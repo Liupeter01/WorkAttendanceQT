@@ -1,10 +1,10 @@
-#include "WorkAttendanceQT.h"
+#include "WorkAttendanceSys.h"
 #include <QtWidgets/QApplication>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    WorkAttendanceQT w;
+    WorkAttendanceSys w;
     w.show();
     return a.exec();
 }

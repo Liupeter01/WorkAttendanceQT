@@ -369,3 +369,6 @@ FodyWeavers.xsd
 *.sln
 *.lib
 *.bsc
+/src/WorkAttendanceQT/WorkAttendanceQT.pro
+/src/WorkAttendanceQT/WorkAttendanceSys.ui
+/src/WorkAttendanceQT/WorkAttendanceQT.pri
