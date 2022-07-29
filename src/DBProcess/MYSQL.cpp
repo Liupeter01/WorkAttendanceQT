@@ -23,9 +23,10 @@ bool MySQL::connect()
 /*------------------------------------------------------------------------------------------------------
 * 数据库的插入函数
 * @name:    dbInsert
-* @param: 数据库操作const std::string& op
+* @param: 数据库操作const std::string op
+* @Correction: 2022-7-29 修复了禁用拷贝构造造成参数传递失败，使用值传递
 *------------------------------------------------------------------------------------------------------*/
-bool MySQL::dbInsert(const std::string& op)
+bool MySQL::dbInsert(const std::string op)
 {
           if (mysql_query(this->m_mysql, op.c_str())) {
                     return false;

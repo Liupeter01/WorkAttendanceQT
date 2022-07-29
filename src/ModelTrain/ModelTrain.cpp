@@ -124,6 +124,7 @@ bool ModelTrain::convertMatrixToString(dlib::matrix<float, 0, 1>& src, std::stri
           for (auto i : src) {
                     outputStream << i << ",";
           }
+          dst = outputStream.str();                                             //将数值更新给外部变量
           return true;
 }
 

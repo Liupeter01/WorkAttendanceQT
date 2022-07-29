@@ -19,12 +19,23 @@ QImage& ImageProcess::startVideoDisplay(QTextBrowser*& _systemOutput)
  * @function: 开启当前视频拍摄，启动人脸训练程序
  * @param:  1.视频开关 std::atomic<bool> &
  *                  2.输出窗口接口：QTextBrowser*& _systemOutput
+ *                  3.进度条的输出接口：QProgressBar* &_processBar
+ *                  4.进度数值显示器 : int _displayNumber
  *
  * @Correction: 2022-7-24 添加函数参数修复防止线程无法正确的停止运转
 *------------------------------------------------------------------------------------------------------*/
-void  ImageProcess::startVideoRegister(std::atomic<bool>& _videoFlag, QTextBrowser*& _systemOutput)
+void  ImageProcess::startVideoRegister(
+          std::atomic<bool>& _videoFlag,
+          QTextBrowser*& _systemOutput,
+          QProgressBar*& _processBar,
+          int _displayNumber
+)
 {
-          this->m_threadPool.emplace_back(&ImageProcess::videoSyncFacialTranning, this, std::ref(_videoFlag), std::ref(_systemOutput));
+          this->m_threadPool.emplace_back(
+                    &ImageProcess::videoSyncFacialTranning, this, 
+                    std::ref(_videoFlag), std::ref(_systemOutput),
+                    std::ref(_processBar),_displayNumber
+          );
 }
 
 
@@ -32,23 +43,14 @@ void  ImageProcess::startVideoRegister(std::atomic<bool>& _videoFlag, QTextBrows
  * 启动人脸注册之后运行训练程序(与外部GUI连接)
  * @name:  startResnetModelTranning
  * @function: 启动人脸注册之后，运行训练程序
- * @param:  1.视频开关 std::atomic<bool> &
- *                  2. 用户ID的输入  const std::string& _userID
- *                  3. 用户姓名的输入    const std::string& _userName
- *                  4. 输出窗口接口：QTextBrowser*& _systemOutput
+ * @param:  输出窗口接口：QTextBrowser*& _systemOutput
+ * @retValue: 返回训练好的特征向量字符串  std::string &
 *------------------------------------------------------------------------------------------------------*/
-void ImageProcess::startResnetModelTranning(
-          std::atomic<bool>& _videoFlag,
-          const std::string& _userID,
-          const std::string& _userName,
-          QTextBrowser*& _systemOutput
-)
+std::string& ImageProcess::startResnetModelTranning(QTextBrowser*& _systemOutput)
 {
-          this->m_threadPool.emplace_back(
-                    &ImageProcess::modelSetTranning, this,
-                    std::ref(_videoFlag), std::ref(_userID),
-                    std::ref(_userName), std::ref(_systemOutput)
-          );
+          this->m_threadRes = std::async(&ImageProcess::modelSetTranning, this, std::ref(_systemOutput));
+          this->m_threadRes.wait();
+          return   this->m_threadRes.get();
 }
 
 /*------------------------------------------------------------------------------------------------------

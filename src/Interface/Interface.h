@@ -64,6 +64,24 @@ public:
           *-----------------------------------------------------------------------------------------------------*/
           void QTVideoOutput(QLabel*& _qlabel, QTextBrowser*& _systemOutput);
 
+          /*------------------------------------------------------------------------------------------------------
+           *  QTWidget层输入的训练集训练开关
+           * @name: QTResnetTranning
+           * @function：输入的训练集训练开关，并另外将信息写入数据库
+           * @param:
+           *                  1. 用户ID的输入  const std::string& _userID
+           *                  2. 用户姓名的输入    const std::string& _userName
+           *                  3. 部门的输入         const std::string & _department
+           *                  3. 输出窗口接口：QTextBrowser*& _systemOutput
+           * 
+          *------------------------------------------------------------------------------------------------------*/
+          void QTResnetTranning(
+                    const std::string& _userID,
+                    const std::string& _userName,
+                    const std::string& _department,
+                    QTextBrowser*& _systemOutput
+          );
+
 protected:
           std::atomic<bool> m_videoFlag = false;                      //视频开关
 };

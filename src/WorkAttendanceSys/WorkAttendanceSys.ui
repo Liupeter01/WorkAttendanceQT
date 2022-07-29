@@ -570,7 +570,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>480</y>
+     <y>520</y>
      <width>231</width>
      <height>31</height>
     </rect>
@@ -606,7 +606,7 @@
      <x>20</x>
      <y>300</y>
      <width>231</width>
-     <height>171</height>
+     <height>211</height>
     </rect>
    </property>
    <property name="font">
@@ -624,7 +624,7 @@
     <property name="geometry">
      <rect>
       <x>140</x>
-      <y>110</y>
+      <y>150</y>
       <width>75</width>
       <height>23</height>
      </rect>
@@ -637,7 +637,7 @@
     <property name="geometry">
      <rect>
       <x>140</x>
-      <y>140</y>
+      <y>180</y>
       <width>75</width>
       <height>23</height>
      </rect>
@@ -646,12 +646,41 @@
      <string>注册系统</string>
     </property>
    </widget>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>120</y>
+      <width>54</width>
+      <height>12</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>部门</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="comboBox">
+    <property name="geometry">
+     <rect>
+      <x>70</x>
+      <y>110</y>
+      <width>151</width>
+      <height>31</height>
+     </rect>
+    </property>
+   </widget>
   </widget>
   <widget class="QPushButton" name="InitTranning">
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>520</y>
+     <y>560</y>
      <width>231</width>
      <height>31</height>
     </rect>
