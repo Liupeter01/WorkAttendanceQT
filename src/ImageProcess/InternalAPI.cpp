@@ -130,7 +130,10 @@ void ImageProcess::videoSyncFacialTranning(
                               {      
                                         break;
                               }
-                              _systemOutput->insertPlainText(QString::number(++_displayNumber));
+                              _systemOutput->insertPlainText(
+                                        QString("人脸训练集图片的输入数量(") +QString::number(++_displayNumber) + 
+                                        QString("/") +QString::number(10) + QString(")\n")
+                              );
                     }
           }
 }
