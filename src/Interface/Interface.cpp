@@ -122,3 +122,39 @@ void Interface::QTResnetTranning(
 
           }
 }
+
+
+/*------------------------------------------------------------------------------------------------------
+ *  QTWidget层输入的人脸登录开关
+ * @name: QTFacialRecognize
+ * @function：从数据库中找到对应的人脸特征向量字符串并根据当前的实时人脸进行对比
+ *                      如果满足条件则将信息输入到实时摄像头的显示层
+ *
+ * @param:
+ *                  1. 用户ID的输入  const std::string& _userID
+ *                  2. 用户姓名的输入    const std::string& _userName
+ *                  3. 部门的输入         const std::string & _department
+ *                  3. 输出窗口接口：QTextBrowser*& _systemOutput
+*------------------------------------------------------------------------------------------------------*/
+void Interface::QTFacialRecognize(
+          const std::string& _userID,
+          const std::string& _userName,
+          const std::string& _department,
+          QTextBrowser*& _systemOutput
+)
+{
+          try{
+                    std::string dbFaceMatrix = this->readFaceRecordFromDB(_userID, _userName, _department);   //输入UserID+UserName+Department得到人脸特征矩阵的字符串
+                    if (dbFaceMatrix == "" || !dbFaceMatrix.size()) {                                                                             //返回的人脸矩阵字符串为空
+                              throw EmptyMatrixString();                                                                                                    //MatrixString为空的异常
+                    }
+                    else {                                                                                                                                                  //返回的人脸矩阵字符串非空                                                                                    
+                              if (this->startFacialRecognize(dbFaceMatrix, _systemOutput)) {                                         //人脸矩阵数据库dbFaceMatrix
+                                        
+                              }
+                    }
+          }
+          catch (const EmptyMatrixString &) {
+
+          }
+}

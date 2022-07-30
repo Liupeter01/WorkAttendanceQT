@@ -144,8 +144,26 @@ protected:
           * @retValue:  返回一个描述人脸的128D的人脸特征向量
           *------------------------------------------------------------------------------------------------------*/
           OUT dlib::matrix<float, 0, 1> resnetEncodingCalc(dlib::matrix<dlib::rgb_pixel>& _face);
-          OUT dlib::matrix<float, 0, 1> resnetEncodingCalc(cv::Mat & _face);
+          OUT dlib::matrix<float, 0, 1> resnetEncodingCalc(dlib::matrix<dlib::rgb_pixel> _face);
+          OUT dlib::matrix<float, 0, 1> resnetEncodingCalc(cv::Mat& _face, dlib::full_object_detection& m_faceLandmark);
 
+protected:
+          /*--------------------------ModelTrain的数据的人脸比对函数接口--------------------*/
+         /*------------------------------------------------------------------------------------------------------
+          * 根据实时输入的视频模块计算当前人脸对应的编码
+          * @name:  compareFaceMatrix
+          * @param 1.传递数据库中的人脸矩阵   const dlib::matrix<float, 0, 1>& _dbMatrix
+          *                2.传递实时输入的人脸矩阵  const dlib::matrix<float, 0, 1>& _realTimeMatrix
+          * 
+          * @retValue:  返回人脸的对比是否成功
+          *------------------------------------------------------------------------------------------------------*/
+          bool compareFaceMatrix(
+                    const dlib::matrix<float, 0, 1>& _dbMatrix,
+                    const dlib::matrix<float, 0, 1>& _realTimeMatrix
+          );
+
+protected:
+          /*--------------------------ModelTrain的数据的转换函数接口------------------------*/
           /*------------------------------------------------------------------------------------------------------
           * 将128D人脸特征向量转换为数据库字符类型
           * @name:   convertMatrixToString

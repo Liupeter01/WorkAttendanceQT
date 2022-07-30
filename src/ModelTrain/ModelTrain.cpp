@@ -121,14 +121,36 @@ ModelTrain::resnetEncodingCalc(dlib::matrix<dlib::rgb_pixel>& _face)
           return (*this->m_Net)(std::vector< dlib::matrix<dlib::rgb_pixel>> { _face }).at(0);
 }
 
-dlib::matrix<float, 0, 1> 
-ModelTrain::resnetEncodingCalc(cv::Mat& _face)
+dlib::matrix<float, 0, 1>
+ModelTrain::resnetEncodingCalc(dlib::matrix<dlib::rgb_pixel> _face)
 {
-          dlib::matrix< dlib::rgb_pixel> imageConvert;                                                                  //转换为DLIB专属的RGB矩阵
-          dlib::assign_image(imageConvert, dlib::cv_image<dlib::rgb_pixel>(_face));
-          return resnetEncodingCalc(imageConvert);
+          return (*this->m_Net)(std::vector< dlib::matrix<dlib::rgb_pixel>> { _face }).at(0);
 }
 
+dlib::matrix<float, 0, 1>
+ModelTrain::resnetEncodingCalc(cv::Mat& _face, dlib::full_object_detection& m_faceLandmark)
+{
+          return resnetEncodingCalc(converImageStoreType(_face, m_faceLandmark));            //转换为DLIB专属的RGB矩阵
+}
+
+/*--------------------------ModelTrain的数据的人脸比对函数接口--------------------*/
+/*------------------------------------------------------------------------------------------------------
+ * 根据实时输入的视频模块计算当前人脸对应的编码
+ * @name:  compareFaceMatrix
+ * @param 1.传递数据库中的人脸矩阵   const dlib::matrix<float, 0, 1>& _dbMatrix
+ *                2.传递实时输入的人脸矩阵  const dlib::matrix<float, 0, 1>& _realTimeMatrix
+ *
+ * @retValue:  返回一个描述人脸的128D的人脸特征向量
+ *------------------------------------------------------------------------------------------------------*/
+bool ModelTrain::compareFaceMatrix(
+          const dlib::matrix<float, 0, 1>& _dbMatrix,
+          const dlib::matrix<float, 0, 1>& _realTimeMatrix
+)
+{
+          return  (dlib::length(_realTimeMatrix - _dbMatrix) < this->TrainningSimilarity ? true : false);
+}
+
+/*--------------------------ModelTrain的数据的转换函数接口------------------------*/
 /*------------------------------------------------------------------------------------------------------
 * 将128D人脸特征向量转换为数据库字符类型
 * @name:   convertMatrixToString
@@ -170,7 +192,7 @@ void ModelTrain::convertStringToMatrix(std::string& src, dlib::matrix<float, 0, 
                     inputStream >> _args >> comma;                                                                                    //提取一对数据<参数数值,逗号>
                     std::ostringstream dbArgs;
                     dbArgs << _args;                                                                                                             //将浮点数转换为字符串
-                    (*matrix++) = _args;
-                    it += dbArgs.str().size() + 1;                                                                                           //浮点数若干字节+逗号1B
+                    (*matrix++) = _args;                                                                                                       //将double db存入在 dlib::matrix<float, 0, 1>中
+                    it += dbArgs.str().size() + 1;                                                                                           //浮点数若干字节+逗号','(1B)
           }
 }

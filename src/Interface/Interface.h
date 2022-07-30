@@ -1,6 +1,23 @@
 #include"../ImageProcess/ImageProcess.h"
 #include"../DBProcess/DBProcess.h"
 
+/*------------------------------------------------------------------------------------------------------
+ * 空的MatrixString的容器
+ * @name:class EmptyMatrixString
+* @function：String的容器是空的
+*------------------------------------------------------------------------------------------------------*/
+class EmptyMatrixString {
+public:
+          /*------------------------------------------------------------------------------------------------------
+          * 返回当前的String的容器为空
+          * @name: what
+          * @RetValue:  std::string返回字符串
+          *------------------------------------------------------------------------------------------------------*/
+          std::string what() {
+                    return std::string("当前的String的容器为空");
+          }
+};
+
 class Interface :public DBProcess, public ImageProcess {
 public:
           Interface();
@@ -75,6 +92,25 @@ public:
            * 
           *------------------------------------------------------------------------------------------------------*/
           void QTResnetTranning(
+                    const std::string& _userID,
+                    const std::string& _userName,
+                    const std::string& _department,
+                    QTextBrowser*& _systemOutput
+          );
+
+          /*------------------------------------------------------------------------------------------------------
+           *  QTWidget层输入的人脸登录开关
+           * @name: QTFacialRecognize
+           * @function：从数据库中找到对应的人脸特征向量字符串并根据当前的实时人脸进行对比
+           *                      如果满足条件则将信息输入到实时摄像头的显示层
+           * 
+           * @param:
+           *                  1. 用户ID的输入  const std::string& _userID
+           *                  2. 用户姓名的输入    const std::string& _userName
+           *                  3. 部门的输入         const std::string & _department
+           *                  3. 输出窗口接口：QTextBrowser*& _systemOutput
+          *------------------------------------------------------------------------------------------------------*/
+          void QTFacialRecognize(
                     const std::string& _userID,
                     const std::string& _userName,
                     const std::string& _department,

@@ -61,9 +61,10 @@ bool MySQL::dbModify(const std::string& op)
 /*------------------------------------------------------------------------------------------------------
 * 数据库的Select函数
 * @name:    dbSelect
-* @param: 数据库操作const std::string& op
+* @param: 数据库操作const std::string op
+* @Correction: 2022-7-30 修复了禁用拷贝构造造成参数传递失败，使用值传递
 *------------------------------------------------------------------------------------------------------*/
-std::vector<std::vector<std::string>> MySQL::dbSelect(const std::string& op)
+std::vector<std::vector<std::string>> MySQL::dbSelect(const std::string op)
 {
           std::vector<std::vector<std::string>> vRet;
           if (mysql_query(m_mysql, op.c_str())) {

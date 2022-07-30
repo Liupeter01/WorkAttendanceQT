@@ -48,9 +48,25 @@ void  ImageProcess::startVideoRegister(
 *------------------------------------------------------------------------------------------------------*/
 std::string& ImageProcess::startResnetModelTranning(QTextBrowser*& _systemOutput)
 {
-          this->m_threadRes = std::async(&ImageProcess::modelSetTranning, this, std::ref(_systemOutput));
-          this->m_threadRes.wait();
-          return   this->m_threadRes.get();
+          this->m_threadMatrixRes = std::async(&ImageProcess::modelSetTranning, this, std::ref(_systemOutput));
+          this->m_threadMatrixRes.wait();
+          return   this->m_threadMatrixRes.get();
+}
+
+/*------------------------------------------------------------------------------------------------------
+ * 启动人脸登录之后运行人脸识别程序(与外部GUI连接)
+ * @name:  startFacialRecognize
+ * @function: 启动人脸登录之后，运行训练程序
+ * @param:  1.人脸特征向量字符串接口： const std::string _dbMatrix
+ *                  2.输出窗口接口：QTextBrowser*& _systemOutput
+ *
+ * @retValue: 返回识别是否成功  bool
+*------------------------------------------------------------------------------------------------------*/
+bool  ImageProcess::startFacialRecognize(const std::string _dbMatrix,QTextBrowser*& _systemOutput)
+{
+          this->m_threadStatusRes = std::async(&ImageProcess::facialRecognize, this, std::ref(_dbMatrix), std::ref(_systemOutput));
+          this->m_threadStatusRes.wait();
+          return   this->m_threadStatusRes.get();
 }
 
 /*------------------------------------------------------------------------------------------------------
@@ -61,8 +77,10 @@ std::string& ImageProcess::startResnetModelTranning(QTextBrowser*& _systemOutput
 void ImageProcess::enableSavingProcess()
 {
           //开启当前图像的保存功能
-          std::lock_guard<std::mutex> _lckg(this->m_savingSwitchSync.second);
-          this->m_savingSwitchSync.first = SavingSwitch::SAVING_FACE;
+          {
+                    std::lock_guard<std::mutex> _lckg(this->m_savingSwitchSync.second);
+                    this->m_savingSwitchSync.first = SavingSwitch::SAVING_FACE;
+          }
           this->m_savingCtrl.notify_all();                       //通知线程条件变量可以工作(可能存在Bug)
 }
 
@@ -74,8 +92,10 @@ void ImageProcess::enableSavingProcess()
 void ImageProcess::enableIgnoreProcess()
 {
           //开启当前图像的舍弃功能
-          std::lock_guard<std::mutex> _lckg(this->m_savingSwitchSync.second);
-          this->m_savingSwitchSync.first = SavingSwitch::DELETE_FACE;
+          {
+                    std::lock_guard<std::mutex> _lckg(this->m_savingSwitchSync.second);
+                    this->m_savingSwitchSync.first = SavingSwitch::DELETE_FACE;
+          }
           this->m_savingCtrl.notify_all();                       //通知线程条件变量可以工作(可能存在Bug)
 }
 
@@ -87,7 +107,9 @@ void ImageProcess::enableIgnoreProcess()
 void ImageProcess::enableCameraShooting()
 {
           //开启当前视频的拍照功能
-          std::lock_guard<std::mutex> _lckg(this->m_cameraSwitchSync.second);
-          this->m_cameraSwitchSync.first = CameraSwitch::TAKE_PICTURE;
+          {
+                    std::lock_guard<std::mutex> _lckg(this->m_cameraSwitchSync.second);
+                    this->m_cameraSwitchSync.first = CameraSwitch::TAKE_PICTURE;
+          }
           this->m_cameraCtrl.notify_all();                       //通知线程条件变量可以工作(可能存在Bug)
 }

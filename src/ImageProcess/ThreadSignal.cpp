@@ -98,6 +98,17 @@ void  ImageProcess::resetDataSyncSignal()
 }
 
 /*-----------------------------------------------------------------------------------------------------
+ * 重置保存功能的就绪信号
+ * @name: resetImageSavingState
+ * @function: 用来指示其他线程有关于图像保存状态
+*------------------------------------------------------------------------------------------------------*/
+void ImageProcess::resetImageSavingState()
+{
+          std::lock_guard<std::mutex> _lckg(this->m_savingSwitchSync.second);
+          this->m_savingSwitchSync.first = SavingSwitch::DEFAULT;                     //重置之前的保存状态
+}
+
+/*-----------------------------------------------------------------------------------------------------
  * 设置视频显示线程的暂停
  * @name: setvideoPause
  * @function: 暂停和继续视频的显示线程
@@ -142,14 +153,22 @@ bool ImageProcess::isVideoPaused()
 *------------------------------------------------------------------------------------------------------*/
 bool ImageProcess::getCameraState()
 {
-          bool _retValue(false);
           if (!this->m_faceRectSync.first.is_empty()) {
-                    _retValue = static_cast<bool>(this->m_cameraSwitchSync.first);                  //读取之前的数据
-                    this->m_cameraSwitchSync.first = CameraSwitch::NO_INPUT;                     //重置之前的摄像机状态
+                    return static_cast<bool>(this->m_cameraSwitchSync.first);                  //读取之前的数据
           }
-          return _retValue;
+          return false;
 }
 
+/*-----------------------------------------------------------------------------------------------------
+ * 其他线程重置摄像头的状态
+ * @name: resetCameraState
+ * @function: 重置摄像头的拍照状态
+*------------------------------------------------------------------------------------------------------*/
+void ImageProcess::resetCameraState()
+{
+          std::lock_guard<std::mutex> _lckg(this->m_cameraSwitchSync.second);
+          this->m_cameraSwitchSync.first = CameraSwitch::NO_INPUT;                     //重置之前的摄像机状态
+}
 
 /*-----------------------------------------------------------------------------------------------------
  * 其他线程判断保存功能是否启动
@@ -160,7 +179,5 @@ bool ImageProcess::getCameraState()
 *------------------------------------------------------------------------------------------------------*/
 bool ImageProcess::getImageSavingState()
 {
-          bool _retValue = static_cast<bool>(this->m_savingSwitchSync.first);                  //读取之前的数据
-          this->m_savingSwitchSync.first = SavingSwitch::DEFAULT;                     //重置之前的保存状态
-          return _retValue;
+          return static_cast<bool>(this->m_savingSwitchSync.first);
 }
