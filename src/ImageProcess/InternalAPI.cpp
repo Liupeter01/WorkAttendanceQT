@@ -1,7 +1,8 @@
 #include"ImageProcess.h"
 
-ImageProcess::ImageProcess(int TrainningSetting)
-          :FaceDetecion(), ModelTrain(TrainningSetting), TakePicture()
+ImageProcess::ImageProcess(int _TrainningSetting, double _TrainningSimilarity)
+          :FaceDetecion(), TakePicture(),
+          ModelTrain(_TrainningSetting, _TrainningSimilarity)
 {
           m_threadPool.emplace_back(&ImageProcess::initImageProcess, this);
           this->m_cameraSwitchSync.first = CameraSwitch::NO_INPUT;              //单次拍照--当前没有输入
@@ -95,35 +96,36 @@ void ImageProcess::videoSyncFacialTranning(
                               std::unique_lock<std::mutex> _lckg(this->m_cameraSwitchSync.second);
                               this->m_cameraCtrl.wait(_lckg, [=]() { return this->getCameraState(); });
                     }();
-                    this->setvideoPause();                                                                                                         //暂停显示线程的正常输出
+                    this->setvideoPause();                                                                                                                                          //暂停显示线程的正常输出
                     /*检查人脸图像是否准备好，避免死锁情况的发生*/
                     [=]() {
                               std::unique_lock<std::mutex> _lckg(this->m_imageSync.second);
                               this->m_imageReady.wait(_lckg, [=]() { return this->getImageSyncStatus();});
                               this->m_copiedImage = this->m_imageSync.first;
                     }();
-                    this->resetImageSyncStatus();                                                                                             //取消人脸图像的就绪状态
+                    this->resetImageSyncStatus();                                                                                                                              //取消人脸图像的就绪状态
                     /*检查人脸位置是否准备好，避免死锁情况的发生*/
                     [=]() {
                               std::unique_lock<std::mutex> _lckg(this->m_faceRectSync.second);
                               this->m_rectReady.wait(_lckg, [=]() { return this->getRectSyncStatus(); });
                               this->m_copiedfaceRect = this->m_faceRectSync.first;
                     }();
-                    this->resetRectSyncStatus();                                                                                              //取消人脸位置的就绪状态
+                    this->resetRectSyncStatus();                                                                                                                               //取消人脸位置的就绪状态
                     /*检查当前保存信号，循环等待外部是保存或删除信号*/
                     [=]() {
                               std::unique_lock<std::mutex> _lckg(this->m_savingSwitchSync.second);
-                              this->m_saving = this->m_savingSwitchSync.first;                                                 //保存当前控制状态机
+                              this->m_saving = this->m_savingSwitchSync.first;                                                                                  //保存当前控制状态机
                               this->m_savingCtrl.wait(_lckg, [=]() { return this->getImageSavingState();});
                     }();
-                    this->setvideoContinue();                                                                                                  //恢复显示线程的正常输出
+                    this->setvideoContinue();                                                                                                                                    //恢复显示线程的正常输出
                     if (this->m_saving == SavingSwitch::SAVING_FACE)
                     {
                               this->m_faceLandmark = this->getFaceLandmark(this->m_copiedImage, this->m_copiedfaceRect);   //获取特征点
-                              if (!this->externalInput(this->m_copiedImage, this->m_faceLandmark)) {       //返回值若为false则代表训练集输入完毕
+                              if (!this->externalInput(_videoFlag, this->m_copiedImage, this->m_faceLandmark))                           //返回值若为false则代表训练集输入完毕
+                              {      
                                         break;
                               }
-                              _systemOutput->insertPlainText(QString::number(++_displayNumber));
+                              _systemOutput->insertPlainText(QString::number(++_displayNumber) + "\n");
                     }
           }
 }

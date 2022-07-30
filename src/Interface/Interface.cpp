@@ -1,8 +1,10 @@
 #include"Interface.h"
 
-Interface::Interface(int TrainningSetting)
-          :ImageProcess(TrainningSetting), DBProcess()
+Interface::Interface()
+          :DBProcess(),
+          ImageProcess(this->initTranningSetting(), this->initTrainningSimilarity())
 {
+          //先初始化DBProcess数据库程序，再初始化ImageProcess
           //此时的ImageProcess类已经被内部创建，无须再次初始化!!!
 }
 
@@ -117,11 +119,6 @@ void Interface::QTResnetTranning(
           std::string& r_faceMatrix(this->startResnetModelTranning(_systemOutput));       //获取人脸矩阵的右值
           if (!this->storeFaceRecord2DB(_userID, _userName, _department, r_faceMatrix))   //将数据存储入数据库
           {
-                    //数据是否插入数据库成功
-                    QMessageBox(QMessageBox::Warning,
-                              QString::fromStdString("数据存储失败"),
-                              QString::fromStdString("请重新进行注册"),
-                              QMessageBox::Yes | QMessageBox::No
-                    );
+
           }
 }

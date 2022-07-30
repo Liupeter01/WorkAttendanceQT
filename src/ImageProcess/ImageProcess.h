@@ -37,7 +37,7 @@ enum class SavingSwitch
 class ImageProcess :public TakePicture, public FaceDetecion,public ModelTrain {
 public:
           ImageProcess() = delete;                           //构造函数默认含参数
-          ImageProcess(int TrainningSetting);
+          ImageProcess(int _TrainningSetting, double _TrainningSimilarity);
           virtual ~ImageProcess();
 public:
           /*-----------------------------------------程序的通用工具---------------------------------------*/

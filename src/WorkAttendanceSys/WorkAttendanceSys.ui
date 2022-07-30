@@ -6,23 +6,23 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1259</width>
-    <height>661</height>
+    <width>945</width>
+    <height>744</height>
    </rect>
   </property>
   <property name="focusPolicy">
    <enum>Qt::StrongFocus</enum>
   </property>
   <property name="windowTitle">
-   <string>WorkAttendanceQT</string>
+   <string>人脸考勤系统登录界面</string>
   </property>
   <widget class="QLabel" name="VideoDisplay">
    <property name="geometry">
     <rect>
-     <x>290</x>
+     <x>280</x>
      <y>30</y>
-     <width>541</width>
-     <height>341</height>
+     <width>641</width>
+     <height>391</height>
     </rect>
    </property>
    <property name="palette">
@@ -471,29 +471,6 @@
     <string/>
    </property>
   </widget>
-  <widget class="QPushButton" name="Exit">
-   <property name="geometry">
-    <rect>
-     <x>1130</x>
-     <y>590</y>
-     <width>121</width>
-     <height>61</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>关闭视频和识别网络</string>
-   </property>
-  </widget>
-  <widget class="QTextBrowser" name="SystemStatusInfo">
-   <property name="geometry">
-    <rect>
-     <x>280</x>
-     <y>410</y>
-     <width>561</width>
-     <height>201</height>
-    </rect>
-   </property>
-  </widget>
   <widget class="QLabel" name="name_label">
    <property name="geometry">
     <rect>
@@ -540,52 +517,13 @@
     </rect>
    </property>
   </widget>
-  <widget class="QPushButton" name="ConfirmTranningSet">
-   <property name="geometry">
-    <rect>
-     <x>870</x>
-     <y>590</y>
-     <width>121</width>
-     <height>61</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>保存当前图像</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="IgnoreTranningSet">
-   <property name="geometry">
-    <rect>
-     <x>1000</x>
-     <y>590</y>
-     <width>121</width>
-     <height>61</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>舍弃当前图像</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="TakePicture">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>520</y>
-     <width>231</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>拍摄照片</string>
-   </property>
-  </widget>
   <widget class="QGroupBox" name="groupBox">
    <property name="geometry">
     <rect>
      <x>270</x>
      <y>10</y>
-     <width>581</width>
-     <height>371</height>
+     <width>661</width>
+     <height>511</height>
     </rect>
    </property>
    <property name="font">
@@ -606,7 +544,7 @@
      <x>20</x>
      <y>300</y>
      <width>231</width>
-     <height>211</height>
+     <height>221</height>
     </rect>
    </property>
    <property name="font">
@@ -618,32 +556,32 @@
     </font>
    </property>
    <property name="title">
-    <string>照片录入：</string>
+    <string>人脸识别：</string>
    </property>
    <widget class="QPushButton" name="Login">
     <property name="geometry">
      <rect>
-      <x>140</x>
+      <x>104</x>
       <y>150</y>
-      <width>75</width>
+      <width>111</width>
       <height>23</height>
      </rect>
     </property>
     <property name="text">
-     <string>登录系统</string>
+     <string>以人脸登录系统</string>
     </property>
    </widget>
    <widget class="QPushButton" name="Register">
     <property name="geometry">
      <rect>
-      <x>140</x>
+      <x>104</x>
       <y>180</y>
-      <width>75</width>
+      <width>111</width>
       <height>23</height>
      </rect>
     </property>
     <property name="text">
-     <string>注册系统</string>
+     <string>注册并录入人脸</string>
     </property>
    </widget>
    <widget class="QLabel" name="label">
@@ -676,19 +614,6 @@
     </property>
    </widget>
   </widget>
-  <widget class="QPushButton" name="InitTranning">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>560</y>
-     <width>231</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>开启训练</string>
-   </property>
-  </widget>
   <widget class="QCalendarWidget" name="calendarWidget">
    <property name="geometry">
     <rect>
@@ -702,7 +627,7 @@
   <widget class="QLCDNumber" name="lcdNumber">
    <property name="geometry">
     <rect>
-     <x>20</x>
+     <x>30</x>
      <y>230</y>
      <width>211</width>
      <height>51</height>
@@ -713,9 +638,9 @@
    <property name="geometry">
     <rect>
      <x>270</x>
-     <y>390</y>
-     <width>581</width>
-     <height>231</height>
+     <y>600</y>
+     <width>661</width>
+     <height>131</height>
     </rect>
    </property>
    <property name="font">
@@ -727,60 +652,73 @@
     </font>
    </property>
    <property name="title">
-    <string>识别结果</string>
+    <string>系统信息</string>
    </property>
-  </widget>
-  <widget class="QProgressBar" name="progressBar">
-   <property name="geometry">
-    <rect>
-     <x>280</x>
-     <y>630</y>
-     <width>571</width>
-     <height>23</height>
-    </rect>
-   </property>
-   <property name="value">
-    <number>24</number>
-   </property>
-  </widget>
-  <widget class="QGroupBox" name="groupBox_4">
-   <property name="geometry">
-    <rect>
-     <x>860</x>
-     <y>10</y>
-     <width>381</width>
-     <height>281</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>Times New Roman</family>
-     <pointsize>10</pointsize>
-     <weight>75</weight>
-     <bold>true</bold>
-    </font>
-   </property>
-   <property name="title">
-    <string>登录列表：</string>
-   </property>
-   <widget class="QTableView" name="tableView">
+   <widget class="QTextBrowser" name="SystemStatusInfo">
     <property name="geometry">
      <rect>
       <x>10</x>
       <y>20</y>
-      <width>361</width>
-      <height>251</height>
+      <width>641</width>
+      <height>91</height>
      </rect>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QGroupBox" name="groupBox_4">
+   <property name="geometry">
+    <rect>
+     <x>270</x>
+     <y>530</y>
+     <width>661</width>
+     <height>61</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Times New Roman</family>
+     <pointsize>10</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="title">
+    <string>训练进度</string>
+   </property>
+   <widget class="QProgressBar" name="progressBar">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>20</y>
+      <width>481</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="value">
+     <number>24</number>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="InitTranning">
+    <property name="geometry">
+     <rect>
+      <x>530</x>
+      <y>20</y>
+      <width>121</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>开启训练</string>
     </property>
    </widget>
   </widget>
   <widget class="QGroupBox" name="groupBox_5">
    <property name="geometry">
     <rect>
-     <x>860</x>
-     <y>300</y>
-     <width>381</width>
-     <height>281</height>
+     <x>20</x>
+     <y>540</y>
+     <width>231</width>
+     <height>171</height>
     </rect>
    </property>
    <property name="font">
@@ -792,16 +730,92 @@
     </font>
    </property>
    <property name="title">
-    <string>打卡记录：</string>
+    <string>管理账户操作：</string>
    </property>
-   <widget class="QTableView" name="tableView_2">
+   <widget class="QPushButton" name="CloseVideo">
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>20</y>
-      <width>361</width>
-      <height>251</height>
+      <y>100</y>
+      <width>211</width>
+      <height>61</height>
      </rect>
+    </property>
+    <property name="text">
+     <string>关闭视频和识别网络</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>30</y>
+      <width>211</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>访问管理部门系统</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QGroupBox" name="groupBox_6">
+   <property name="geometry">
+    <rect>
+     <x>270</x>
+     <y>430</y>
+     <width>661</width>
+     <height>91</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Times New Roman</family>
+     <pointsize>10</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="title">
+    <string>训练操作</string>
+   </property>
+   <widget class="QPushButton" name="TakePicture">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>20</y>
+      <width>121</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>拍摄照片</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="ConfirmTranningSet">
+    <property name="geometry">
+     <rect>
+      <x>400</x>
+      <y>20</y>
+      <width>121</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>保存当前图像</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="IgnoreTranningSet">
+    <property name="geometry">
+     <rect>
+      <x>530</x>
+      <y>20</y>
+      <width>121</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>舍弃当前图像</string>
     </property>
    </widget>
   </widget>
@@ -809,21 +823,15 @@
   <zorder>groupBox_2</zorder>
   <zorder>groupBox</zorder>
   <zorder>VideoDisplay</zorder>
-  <zorder>Exit</zorder>
-  <zorder>SystemStatusInfo</zorder>
   <zorder>name_label</zorder>
   <zorder>id_label</zorder>
   <zorder>UserID</zorder>
   <zorder>NameInput</zorder>
-  <zorder>ConfirmTranningSet</zorder>
-  <zorder>IgnoreTranningSet</zorder>
-  <zorder>TakePicture</zorder>
-  <zorder>InitTranning</zorder>
   <zorder>calendarWidget</zorder>
   <zorder>lcdNumber</zorder>
-  <zorder>progressBar</zorder>
   <zorder>groupBox_4</zorder>
   <zorder>groupBox_5</zorder>
+  <zorder>groupBox_6</zorder>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources>

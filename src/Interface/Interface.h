@@ -3,8 +3,7 @@
 
 class Interface :public DBProcess, public ImageProcess {
 public:
-          Interface() = delete;
-          Interface(int TrainningSetting);
+          Interface();
           virtual ~Interface();
 
 public:

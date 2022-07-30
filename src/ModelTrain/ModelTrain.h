@@ -35,6 +35,23 @@ using anet_type = dlib::loss_metric< dlib::fc_no_bias<128, dlib::avg_pool_everyt
           dlib::max_pool<3, 3, 2, 2, dlib::relu<dlib::affine<dlib::con<32, 7, 7, 2, 2, dlib::input_rgb_image_sized<150>>>>>>>>>>>>>;
 
 /*------------------------------------------------------------------------------------------------------
+ *空的Vector的容器
+ * @name:class EmptyVector 
+* @function：Vector的容器是空的
+*------------------------------------------------------------------------------------------------------*/
+class EmptyVector {
+public:
+          /*------------------------------------------------------------------------------------------------------
+          * 返回当前的Vector的容器为空
+          * @name: what
+          * @RetValue:  std::string返回字符串
+          *------------------------------------------------------------------------------------------------------*/
+          std::string what() {
+                    return std::string("当前的Vector的容器为空");
+          }
+};
+
+/*------------------------------------------------------------------------------------------------------
  *残差神经网络加载类
  * @name:class ResnetLoader
 * @function：加速残差神经网络模型加载速度
@@ -65,7 +82,7 @@ private:
 
 class ModelTrain {
 public:
-          ModelTrain(int TranningSetting);
+          ModelTrain(int _TranningSetting, double _TrainningSimilarity);
           virtual ~ModelTrain();
 
 public:
@@ -98,16 +115,25 @@ protected:
           /*------------------------------------------------------------------------------------------------------
           * 当输入达到需求的训练图像数量时开启训练
           * @name: externalInput
-          * @param 1.输入原始图像  cv::Mat & _origin
-          * @           2.人脸的特征点的存储结构：dlib::full_object_detection & _shapeInfo
+          * @param 1.关闭外部输入的控制开关 std::atomic<bool>& _videoFlag
+          *                2.输入原始图像  cv::Mat & _origin
+          *                3.人脸的特征点的存储结构：dlib::full_object_detection & _shapeInfo
+          *
           * @RetValue : true : 可以继续输入图像 false 不可以输入
+          * @Correction: 2022-7-30 引入_videoFlag标识符用于防止输入线程无法关闭的情况
           *------------------------------------------------------------------------------------------------------*/
-          bool externalInput(cv::Mat& _origin, dlib::full_object_detection& _shapeInfo);
+          bool externalInput(
+                    std::atomic<bool>& _videoFlag,
+                    cv::Mat& _origin,
+                    dlib::full_object_detection& _shapeInfo
+          );
 
           /*------------------------------------------------------------------------------------------------------
           * 根据dlib存储的多张人脸模型计算128D人脸特征向量均值
           * @name:  ResnetTrainning
           * @retValue:  返回一个初次保存的人脸的128D的人脸特征向量的平均值用于
+          *
+          * @Correction: 2022-7-29 增加了对于多张人脸训练模型容器为空的异常检测
           *------------------------------------------------------------------------------------------------------*/
           OUT dlib::matrix<float, 0, 1> resnetTrainning();
 
@@ -123,12 +149,13 @@ protected:
           /*------------------------------------------------------------------------------------------------------
           * 将128D人脸特征向量转换为数据库字符类型
           * @name:   convertMatrixToString
-          * @param 1.传递的128D的人脸特征向量  dlib::matrix<float, 0, 1>& src
+          * @param 1.传递的128D的人脸特征向量 const dlib::matrix<float, 0, 1>& src
           *                2.传递接收人脸特征向量的字符串的地址std::string& dst
-          * 
+          *
           * @retValue:  返回一个转换是否成功
+          * @Correction: 2022-7-29 加上flush用于刷新，防止返回的数值为空的情况发生
           *------------------------------------------------------------------------------------------------------*/
-          bool convertMatrixToString(dlib::matrix<float, 0, 1>& src, std::string& dst);
+          bool convertMatrixToString(const dlib::matrix<float, 0, 1>& src, std::string& dst);
 
           /*------------------------------------------------------------------------------------------------------
           * 将人脸数据库字符转换为特征向量类型128D
@@ -136,13 +163,15 @@ protected:
           * @param 1.传递接收人脸特征向量的字符串的地址std::string& src
           *                   2.传递的128D的人脸特征向量  dlib::matrix<float, 0, 1>& dst
           *
+          * @Correction: 2022-7-29 修复数据类型无法成功的进行提取导致的程序出错
           *------------------------------------------------------------------------------------------------------*/
           void convertStringToMatrix(std::string& src, dlib::matrix<float, 0, 1>& dst);
 
 private:
-          int tranningCount;                                                                              //初始化时训练的张数确定
-          anet_type *m_Net = nullptr;                                                                               //残差神经网络操作类
-          ResnetLoader *m_resetLoader = nullptr;                                                            //残差神经网络加载类
-          std::vector < dlib::matrix<dlib::rgb_pixel>>m_imageArr;                //残差神经网络输入的dlib风格的图像数组
-          std::shared_future< dlib::matrix<float, 0, 1>> m_threadres;                 //神经网络中的线程优化
+          int TrainningSetting;                                                                         //初始化时训练的张数确定
+          double TrainningSimilarity;                                                              //初始化时训练的特征矩阵匹配参数
+          anet_type *m_Net = nullptr;                                                             //残差神经网络操作类
+          ResnetLoader *m_resetLoader = nullptr;                                         //残差神经网络加载类
+          std::vector < dlib::matrix<dlib::rgb_pixel>>m_imageArr;              //残差神经网络输入的dlib风格的图像数组
+          std::shared_future< dlib::matrix<float, 0, 1>> m_threadres;           //神经网络中的线程优化
 };

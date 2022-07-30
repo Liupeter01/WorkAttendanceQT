@@ -1,5 +1,6 @@
 #pragma once
 #include "ui_WorkAttendanceSys.h"
+#include "ui_WorkAttendanceAdmin.h"
 #include <QtWidgets/QDialog>
 #include"../Interface/Interface.h"
 
@@ -13,6 +14,13 @@ public:
 
 private:
           /*------------------------WorkAttendanceSys考勤系统初始化-----------------------------*/
+          /*------------------------------------------------------------------------------------------------------
+          * @WorkAttendanceSys考勤系统按钮设定
+          * @name : initButtonSetting
+          * @funtion : 提供操作槽SLOT供给signal信号调用
+          *------------------------------------------------------------------------------------------------------*/
+          void initButtonSetting();
+
           /*------------------------------------------------------------------------------------------------------
           * @WorkAttendanceSys考勤系统常驻程序
           * @name : initWorkAttendanceSys
@@ -46,6 +54,9 @@ private slots:
            * 在训练模型时作为训练集的拍照开关
            * @name : takePictureForTranning
            * @funtion : 提供操作槽SLOT供给signal信号调用
+           * @Correction : 2022-7-30 只有摁下拍摄按钮之后才可以选择图像的保存逻辑
+           *                                                没有做出保存决定之前不可拍摄下一张照片
+           * 
            *------------------------------------------------------------------------------------------------------*/
           void takePictureForTranning();
 
@@ -61,6 +72,8 @@ private slots:
            * 保存当前的照片图像
            * @name : savePicture
            * @funtion : 提供操作槽SLOT供给signal信号调用
+           * @Correction : 2022-7-30 只有摁下拍摄按钮之后才可以选择继续拍照
+           *                                                没有拍照之前不可以选择保存逻辑
            *------------------------------------------------------------------------------------------------------*/
           void savePicture();
 
@@ -68,13 +81,16 @@ private slots:
            * 舍弃当前的照片图像
            * @name : ignorePicture
            * @funtion : 提供操作槽SLOT供给signal信号调用
+           * @Correction : 2022-7-30 只有摁下拍摄按钮之后才可以选择继续拍照
+           *                                                没有拍照之前不可以选择保存逻辑
            *------------------------------------------------------------------------------------------------------*/
           void ignorePicture();
 
           /*------------------------------------------------------------------------------------------------------
-           * 摁下当前开关启动人脸的训练程序
+           * 摁下当前开关启动人脸的训练拍照程序
            * @name : registerEmployee
            * @funtion : 提供操作槽SLOT供给signal信号调用
+           * @Correction : 2022-7-30 启动训练拍照程序之后系统允许按钮的操作
            *------------------------------------------------------------------------------------------------------*/
           void registerEmployee();
 
@@ -86,11 +102,18 @@ private:
            *------------------------------------------------------------------------------------------------------*/
           void connectSlotSet();
 
+          /*------------------------------------------------------------------------------------------------------
+           * 删除打开普通和ADMIN系统UI
+           * @name : deleteSysUi
+           * @funtion : 删除打开普通和ADMIN系统UI
+           *------------------------------------------------------------------------------------------------------*/
+          void deleteSysUi();
 private:
           /*------------------WorkAttendanceSys考勤系统MYSQL操作指令-------------------------*/
           std::string m_SelectDepartment = "SELECT Department FROM departmenttable";
 
 private:
-          Ui::WorkAttendanceSys ui;
+          Ui::WorkAttendanceSys *ui_sys;                       //人脸系统主系统
+          Ui::WorkAttendanceAdmin* ui_admin;              //人脸系统ADMIN界面
           std::vector<std::thread> m_threadPool;
 };
