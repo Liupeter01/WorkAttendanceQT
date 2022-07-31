@@ -181,18 +181,19 @@ bool ModelTrain::convertMatrixToString(const dlib::matrix<float, 0, 1>& src, std
 *                   2.传递的128D的人脸特征向量  dlib::matrix<float, 0, 1>& dst
 *
 * @Correction: 2022-7-29 修复数据类型无法成功的进行提取导致的程序出错
+*                        2022-7-31 修复std::string迭代器遍历时容易越界的问题，使用指针代替改善
 *------------------------------------------------------------------------------------------------------*/
-void ModelTrain::convertStringToMatrix(std::string& src, dlib::matrix<float, 0, 1>& dst)
-{
-          std::istringstream inputStream(src);                                                                                           //输入流
-          dlib::matrix<float, 0, 1>::iterator matrix = dst.begin();                                                             //矩阵输入流
-          for (std::string::iterator it = src.begin(); it != src.end() && matrix < dst.begin()+128 ;) {       //默认128D的向量
-                    double _args;                                                                                                                    //取出参数数值
-                    char  comma;                                                                                                                    //取出逗号
-                    inputStream >> _args >> comma;                                                                                    //提取一对数据<参数数值,逗号>
-                    std::ostringstream dbArgs;
-                    dbArgs << _args;                                                                                                             //将浮点数转换为字符串
-                    (*matrix++) = _args;                                                                                                       //将double db存入在 dlib::matrix<float, 0, 1>中
-                    it += dbArgs.str().size() + 1;                                                                                           //浮点数若干字节+逗号','(1B)
+#include<strstream>
+void ModelTrain::convertStringToMatrix(std::string& src, dlib::matrix<float, 0, 1>& dst)           
+{               
+          dlib::matrix<float, 0, 1>matrix_face(128, 1);                                                                          //矩阵输入流
+          dlib::matrix<float, 0, 1>::iterator matrix_face_it = matrix_face.begin();                               //矩阵输入流
+          for (const char* p = src.c_str(); p != src.c_str() + strlen(src.c_str()); ) {
+                    char temp[32]{ 0 };
+                    std::istrstream inputStream(p);
+                    inputStream.getline(temp, 32, ',');                                                                                   //提取一对数据<参数数值,逗号>
+                    p += std::strlen(temp) + 1;                                                                                              //浮点数若干字节+逗号','(1B)
+                    *(matrix_face_it++) = std::atof(temp);                                                                              //将向量存入临时容器复制在matrix矩阵中
           }
+          dst = matrix_face;
 }

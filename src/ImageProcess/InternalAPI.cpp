@@ -1,7 +1,8 @@
 #include"ImageProcess.h"
 
 ImageProcess::ImageProcess(int _TrainningSetting, double _TrainningSimilarity)
-          :FaceDetecion(), TakePicture(),
+          :TrainningSetting(_TrainningSetting),
+          FaceDetecion(), TakePicture(),
           ModelTrain(_TrainningSetting, _TrainningSimilarity)
 {
           m_threadPool.emplace_back(&ImageProcess::initImageProcess, this);
@@ -131,8 +132,8 @@ void ImageProcess::videoSyncFacialTranning(
                                         break;
                               }
                               _systemOutput->insertPlainText(
-                                        QString("人脸训练集图片的输入数量(") +QString::number(++_displayNumber) + 
-                                        QString("/") +QString::number(10) + QString(")\n")
+                                        QString::fromLocal8Bit("人脸训练集图片的输入数量(") + QString::number(++_displayNumber)
+                                        + QString("/") + QString::number(TrainningSetting) + QString(")\n")
                               );
                     }
           }
@@ -168,7 +169,6 @@ bool  ImageProcess::facialRecognize(const std::string _dbMatrix,QTextBrowser*& _
           std::string stringMatrix(_dbMatrix);                                            //临时存储stringMatrix
           dlib::matrix<float, 0, 1> convertMatrix;                                      //临时存储convertMatrix
           this->convertStringToMatrix(stringMatrix, convertMatrix);       //转换为字符串为矩阵类型convertMatrix            
-
           /*检查人脸图像是否准备好，避免死锁情况的发生*/
           [=]() {
                     std::unique_lock<std::mutex> _lckg(this->m_imageSync.second);
@@ -176,7 +176,6 @@ bool  ImageProcess::facialRecognize(const std::string _dbMatrix,QTextBrowser*& _
                     this->m_copiedImage = this->m_imageSync.first;
           }();
           this->resetImageSyncStatus();                                                                                                                             //取消人脸图像的就绪状态
-
           /*检查人脸位置是否准备好，避免死锁情况的发生*/
           [=]() {
                     std::unique_lock<std::mutex> _lckg(this->m_faceRectSync.second);
@@ -184,10 +183,9 @@ bool  ImageProcess::facialRecognize(const std::string _dbMatrix,QTextBrowser*& _
                     this->m_copiedfaceRect = this->m_faceRectSync.first;
           }();
           this->resetRectSyncStatus();                                                                                                                               //取消人脸位置的就绪状态
-
           this->m_faceLandmark = this->getFaceLandmark(this->m_copiedImage, this->m_copiedfaceRect);            //获取特征点的数据结构
-
-          return this->compareFaceMatrix(convertMatrix,                                                                                               //返回人脸矩阵是否满足参数条件
+          return this->compareFaceMatrix(
+                    convertMatrix,                                                                                               //返回人脸矩阵是否满足参数条件
                     this->resnetEncodingCalc(this->m_copiedImage, this->m_faceLandmark)
           );
 }

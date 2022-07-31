@@ -45,6 +45,7 @@ double DBProcess::initTrainningSimilarity()
  *                   3. 部门 ： const std::string & _department
  *
  * @retValue : 返回UserID对应的人脸信息
+ * @Correction: 2022-7-31 修复dbSelect的部门字符串的错误
  *------------------------------------------------------------------------------------------------------*/
 std::string  DBProcess::readFaceRecordFromDB(
           const  std::string& employeeNumber,
@@ -54,8 +55,8 @@ std::string  DBProcess::readFaceRecordFromDB(
 {
           /*添加对于登录用户的信息确认程序*/
           std::vector<std::vector<std::string>> isUserExist = this->dbSelect(                                                                                     //判断是否存在当前的员工
-                    this->m_SelectEmployeeString+employeeNumber+" AND Department = "+_department
-          );                                                  
+                    this->m_SelectEmployeeString + employeeNumber + " AND Department = " + "\"" + _department + "\""
+          );
 
           if (std::string(isUserExist[0][0].c_str()) != _userName) {                                                                                                    //存在当前的员工
                     return std::string();                                                                                                                                                       //员工为空

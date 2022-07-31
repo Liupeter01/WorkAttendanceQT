@@ -119,7 +119,10 @@ void Interface::QTResnetTranning(
           std::string& r_faceMatrix(this->startResnetModelTranning(_systemOutput));       //获取人脸矩阵的右值
           if (!this->storeFaceRecord2DB(_userID, _userName, _department, r_faceMatrix))   //将数据存储入数据库
           {
-
+                    _systemOutput->insertPlainText(
+                              QString::fromLocal8Bit(_department.c_str()) + QString::fromLocal8Bit("的") +
+                              QString::fromLocal8Bit(_userName.c_str()) + QString::fromLocal8Bit("人脸信息存储成功!\n")
+                    );
           }
 }
 
@@ -148,10 +151,17 @@ void Interface::QTFacialRecognize(
                     if (dbFaceMatrix == "" || !dbFaceMatrix.size()) {                                                                             //返回的人脸矩阵字符串为空
                               throw EmptyMatrixString();                                                                                                    //MatrixString为空的异常
                     }
-                    else {                                                                                                                                                  //返回的人脸矩阵字符串非空                                                                                    
-                              if (this->startFacialRecognize(dbFaceMatrix, _systemOutput)) {                                         //人脸矩阵数据库dbFaceMatrix
-                                        
-                              }
+                    if (this->startFacialRecognize(dbFaceMatrix, _systemOutput)) {                                                   //人脸矩阵字符串非空数据库dbFaceMatrix
+                              _systemOutput->insertPlainText(
+                                        QString::fromLocal8Bit(_department.c_str()) + QString::fromLocal8Bit("的") +
+                                        QString::fromLocal8Bit(_userName.c_str()) + QString::fromLocal8Bit("人脸登陆成功!\n")
+                              );
+                    }
+                    else {
+                              _systemOutput->insertPlainText(
+                                        QString::fromLocal8Bit(_userName.c_str()) + 
+                                        QString::fromLocal8Bit("查无此人，人脸登陆失败!  请联系系统管理员\n")
+                              );
                     }
           }
           catch (const EmptyMatrixString &) {

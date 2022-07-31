@@ -182,6 +182,7 @@ protected:
           *                   2.传递的128D的人脸特征向量  dlib::matrix<float, 0, 1>& dst
           *
           * @Correction: 2022-7-29 修复数据类型无法成功的进行提取导致的程序出错
+          *                        2022-7-31 修复std::string迭代器遍历时容易越界的问题，使用指针代替改善
           *------------------------------------------------------------------------------------------------------*/
           void convertStringToMatrix(std::string& src, dlib::matrix<float, 0, 1>& dst);
 
