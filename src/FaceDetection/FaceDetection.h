@@ -51,7 +51,7 @@ public:
          * @function：将图像转换为dlib的灰度图像提升人脸检测的速度
          * @param 输入原始图像  cv::Mat  &_origin
         *------------------------------------------------------------------------------------------------------*/
-          inline dlib::cv_image<unsigned char> ConvertBGR2GRAY(cv::Mat &_origin);
+          inline dlib::cv_image<unsigned char> ConvertBGR2GRAY(cv::Mat& _origin);
 
 protected:
           /*------------------------------------内部数据获取函数-----------------------------------------*/
@@ -60,10 +60,10 @@ protected:
           * @name: getFaceRectangle
           * @param :  1.输入图像的原始图cv::Mat& _origin
           *                   2.人脸位置更新锁std::mutex & _writeMutex
-          * 
+          *
           * @retValue：返回分配dlib::rectangle的引用
           *------------------------------------------------------------------------------------------------------*/
-          dlib::rectangle& getFaceRectangle(cv::Mat& _origin,std::mutex & _writeMutex);
+          dlib::rectangle& getFaceRectangle(cv::Mat& _origin, std::mutex& _writeMutex);
 
           /*------------------------------------------------------------------------------------------------------
           * 外部函数获取内部的人脸特征点数据
@@ -93,7 +93,7 @@ public:
           cv::Mat m_grayImage;                                                                    //存储灰度图
 private:
           dlib::rectangle m_imageFaceScale;                                                 //当前视频人脸坐标
-          FrontFaceLoader *m_landmarkLoader = nullptr;
-          dlib::frontal_face_detector *m_faceDetector = nullptr;                 //人脸所在矩形检测器
-          dlib::shape_predictor *m_faceFeaturePoint = nullptr;                    //68个特征点寻找器
+          FrontFaceLoader* m_landmarkLoader = nullptr;
+          dlib::frontal_face_detector* m_faceDetector = nullptr;                 //人脸所在矩形检测器
+          dlib::shape_predictor* m_faceFeaturePoint = nullptr;                    //68个特征点寻找器
 };

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>945</width>
+    <width>1180</width>
     <height>744</height>
    </rect>
   </property>
@@ -471,52 +471,6 @@
     <string/>
    </property>
   </widget>
-  <widget class="QLabel" name="name_label">
-   <property name="geometry">
-    <rect>
-     <x>40</x>
-     <y>380</y>
-     <width>54</width>
-     <height>12</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>姓名</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="id_label">
-   <property name="geometry">
-    <rect>
-     <x>40</x>
-     <y>340</y>
-     <width>54</width>
-     <height>12</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>账号ID</string>
-   </property>
-  </widget>
-  <widget class="QTextEdit" name="UserID">
-   <property name="geometry">
-    <rect>
-     <x>90</x>
-     <y>330</y>
-     <width>151</width>
-     <height>31</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QTextEdit" name="NameInput">
-   <property name="geometry">
-    <rect>
-     <x>90</x>
-     <y>370</y>
-     <width>151</width>
-     <height>31</height>
-    </rect>
-   </property>
-  </widget>
   <widget class="QGroupBox" name="groupBox">
    <property name="geometry">
     <rect>
@@ -542,9 +496,9 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>300</y>
+     <y>470</y>
      <width>231</width>
-     <height>221</height>
+     <height>241</height>
     </rect>
    </property>
    <property name="font">
@@ -558,59 +512,43 @@
    <property name="title">
     <string>人脸识别：</string>
    </property>
-   <widget class="QPushButton" name="Login">
+   <widget class="QPushButton" name="AciqurePremit">
     <property name="geometry">
      <rect>
-      <x>104</x>
-      <y>150</y>
-      <width>111</width>
-      <height>23</height>
+      <x>10</x>
+      <y>160</y>
+      <width>211</width>
+      <height>61</height>
      </rect>
     </property>
     <property name="text">
-     <string>以人脸登录系统</string>
+     <string>新员工权限申请</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="Register">
+   <widget class="QPushButton" name="Logout">
     <property name="geometry">
      <rect>
-      <x>104</x>
-      <y>180</y>
-      <width>111</width>
-      <height>23</height>
+      <x>10</x>
+      <y>90</y>
+      <width>211</width>
+      <height>61</height>
      </rect>
     </property>
     <property name="text">
-     <string>注册并录入人脸</string>
+     <string>人脸签退</string>
     </property>
    </widget>
-   <widget class="QLabel" name="label">
+   <widget class="QPushButton" name="SignIn">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>120</y>
-      <width>54</width>
-      <height>12</height>
+      <x>10</x>
+      <y>20</y>
+      <width>211</width>
+      <height>61</height>
      </rect>
-    </property>
-    <property name="font">
-     <font>
-      <weight>50</weight>
-      <bold>false</bold>
-     </font>
     </property>
     <property name="text">
-     <string>部门</string>
-    </property>
-   </widget>
-   <widget class="QComboBox" name="comboBox">
-    <property name="geometry">
-     <rect>
-      <x>70</x>
-      <y>110</y>
-      <width>151</width>
-      <height>31</height>
-     </rect>
+     <string>人脸签到</string>
     </property>
    </widget>
   </widget>
@@ -628,7 +566,7 @@
    <property name="geometry">
     <rect>
      <x>30</x>
-     <y>230</y>
+     <y>220</y>
      <width>211</width>
      <height>51</height>
     </rect>
@@ -660,7 +598,7 @@
       <x>10</x>
       <y>20</y>
       <width>641</width>
-      <height>91</height>
+      <height>101</height>
      </rect>
     </property>
    </widget>
@@ -690,7 +628,7 @@
      <rect>
       <x>20</x>
       <y>20</y>
-      <width>481</width>
+      <width>511</width>
       <height>31</height>
      </rect>
     </property>
@@ -715,8 +653,8 @@
   <widget class="QGroupBox" name="groupBox_5">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>540</y>
+     <x>940</x>
+     <y>10</y>
      <width>231</width>
      <height>171</height>
     </rect>
@@ -730,13 +668,13 @@
     </font>
    </property>
    <property name="title">
-    <string>管理账户操作：</string>
+    <string>访问管理界面：</string>
    </property>
    <widget class="QPushButton" name="CloseVideo">
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>100</y>
+      <y>90</y>
       <width>211</width>
       <height>61</height>
      </rect>
@@ -749,7 +687,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>30</y>
+      <y>20</y>
       <width>211</width>
       <height>61</height>
      </rect>
@@ -819,19 +757,254 @@
     </property>
    </widget>
   </widget>
+  <widget class="QPushButton" name="ExitSystem">
+   <property name="geometry">
+    <rect>
+     <x>950</x>
+     <y>660</y>
+     <width>211</width>
+     <height>61</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Times New Roman</family>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>退出窗口</string>
+   </property>
+  </widget>
+  <widget class="QGroupBox" name="groupBox_7">
+   <property name="geometry">
+    <rect>
+     <x>940</x>
+     <y>190</y>
+     <width>231</width>
+     <height>261</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Times New Roman</family>
+     <pointsize>10</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="title">
+    <string>新员工通道：</string>
+   </property>
+   <widget class="QPushButton" name="checkPremittion">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>120</y>
+      <width>211</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>查询权限</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="id_label_2">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>70</y>
+      <width>71</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>权限状态:</string>
+    </property>
+   </widget>
+   <widget class="QTextBrowser" name="SystemStatusInfo_2">
+    <property name="geometry">
+     <rect>
+      <x>80</x>
+      <y>70</y>
+      <width>141</width>
+      <height>41</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="TranningSetInput">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>190</y>
+      <width>211</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>注册并录入人脸</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="name_label_2">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>20</y>
+      <width>54</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Times New Roman</family>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>姓名</string>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="NameInput_2">
+    <property name="geometry">
+     <rect>
+      <x>80</x>
+      <y>20</y>
+      <width>141</width>
+      <height>41</height>
+     </rect>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QLabel" name="name_label">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>350</y>
+     <width>54</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Times New Roman</family>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>姓名</string>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="comboBox">
+   <property name="geometry">
+    <rect>
+     <x>80</x>
+     <y>400</y>
+     <width>151</width>
+     <height>41</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>410</y>
+     <width>54</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>部门</string>
+   </property>
+  </widget>
+  <widget class="QTextEdit" name="NameInput">
+   <property name="geometry">
+    <rect>
+     <x>80</x>
+     <y>350</y>
+     <width>151</width>
+     <height>41</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="id_label">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>310</y>
+     <width>54</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Times New Roman</family>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>账号ID</string>
+   </property>
+  </widget>
+  <widget class="QTextEdit" name="UserID">
+   <property name="geometry">
+    <rect>
+     <x>80</x>
+     <y>300</y>
+     <width>151</width>
+     <height>41</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QGroupBox" name="groupBox_8">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>280</y>
+     <width>231</width>
+     <height>181</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Times New Roman</family>
+     <pointsize>10</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="title">
+    <string>身份认证：</string>
+   </property>
+  </widget>
+  <zorder>groupBox_8</zorder>
   <zorder>groupBox_3</zorder>
   <zorder>groupBox_2</zorder>
   <zorder>groupBox</zorder>
   <zorder>VideoDisplay</zorder>
-  <zorder>name_label</zorder>
-  <zorder>id_label</zorder>
-  <zorder>UserID</zorder>
-  <zorder>NameInput</zorder>
   <zorder>calendarWidget</zorder>
   <zorder>lcdNumber</zorder>
   <zorder>groupBox_4</zorder>
   <zorder>groupBox_5</zorder>
   <zorder>groupBox_6</zorder>
+  <zorder>ExitSystem</zorder>
+  <zorder>groupBox_7</zorder>
+  <zorder>name_label</zorder>
+  <zorder>comboBox</zorder>
+  <zorder>label</zorder>
+  <zorder>NameInput</zorder>
+  <zorder>id_label</zorder>
+  <zorder>UserID</zorder>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources>

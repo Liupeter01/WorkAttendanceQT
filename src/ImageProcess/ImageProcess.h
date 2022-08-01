@@ -39,30 +39,6 @@ public:
           ImageProcess() = delete;                           //构造函数默认含参数
           ImageProcess(int _TrainningSetting, double _TrainningSimilarity);
           virtual ~ImageProcess();
-public:
-          /*-----------------------------------------程序的通用工具---------------------------------------*/
-          /*------------------------------------------------------------------------------------------------------
-           * cv::Mat ----> QImage
-           * @name: mat2Qimage
-           * @function：将MAT类型转换为QT的QImage类型
-           * @param 输入原始图像  const cv::Mat& mat
-           * @retValue : 返回位于本类中QImage&引用类型
-           * @Correction: 2022-7-21 在类内部引入QImage临时存储结构，可以使用引用加速
-           *                        2022-7-21 删除函数中多余的部分，仅仅保留CV8U_C3下的处理方式，并引入内联函数
-          *------------------------------------------------------------------------------------------------------*/
-          inline QImage &mat2Qimage(const cv::Mat& mat);
-
-          /*------------------------------------------------------------------------------------------------------
-           * 将启动日志信息输出到SystemStatusInfo窗口中
-           * @name:  printOnTextBroswer
-           * @function: 将启动日志信息输出到SystemStatusInfo窗口中
-           * @param:  1. 输出窗口接口：QTextBrowser*& _systemOutput
-           *                  2. 输出的wstring的字符串：const std::wstring& _wstring
-          *------------------------------------------------------------------------------------------------------*/
-          inline void printOnTextBroswer(
-                    QTextBrowser*& _systemOutput,
-                    const std::wstring& _wstring
-          );
 
 protected:  
           /*------------------------------为外部函数提供的ExternalAPI--------------------------------*/
@@ -133,10 +109,7 @@ protected:
            *
            * @retValue: 返回识别是否成功  bool
           *------------------------------------------------------------------------------------------------------*/
-          bool startFacialRecognize(
-                    const std::string _dbMatrix, 
-                    QTextBrowser*& _systemOutput
-          );
+          bool startFacialRecognize(const std::string _dbMatrix, QTextBrowser*& _systemOutput);
 
 private:
           /*-------------------------------为内部函数提供的IxternalAPI------------------------------*/
@@ -186,10 +159,7 @@ private:
            *
            * @retValue: 返回识别是否成功  bool 
           *------------------------------------------------------------------------------------------------------*/
-          bool facialRecognize(
-                    const std::string _dbMatrix,
-                    QTextBrowser*& _systemOutput
-          );
+          bool facialRecognize(const std::string _dbMatrix, QTextBrowser*& _systemOutput);
 
 private:
           /*-----------------------------ImageProcess的初始化的函数接口----------------------------*/
@@ -317,12 +287,38 @@ private:
           *------------------------------------------------------------------------------------------------------*/
           void resetCameraState();
 
+protected:
+          /*----------------------------------ImageProcess的通用工具-----------------------------------*/
+          /*------------------------------------------------------------------------------------------------------
+           * cv::Mat ----> QImage
+           * @name: mat2Qimage
+           * @function：将MAT类型转换为QT的QImage类型
+           * @param 输入原始图像  const cv::Mat& mat
+           * @retValue : 返回位于本类中QImage&引用类型
+           * @Correction: 2022-7-21 在类内部引入QImage临时存储结构，可以使用引用加速
+           *                        2022-7-21 删除函数中多余的部分，仅仅保留CV8U_C3下的处理方式，并引入内联函数
+          *------------------------------------------------------------------------------------------------------*/
+          inline QImage& mat2Qimage(const cv::Mat& mat);
+
+          /*------------------------------------------------------------------------------------------------------
+           * 将启动日志信息输出到SystemStatusInfo窗口中
+           * @name:  printOnTextBroswer
+           * @function: 将启动日志信息输出到SystemStatusInfo窗口中
+           * @param:  1. 输出窗口接口：QTextBrowser*& _systemOutput
+           *                  2. 输出的QString的字符串：const QString _qstring
+           * 
+           * @Correction: 2022-8-1 将宽字符改为QT专属的QString方便开发
+          *------------------------------------------------------------------------------------------------------*/
+          inline void printOnTextBroswer(
+                    QTextBrowser*& _systemOutput,
+                    const QString _qstring
+          );
+
 private:
           /*--------------------------------------------------通用数据结构------------------------------------------------*/
           QImage m_qimageFrameStore;                        //类内部引入QImage存储结构
           std::vector<std::thread> m_threadPool;            //线程池(包含初始化等等操作)
           int TrainningSetting;                                          //训练集的大小设定
-          /*--------------------------------------------------------------------------------------------------------------------*/
 
           /*--------------------------------------------------画面显示线程------------------------------------------------*/
           std::pair<cv::Mat, std::mutex> m_imageSync;                 //图像更新+图像更新的互斥量mutex
@@ -332,7 +328,6 @@ private:
           std::atomic<bool> m_faceRectReadySign;                      //设置人脸位置就绪信号
 
           std::condition_variable m_videoDisplayCtrl;                           //暂停视频线程的条件变量
-          /*--------------------------------------------------------------------------------------------------------------------*/
 
           /*--------------------------------------------------人脸训练线程------------------------------------------------*/
           cv::Mat m_copiedImage;                                             //拷贝的人脸图像
@@ -351,16 +346,12 @@ private:
           std::condition_variable m_imageReady;                         //等待图像数据是否准备就绪条件变量
           std::condition_variable m_rectReady;                             //等待人脸数据是否准备就绪条件变量
           std::condition_variable m_savingCtrl;                                            //保存开关条件变量
-          /*--------------------------------------------------------------------------------------------------------------------*/
 
           /*--------------------------------------------------人脸识别线程------------------------------------------------*/
           dlib::matrix<float, 0, 1> m_copidMatrix;                    //拷贝的128D特征人脸
           std::string m_copiedMatrixString;                               //拷贝的128D特征人脸的字符串
           std::string m_copiedNameString;                                 //拷贝的人脸识别的名字结果
 
-          //std::condition_variable m_;                                           //条件变量
-
           std::future<std::string&> m_threadMatrixRes;             //接收来自线程的人脸矩阵字符串运算结果
           std::future<bool>  m_threadStatusRes;                        //接收来自线程的识别人脸结果是否成功
-           /*--------------------------------------------------------------------------------------------------------------------*/
 };

@@ -40,14 +40,17 @@ inline QImage& ImageProcess::mat2Qimage(const cv::Mat& mat)
  * @name:  printOnTextBroswer
  * @function: 将启动日志信息输出到SystemStatusInfo窗口中
  * @param:  1. 输出窗口接口：QTextBrowser*& _systemOutput
- *                  2. 输出的wstring的字符串：const std::wstring& _wstring
+ *                  2. 输出的QString的字符串：const QString& _wstring
+ *
+ * @Correction: 2022-8-1 将宽字符改为QT专属的QString方便开发
 *------------------------------------------------------------------------------------------------------*/
+
 inline void ImageProcess::printOnTextBroswer(
           QTextBrowser*& _systemOutput,
-          const std::wstring& _wstring
+          const QString _qstring
 )
 {
-          _systemOutput->insertPlainText(QString::fromStdWString(_wstring));
+          _systemOutput->insertPlainText(_qstring);
 }
 
 /*-------------------------------为内部函数提供的IxternalAPI------------------------------*/
@@ -131,9 +134,10 @@ void ImageProcess::videoSyncFacialTranning(
                               {      
                                         break;
                               }
-                              _systemOutput->insertPlainText(
-                                        QString::fromLocal8Bit("人脸训练集图片的输入数量(") + QString::number(++_displayNumber)
-                                        + QString("/") + QString::number(TrainningSetting) + QString(")\n")
+                              this->printOnTextBroswer(_systemOutput,
+                                        QString::fromLocal8Bit("人脸训练集图片的输入数量(") +
+                                        QString::number(++_displayNumber) + QString("/") +
+                                        QString::number(TrainningSetting) + QString(")\n")
                               );
                     }
           }
