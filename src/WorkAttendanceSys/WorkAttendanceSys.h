@@ -109,6 +109,13 @@ private slots:
            *------------------------------------------------------------------------------------------------------*/
           void employeeSignalOutInterface();
 
+          /*------------------------------------------------------------------------------------------------------
+           * 槽函数类别---摁下当前开关向管理员账户申请注册权限
+           * @name : employeeAskPremitInterface
+           * @funtion : 提供操作槽SLOT供给signal信号调用
+           *------------------------------------------------------------------------------------------------------*/
+          void employeeAskPremitInterface();
+
 private:
           /*------------------------------------------------------------------------------------------------------
            * 信号槽的设置程序
@@ -129,7 +136,8 @@ private:
           std::string m_SelectDepartment = "SELECT Department FROM departmenttable";
 
 private:
-          Ui::WorkAttendanceSys *ui_sys;                       //人脸系统主系统
+          QTime* m_globalTimer = nullptr;                      //全局时钟系统
+          Ui::WorkAttendanceSys *ui_sys;                        //人脸系统主系统
           Ui::WorkAttendanceAdmin* ui_admin;              //人脸系统ADMIN界面
           std::vector<std::thread> m_threadPool;
 };

@@ -45,10 +45,7 @@ inline QImage& ImageProcess::mat2Qimage(const cv::Mat& mat)
  * @Correction: 2022-8-1 将宽字符改为QT专属的QString方便开发
 *------------------------------------------------------------------------------------------------------*/
 
-inline void ImageProcess::printOnTextBroswer(
-          QTextBrowser*& _systemOutput,
-          const QString _qstring
-)
+inline void ImageProcess::printOnTextBroswer(QTextBrowser*& _systemOutput, const QString _qstring)
 {
           _systemOutput->insertPlainText(_qstring);
 }

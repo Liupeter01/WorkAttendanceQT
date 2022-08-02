@@ -1,10 +1,11 @@
+#include<QtCore/qtimer.h>
 #include"MYSQL.h"
 
 class DBProcess : public MySQL {
 public:
           DBProcess();
           virtual ~DBProcess();
-
+          
 protected:
           /*------------------------WorkAttendanceSys考勤系统初始化-----------------------------*/
           /*------------------------------------------------------------------------------------------------------
@@ -26,7 +27,7 @@ protected:
 protected:
           /*----------------------WorkAttendanceSys考勤系统数据库操作-------------------------*/
          /*------------------------------------------------------------------------------------------------------
-          * 将人脸信息从数据库中进行提取
+          * 将人脸信息从数据库中先提取并验证是否存在
           * @name : readFaceRecordFromDB
           * @function：获取员工号UserID对应的人脸信息
           * @param：1. 员工号 ： const  std::string& employeeNumber
@@ -67,6 +68,34 @@ protected:
                     const  std::string& employeeNumber,
                     const  std::string& _name,
                     const std::string& _faceMatrix
+          );
+
+          /*------------------------------------------------------------------------------------------------------
+          * 将员工上班打卡的信息记录在数据库中
+          * @name: storeAttendanceRecord2DB
+          * @param 1. 员工号： const  std::string& employeeNumber
+          *                2. 部门 ：  const std::string& _department
+          *                3.全局时钟系统的输入 QTime*& _timer
+          * 
+          *------------------------------------------------------------------------------------------------------*/
+          bool storeAttendanceRecord2DB(
+                    const  std::string& employeeNumber,
+                    const std::string& _department,
+                    QTime*& _timer
+          );
+
+          /*------------------------------------------------------------------------------------------------------
+          * 将员工下班签退的信息记录在数据库中
+          * @name: storeSignOutRecord2DB
+          * @param 1. 员工号： const  std::string& employeeNumber
+          *                2. 部门 ：  const std::string& _department
+          *                3.全局时钟系统的输入 QTime*& _timer
+          * 
+          *------------------------------------------------------------------------------------------------------*/
+          bool storeSignOutRecord2DB(
+                    const  std::string& employeeNumber,
+                    const std::string& _department,
+                    QTime*& _timer
           );
 
 private:

@@ -2,7 +2,8 @@
 
 WorkAttendanceSys::WorkAttendanceSys(QWidget* parent)
           : QDialog(parent), Interface(),
-          ui_sys(new Ui::WorkAttendanceSys)
+          ui_sys(new Ui::WorkAttendanceSys),
+          m_globalTimer(new QTime)
 {
           ui_sys->setupUi(this);
           this->connectSlotSet();                                            //设置信号槽
@@ -14,13 +15,14 @@ WorkAttendanceSys::WorkAttendanceSys(QWidget* parent)
 
 WorkAttendanceSys::~WorkAttendanceSys()
 {
-          this->videoClose();                                                  //关闭视频
+          this->QTcloseVideo();                                            //关闭视频
+          delete m_globalTimer;                                            //关闭时钟系统
+          this->deleteSysUi();                                                //关闭UI显示系统
           for (auto& i : this->m_threadPool) {                      //关闭其他的线程
                     if (i.joinable()) {
                               i.join();
                     }
           }
-          this->deleteSysUi();                                                //关闭UI显示系统
 }
 
 /*------------------------WorkAttendanceSys考勤系统初始化-----------------------------*/
@@ -49,7 +51,7 @@ void WorkAttendanceSys::initButtonSetting()
 void  WorkAttendanceSys::initWorkAttendanceSys()
 {
           this->m_threadPool.emplace_back(&Interface::QTVideoOutput, this, std::ref(this->ui_sys->VideoDisplay), std::ref(this->ui_sys->SystemStatusInfo));
-          this->m_threadPool.emplace_back(&Interface::setLcdTimer, this, std::ref(this->ui_sys->lcdNumber));
+          this->m_threadPool.emplace_back(&Interface::QTsetLcdTimer, this, std::ref(this->ui_sys->lcdNumber), std::ref(this->m_globalTimer));
 }
 
 /*------------------------------------------------------------------------------------------------------
@@ -85,7 +87,7 @@ void WorkAttendanceSys::initProcessBarSetting()
 *------------------------------------------------------------------------------------------------------*/
 void WorkAttendanceSys::closeVideoStream()
 {
-          this->videoClose();
+          this->QTcloseVideo();
 }
 
 /*------------------------------------------------------------------------------------------------------
@@ -97,7 +99,7 @@ void WorkAttendanceSys::closeVideoStream()
  *------------------------------------------------------------------------------------------------------*/
 void WorkAttendanceSys::takePictureFromVideo()
 {
-          this->videoCameraShooting();
+          this->QTtakePicture();
           [=]() {
                     this->ui_sys->ConfirmTranningSet->setEnabled(true);          //启用保存按钮
                     this->ui_sys->ConfirmTranningSet->update();                       //更新保存按钮状态
@@ -116,11 +118,15 @@ void WorkAttendanceSys::takePictureFromVideo()
  *------------------------------------------------------------------------------------------------------*/
 void WorkAttendanceSys::initTranningProcess()
 {
+          [=]() {
+                    this->ui_sys->TakePicture->setDisabled(true);                       //禁用拍摄按钮
+                    this->ui_sys->TakePicture->update();                                      //更新拍摄按钮状态
+          }();
           this->QTResnetTranning(
-                    this->ui_sys->UserID->document()->toRawText().toStdString(),                         //UserID
-                    this->ui_sys->NameInput->document()->toRawText().toStdString(),                   //UserName
-                    this->ui_sys->comboBox->currentText().toLocal8Bit().constData(),                    //Department
-                    this->ui_sys->SystemStatusInfo                                                                             //输出窗口
+                    this->ui_sys->UserID->document()->toPlainText().toLocal8Bit().constData(),        //UserID
+                    this->ui_sys->NameInput->document()->toPlainText().toLocal8Bit().constData(),  //UserName
+                    this->ui_sys->comboBox->currentText().toLocal8Bit().constData(),                        //Department
+                    this->ui_sys->SystemStatusInfo                                                                                  //输出窗口
           );
 }
 
@@ -133,7 +139,7 @@ void WorkAttendanceSys::initTranningProcess()
  *------------------------------------------------------------------------------------------------------*/
 void WorkAttendanceSys::savePictureForTranning()
 {
-          this->videoFrameSavingProcess();
+          this->QTsaveImage();
           [=]() {
                     this->ui_sys->ConfirmTranningSet->setDisabled(true);          //禁用保存按钮
                     this->ui_sys->ConfirmTranningSet->update();                        //更新保存按钮状态
@@ -153,7 +159,7 @@ void WorkAttendanceSys::savePictureForTranning()
  *------------------------------------------------------------------------------------------------------*/
 void WorkAttendanceSys::ignorePictureForTranning()
 {
-          this->videoFrameIgnoreProcess();
+          this->QTignoreImage();
           [=]() {
                     this->ui_sys->ConfirmTranningSet->setDisabled(true);          //禁用保存按钮
                     this->ui_sys->ConfirmTranningSet->update();                        //更新禁用保存按钮状态
@@ -192,8 +198,44 @@ void WorkAttendanceSys::tranningSetInputFromVideo()                             
  *------------------------------------------------------------------------------------------------------*/
 void WorkAttendanceSys::employeeAttendanceInterface()
 {
-          //this->ui_sys->Register->setDisabled(true);
-          //this->ui_sys->Register->update();
+          [=]() {
+                    this->ui_sys->InitTranning->setDisabled(true);                                  //禁用训练摁键
+                    this->ui_sys->InitTranning->update();                                                //更新拍照摁键按钮状态
+                    this->ui_sys->TakePicture->setDisabled(true);                                   //禁用拍照摁键
+                    this->ui_sys->TakePicture->update();                                                 //更新拍照摁键状态
+                    this->ui_sys->ConfirmTranningSet->setDisabled(true);                     //禁用保存按钮
+                    this->ui_sys->ConfirmTranningSet->update();                                   //更新禁用保存按钮状态
+                    this->ui_sys->IgnoreTranningSet->setDisabled(true);                        //禁用忽略按钮
+                    this->ui_sys->IgnoreTranningSet->update();                                      //更新忽略按钮状态
+                    this->ui_sys->TranningSetInput->setDisabled(true);                          //禁用注册并禁用人脸按钮
+                    this->ui_sys->TranningSetInput->update();                                        //更新注册并禁用人脸按钮状态
+                    this->ui_sys->checkPremittion->setDisabled(true);                            //禁用查询权限按钮
+                    this->ui_sys->checkPremittion->update();                                          //更新查询权限按钮状态
+          }();
+
+          this->QTEmployeeAttendance(
+                    this->ui_sys->UserID->toPlainText().toLocal8Bit().constData(),                         //UserID
+                    this->ui_sys->NameInput->toPlainText().toLocal8Bit().constData(),                   //UserName
+                    this->ui_sys->comboBox->currentText().toLocal8Bit().constData(),                    //Department
+                    this->m_globalTimer,                                                                                             //加载全局计时器
+                    this->ui_sys->SystemStatusInfo                                                                             //输出窗口
+          );
+
+          [=]() {
+                    this->ui_sys->checkPremittion->setEnabled(true);                            //启用查询权限按钮
+                    this->ui_sys->checkPremittion->update();                                          //更新查询权限按钮状态
+                    this->ui_sys->UserID->clear();                                                           //清空ID的输入
+                    this->ui_sys->NameInput->clear();                                                     //清空名字的输入
+          }();
+}
+
+/*------------------------------------------------------------------------------------------------------
+ * 槽函数类别---摁下当前开关启动用户的人脸登出系统(开始人脸识别)
+ * @name : employeeSignalOutInterface
+ * @funtion : 提供操作槽SLOT供给signal信号调用
+ *------------------------------------------------------------------------------------------------------*/
+void WorkAttendanceSys::employeeSignalOutInterface()
+{
           [=]() {
                     this->ui_sys->InitTranning->setDisabled(true);                                  //禁用训练摁键
                     this->ui_sys->InitTranning->update();                                                //更新拍照摁键按钮状态
@@ -205,10 +247,11 @@ void WorkAttendanceSys::employeeAttendanceInterface()
                     this->ui_sys->IgnoreTranningSet->update();                                      //更新忽略按钮状态
           }();
 
-          this->QTFacialRecognize(
-                    this->ui_sys->UserID->document()->toRawText().toStdString(),                         //UserID
-                    this->ui_sys->NameInput->document()->toRawText().toStdString(),                   //UserName
+          this->QTEmployeeSignOut(
+                    this->ui_sys->UserID->toPlainText().toLocal8Bit().constData(),                         //UserID
+                    this->ui_sys->NameInput->toPlainText().toLocal8Bit().constData(),                   //UserName
                     this->ui_sys->comboBox->currentText().toLocal8Bit().constData(),                    //Department
+                    this->m_globalTimer,                                                                                             //加载全局计时器
                     this->ui_sys->SystemStatusInfo                                                                             //输出窗口
           );
 
@@ -221,21 +264,37 @@ void WorkAttendanceSys::employeeAttendanceInterface()
                     this->ui_sys->ConfirmTranningSet->update();                                   //更新禁用保存按钮状态
                     this->ui_sys->IgnoreTranningSet->setEnabled(true);                        //启用忽略按钮
                     this->ui_sys->IgnoreTranningSet->update();                                      //更新忽略按钮状态
+                    this->ui_sys->UserID->clear();                                                           //清空ID的输入
+                    this->ui_sys->NameInput->clear();                                                     //清空名字的输入
           }();
-          //this->ui_sys->InitTranning->setEnabled(true);
-          //this->ui_sys->Register->setEnabled(true);
-          //this->ui_sys->InitTranning->update();
-          //this->ui_sys->Register->update();
 }
 
 /*------------------------------------------------------------------------------------------------------
- * 槽函数类别---摁下当前开关启动用户的人脸登出系统(开始人脸识别)
- * @name : employeeSignalOutInterface
+ * 槽函数类别---摁下当前开关向管理员账户申请注册权限
+ * @name : employeeAskPremitInterface
  * @funtion : 提供操作槽SLOT供给signal信号调用
  *------------------------------------------------------------------------------------------------------*/
-void WorkAttendanceSys::employeeSignalOutInterface()
+void WorkAttendanceSys::employeeAskPremitInterface()
 {
+          [=]() {
+                    this->ui_sys->InitTranning->setDisabled(true);                                  //禁用训练摁键
+                    this->ui_sys->InitTranning->update();                                                //更新拍照摁键按钮状态
+                    this->ui_sys->TakePicture->setDisabled(true);                                   //禁用拍照摁键
+                    this->ui_sys->TakePicture->update();                                                 //更新拍照摁键状态
+                    this->ui_sys->ConfirmTranningSet->setDisabled(true);                     //禁用保存按钮
+                    this->ui_sys->ConfirmTranningSet->update();                                   //更新禁用保存按钮状态
+                    this->ui_sys->IgnoreTranningSet->setDisabled(true);                        //禁用忽略按钮
+                    this->ui_sys->IgnoreTranningSet->update();                                      //更新忽略按钮状态
+                    this->ui_sys->TranningSetInput->setDisabled(true);                          //禁用注册并禁用人脸按钮
+                    this->ui_sys->TranningSetInput->update();                                        //更新注册并禁用人脸按钮状态
+          }();
 
+          this->QTEmployeeAskPremit(
+                    this->ui_sys->UserID->toPlainText().toLocal8Bit().constData(),                         //UserID
+                    this->ui_sys->NameInput->toPlainText().toLocal8Bit().constData(),                   //UserName
+                    this->ui_sys->comboBox->currentText().toLocal8Bit().constData(),                    //Department
+                    this->ui_sys->SystemStatusInfo                                                                             //输出窗口
+          );
 }
 
 /*------------------------------------------------------------------------------------------------------
@@ -245,14 +304,24 @@ void WorkAttendanceSys::employeeSignalOutInterface()
  *------------------------------------------------------------------------------------------------------*/
 void WorkAttendanceSys::connectSlotSet()
 {
-          QObject::connect(ui_sys->CloseVideo, SIGNAL(clicked()), this, SLOT(closeVideoStream()));                       //关闭视频流
-          QObject::connect(ui_sys->TakePicture, SIGNAL(clicked()), this, SLOT(savePictureForTrannin()));             //开启拍照模块
-          QObject::connect(ui_sys->TranningSetInput, SIGNAL(clicked()), this, SLOT(tranningSetInputFromVideo())); //人脸训练功能模块
-          QObject::connect(ui_sys->ConfirmTranningSet, SIGNAL(clicked()), this, SLOT(savePictureForTranning()));//保存人脸
-          QObject::connect(ui_sys->IgnoreTranningSet, SIGNAL(clicked()), this, SLOT(ignorePictureForTranning()));//舍弃人脸
-          QObject::connect(ui_sys->InitTranning, SIGNAL(clicked()), this, SLOT(initTranningProcess()));                   //开启残差神经网络
-          QObject::connect(ui_sys->SignIn, SIGNAL(clicked()), this, SLOT(employeeAttendanceInterface()));          //开启签到程序
-          QObject::connect(ui_sys->Logout, SIGNAL(clicked()), this, SLOT(employeeSignalOutInterface()));           //开启签退程序
+          /*当经过管理人员审批之后开启积累训练的进度条*/
+          QObject::connect(ui_sys->TranningSetInput, SIGNAL(clicked()), this, SLOT(tranningSetInputFromVideo()));    //人脸训练功能模块
+          QObject::connect(ui_sys->TakePicture, SIGNAL(clicked()), this, SLOT(takePictureFromVideo()));                      //开启拍照模块
+          QObject::connect(ui_sys->ConfirmTranningSet, SIGNAL(clicked()), this, SLOT(savePictureForTranning()));      //保存人脸
+          QObject::connect(ui_sys->IgnoreTranningSet, SIGNAL(clicked()), this, SLOT(ignorePictureForTranning()));      //舍弃人脸
+
+          /*当训练的进度条已满之后，可以开启Resnet网络训练*/
+          QObject::connect(ui_sys->InitTranning, SIGNAL(clicked()), this, SLOT(initTranningProcess()));                         //开启残差神经网络
+
+          /*用户的登录登出功能*/
+          QObject::connect(ui_sys->SignIn, SIGNAL(clicked()), this, SLOT(employeeAttendanceInterface()));                   //开启签到程序
+          QObject::connect(ui_sys->Logout, SIGNAL(clicked()), this, SLOT(employeeSignalOutInterface()));                    //开启签退程序
+
+          /*关闭系统的核心功能*/
+          QObject::connect(ui_sys->CloseVideo, SIGNAL(clicked()), this, SLOT(closeVideoStream()));                              //关闭视频流
+
+          /*用户申请注册权限*/
+          QObject::connect(ui_sys->AciqurePremit, SIGNAL(clicked()), this, SLOT(employeeAskPremitInterface()));        //向管理员账户申请注册权限
 }
 
 /*------------------------------------------------------------------------------------------------------

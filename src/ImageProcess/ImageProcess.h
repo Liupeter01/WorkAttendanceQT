@@ -309,10 +309,7 @@ protected:
            * 
            * @Correction: 2022-8-1 将宽字符改为QT专属的QString方便开发
           *------------------------------------------------------------------------------------------------------*/
-          inline void printOnTextBroswer(
-                    QTextBrowser*& _systemOutput,
-                    const QString _qstring
-          );
+          inline void printOnTextBroswer(QTextBrowser*& _systemOutput, const QString _qstring);
 
 private:
           /*--------------------------------------------------通用数据结构------------------------------------------------*/

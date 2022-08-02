@@ -522,7 +522,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>新员工权限申请</string>
+     <string>新员工申请权限</string>
     </property>
    </widget>
    <widget class="QPushButton" name="Logout">
@@ -668,7 +668,7 @@
     </font>
    </property>
    <property name="title">
-    <string>访问管理界面：</string>
+    <string>管理员入口：</string>
    </property>
    <widget class="QPushButton" name="CloseVideo">
     <property name="geometry">
@@ -683,7 +683,7 @@
      <string>关闭视频和识别网络</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton">
+   <widget class="QPushButton" name="AdminOnly">
     <property name="geometry">
      <rect>
       <x>10</x>
