@@ -199,13 +199,19 @@ void Interface::QTEmployeeAttendance(
                               }
                               if (this->startFacialRecognize(dbFaceMatrix, _systemOutput)) {                                                   //将数据库dbFaceMatrix和实时人脸进行比对
                                         _systemOutput->insertPlainText(
+                                                  QString::fromLocal8Bit("[") + _timer->currentDateTime().toString("yyyy-MM-dd hh:mm:ss") + QString::fromLocal8Bit("]:") +
                                                   QString::fromLocal8Bit(_department.c_str()) + QString::fromLocal8Bit("的") +
                                                   QString::fromLocal8Bit(_userName.c_str()) + QString::fromLocal8Bit("人脸登陆成功!\n")
                                         );
-                                        this->storeAttendanceRecord2DB(_userID, _department, _timer);                                       //进行考勤时间的记录
+                                        this->storeAttendanceRecord2DB(                                                                                         //进行考勤时间的记录
+                                                  _userID, _department,
+                                                  ((_timer->currentDateTime().time() > this->getMorningShiftTime()) ? "员工迟到" : "正常签到"),
+                                                  _timer
+                                        );
                               }
                               else {
                                         _systemOutput->insertPlainText(
+                                                  QString::fromLocal8Bit("[") + _timer->currentDateTime().toString("yyyy-MM-dd hh:mm:ss") + QString::fromLocal8Bit("]:") +
                                                   QString::fromLocal8Bit(_department.c_str()) + QString::fromLocal8Bit("的") +
                                                   QString::fromLocal8Bit(_userName.c_str()) + QString::fromLocal8Bit("人脸识别失败!请重新尝试\n")
                                         );
@@ -213,10 +219,14 @@ void Interface::QTEmployeeAttendance(
                     }
           }
           catch (const InvalidInput&) {
-                    _systemOutput->insertPlainText(QString::fromLocal8Bit("当前输入中含有非法字符，请重新输入\n"));
+                    _systemOutput->insertPlainText(
+                              QString::fromLocal8Bit("[") + _timer->currentDateTime().toString("yyyy-MM-dd hh:mm:ss") + QString::fromLocal8Bit("]:") +
+                              QString::fromLocal8Bit("当前输入中含有非法字符，请重新输入\n")
+                    );
           }
           catch (const EmptyMatrixString &) {
                     _systemOutput->insertPlainText(
+                              QString::fromLocal8Bit("[") + _timer->currentDateTime().toString("yyyy-MM-dd hh:mm:ss") + QString::fromLocal8Bit("]:") +
                               QString::fromLocal8Bit(_userName.c_str()) + QString::fromLocal8Bit("查无此人，人脸登陆失败!  请联系系统管理员\n")
                     );
           }
@@ -249,21 +259,41 @@ void Interface::QTEmployeeSignOut(
                     }
                     else
                     {
-                              _systemOutput->insertPlainText(
-                                        QString::fromLocal8Bit(_department.c_str()) + QString::fromLocal8Bit("的") +
-                                        QString::fromLocal8Bit(_userName.c_str()) + QString::fromLocal8Bit("人脸登陆成功!\n")
-                              );
-                              _systemOutput->insertPlainText(
-                                        QString::fromLocal8Bit(_department.c_str()) + QString::fromLocal8Bit("的") +
-                                        QString::fromLocal8Bit(_userName.c_str()) + QString::fromLocal8Bit("人脸识别失败!请重新尝试\n")
-                              );
+                              /*将人脸信息从数据库中先提取并验证是否存在*/
+                              std::string dbFaceMatrix = this->readFaceRecordFromDB(_userID, _userName, _department);   //输入UserID+UserName+Department得到人脸特征矩阵的字符串
+                              if (dbFaceMatrix == "" || !dbFaceMatrix.size()) {                                                                             //返回的人脸矩阵字符串为空
+                                        throw EmptyMatrixString();                                                                                                    //MatrixString为空的异常
+                              }
+                              if (this->startFacialRecognize(dbFaceMatrix, _systemOutput)) {                                                   //将数据库dbFaceMatrix和实时人脸进行比对
+                                        _systemOutput->insertPlainText(
+                                                  QString::fromLocal8Bit("[") + _timer->currentDateTime().toString("yyyy-MM-dd hh:mm:ss")  + QString::fromLocal8Bit("]:") +
+                                                  QString::fromLocal8Bit(_department.c_str()) + QString::fromLocal8Bit("的") +
+                                                  QString::fromLocal8Bit(_userName.c_str()) + QString::fromLocal8Bit("人脸登陆成功!\n")
+                                        );
+                                        this->storeSignOutRecord2DB(                                                                                                //进行考勤时间的记录
+                                                  _userID, _department,
+                                                  ((_timer->currentDateTime().time() < this->getNightshiftTime()) ? "员工早退" : "正常签退"),
+                                                  _timer
+                                        );
+                              }
+                              else {
+                                        _systemOutput->insertPlainText(
+                                                  QString::fromLocal8Bit("[") + _timer->currentDateTime().toString("yyyy-MM-dd hh:mm:ss") +
+                                                  QString::fromLocal8Bit("]:") + QString::fromLocal8Bit(_department.c_str()) + QString::fromLocal8Bit("的") +
+                                                  QString::fromLocal8Bit(_userName.c_str()) + QString::fromLocal8Bit("人脸识别失败!请重新尝试\n")
+                                        );
+                              }
                     }
           }
           catch (const InvalidInput&) {
-                    _systemOutput->insertPlainText(QString::fromLocal8Bit("当前输入中含有非法字符，请重新输入\n"));
+                    _systemOutput->insertPlainText(
+                              QString::fromLocal8Bit("[") + _timer->currentDateTime().toString("yyyy-MM-dd hh:mm:ss") + QString::fromLocal8Bit("]:") +
+                              QString::fromLocal8Bit("当前输入中含有非法字符，请重新输入\n")
+                    );
           }
           catch (const EmptyMatrixString&) {
                     _systemOutput->insertPlainText(
+                              QString::fromLocal8Bit("[") + _timer->currentDateTime().toString("yyyy-MM-dd hh:mm:ss") + QString::fromLocal8Bit("]:") +
                               QString::fromLocal8Bit(_userName.c_str()) + QString::fromLocal8Bit("查无此人，人脸登陆失败!  请联系系统管理员\n")
                     );
           }
@@ -277,14 +307,73 @@ void Interface::QTEmployeeSignOut(
  *                  1. 用户ID的输入  const std::string& _userID
  *                  2. 用户姓名的输入    const std::string& _userName
  *                  3. 部门的输入         const std::string & _department
- *                  3. 输出窗口接口：QTextBrowser*& _systemOutput
+ *                  4.全局时钟系统的输入 QDateTime*& _timer
+ *                  5. 输出窗口接口：QTextBrowser*& _systemOutput
 *------------------------------------------------------------------------------------------------------*/
 void  Interface::QTEmployeeAskPremit(
           const std::string& _userID,
           const std::string& _userName,
           const std::string& _department,
+          QDateTime*& _timer,
           QTextBrowser*& _systemOutput
 )
 {
+          try {
+                    if (_userID == "" || _userName == "") {                                                                                                     //ID和名字不可以为空
+                              throw  InvalidInput();                                                                                                                       //无效的登录信息输入
+                    }
+                    this->storeAskPremitRecord2DB(_userID, _userName, _department, _timer);                             //申请访问权限
+          }
+          catch (const InvalidInput&) {
+                    _systemOutput->insertPlainText(
+                              QString::fromLocal8Bit("[") + _timer->currentDateTime().toString("yyyy-MM-dd hh:mm:ss") + QString::fromLocal8Bit("]:") +
+                              QString::fromLocal8Bit("当前输入中含有非法字符，请重新输入\n")
+                    );
+          }
+}
 
+/*------------------------------------------------------------------------------------------------------
+ *  Interface类为QTWidget层输入检查员工的操作权限
+ * @name:QTEmployeeCheckPremittion
+ * @function：在数据库中写入申请信息等待管理员进行决断
+ * @param:
+ *                  1. 用户ID的输入  const std::string& _userID
+ *                  2. 用户姓名的输入    const std::string& _userName
+ *                  3. 部门的输入         const std::string & _department
+ *                  4. 注册并录入人脸的开关启用 : QPushButton *&_TrainningSetInput,
+ *                  5.全局时钟系统的输入 QDateTime*& _timer
+ *                  6 将数据库中的权限信息写入到屏幕上 :QTextBrowser*& _privliedgeStatus
+ *                  7. 输出窗口接口：QTextBrowser*& _systemOutput
+*------------------------------------------------------------------------------------------------------*/
+void Interface::QTEmployeeCheckPremittion(
+          const std::string& _userID,
+          const std::string& _userName,
+          const std::string& _department,
+          QPushButton*& _TrainningSetInput,
+          QDateTime*& _timer,
+          QTextBrowser*& _privliedgeStatus,
+          QTextBrowser*& _systemOutput
+)
+{
+          try {
+                    if (_userID == "" || _userName == "") {                                                                                                     //ID和名字不可以为空
+                              throw  InvalidInput();                                                                                                                       //无效的登录信息输入
+                    }
+                    std::string authoritySet = this->checkPremitRecordFromDB(_userID, _userName, _department);         //权限信息
+                    _privliedgeStatus->insertPlainText(QString::fromLocal8Bit(authoritySet.c_str()));
+                    if (authoritySet == "申请通过") {
+                              _TrainningSetInput->setEnabled(true);                              //启用注册人脸按钮                                                      
+                              _TrainningSetInput->update();                                           //更新注册人脸按钮状态
+                    }
+                    else {
+                              _TrainningSetInput->setDisabled(true);                            //禁用注册并禁用人脸按钮   
+                              _TrainningSetInput->update();                                          //更新注册并禁用人脸按钮状态
+                    }
+          }
+          catch (const InvalidInput&) {
+                    _systemOutput->insertPlainText(
+                              QString::fromLocal8Bit("[") + _timer->currentDateTime().toString("yyyy-MM-dd hh:mm:ss") + QString::fromLocal8Bit("]:") +
+                              QString::fromLocal8Bit("当前输入中含有非法字符，请重新输入\n")
+                    );
+          }
 }

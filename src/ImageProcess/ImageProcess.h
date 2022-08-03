@@ -10,6 +10,7 @@
 #include<QtWidgets/qlcdnumber.h>
 #include<QtWidgets/qmessagebox.h>
 #include<QtWidgets/qprogressbar.h>
+#include<QtWidgets/qpushbutton.h>
 
 /*------------------------------------------------------------------------------------------------------
  * 控制ImageProcess层的拍照控制状态机

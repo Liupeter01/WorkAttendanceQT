@@ -495,8 +495,8 @@
   <widget class="QGroupBox" name="groupBox_2">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>500</y>
+     <x>940</x>
+     <y>180</y>
      <width>231</width>
      <height>231</height>
     </rect>
@@ -510,7 +510,7 @@
     </font>
    </property>
    <property name="title">
-    <string>人脸识别：</string>
+    <string>人脸签到：</string>
    </property>
    <widget class="QPushButton" name="AciqurePremit">
     <property name="geometry">
@@ -565,9 +565,9 @@
   <widget class="QLCDNumber" name="lcdclock">
    <property name="geometry">
     <rect>
-     <x>30</x>
-     <y>290</y>
-     <width>211</width>
+     <x>20</x>
+     <y>300</y>
+     <width>221</width>
      <height>51</height>
     </rect>
    </property>
@@ -656,7 +656,7 @@
      <x>940</x>
      <y>10</y>
      <width>231</width>
-     <height>171</height>
+     <height>161</height>
     </rect>
    </property>
    <property name="font">
@@ -761,7 +761,7 @@
    <property name="geometry">
     <rect>
      <x>950</x>
-     <y>660</y>
+     <y>670</y>
      <width>211</width>
      <height>61</height>
     </rect>
@@ -781,9 +781,9 @@
    <property name="geometry">
     <rect>
      <x>940</x>
-     <y>190</y>
+     <y>420</y>
      <width>231</width>
-     <height>261</height>
+     <height>211</height>
     </rect>
    </property>
    <property name="font">
@@ -801,7 +801,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>120</y>
+      <y>70</y>
       <width>211</width>
       <height>61</height>
      </rect>
@@ -814,22 +814,22 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>70</y>
+      <y>20</y>
       <width>71</width>
-      <height>41</height>
+      <height>51</height>
      </rect>
     </property>
     <property name="text">
      <string>权限状态:</string>
     </property>
    </widget>
-   <widget class="QTextBrowser" name="SystemStatusInfo_2">
+   <widget class="QTextBrowser" name="PremissionStatus">
     <property name="geometry">
      <rect>
       <x>80</x>
-      <y>70</y>
-      <width>141</width>
-      <height>41</height>
+      <y>30</y>
+      <width>131</width>
+      <height>31</height>
      </rect>
     </property>
    </widget>
@@ -837,7 +837,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>190</y>
+      <y>140</y>
       <width>211</width>
       <height>61</height>
      </rect>
@@ -846,44 +846,14 @@
      <string>注册并录入人脸</string>
     </property>
    </widget>
-   <widget class="QLabel" name="name_label_2">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>20</y>
-      <width>54</width>
-      <height>41</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <family>Times New Roman</family>
-      <weight>75</weight>
-      <bold>true</bold>
-     </font>
-    </property>
-    <property name="text">
-     <string>姓名</string>
-    </property>
-   </widget>
-   <widget class="QTextEdit" name="NameInput_2">
-    <property name="geometry">
-     <rect>
-      <x>80</x>
-      <y>20</y>
-      <width>141</width>
-      <height>41</height>
-     </rect>
-    </property>
-   </widget>
   </widget>
   <widget class="QLabel" name="name_label">
    <property name="geometry">
     <rect>
      <x>30</x>
-     <y>400</y>
+     <y>430</y>
      <width>54</width>
-     <height>51</height>
+     <height>61</height>
     </rect>
    </property>
    <property name="font">
@@ -901,19 +871,25 @@
    <property name="geometry">
     <rect>
      <x>80</x>
-     <y>450</y>
+     <y>490</y>
      <width>151</width>
-     <height>31</height>
+     <height>41</height>
     </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Times New Roman</family>
+     <pointsize>16</pointsize>
+    </font>
    </property>
   </widget>
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
      <x>30</x>
-     <y>450</y>
+     <y>490</y>
      <width>54</width>
-     <height>31</height>
+     <height>41</height>
     </rect>
    </property>
    <property name="font">
@@ -930,17 +906,23 @@
    <property name="geometry">
     <rect>
      <x>80</x>
-     <y>410</y>
+     <y>440</y>
      <width>151</width>
-     <height>31</height>
+     <height>41</height>
     </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Times New Roman</family>
+     <pointsize>16</pointsize>
+    </font>
    </property>
   </widget>
   <widget class="QLabel" name="id_label">
    <property name="geometry">
     <rect>
      <x>30</x>
-     <y>380</y>
+     <y>400</y>
      <width>54</width>
      <height>21</height>
     </rect>
@@ -960,19 +942,25 @@
    <property name="geometry">
     <rect>
      <x>80</x>
-     <y>370</y>
+     <y>390</y>
      <width>151</width>
-     <height>31</height>
+     <height>41</height>
     </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Times New Roman</family>
+     <pointsize>16</pointsize>
+    </font>
    </property>
   </widget>
   <widget class="QGroupBox" name="groupBox_8">
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>350</y>
+     <y>370</y>
      <width>231</width>
-     <height>141</height>
+     <height>181</height>
     </rect>
    </property>
    <property name="font">
@@ -990,9 +978,9 @@
   <widget class="QLCDNumber" name="lcddate">
    <property name="geometry">
     <rect>
-     <x>20</x>
+     <x>10</x>
      <y>230</y>
-     <width>231</width>
+     <width>241</width>
      <height>51</height>
     </rect>
    </property>

@@ -191,12 +191,37 @@ public:
            *                  1. 用户ID的输入  const std::string& _userID
            *                  2. 用户姓名的输入    const std::string& _userName
            *                  3. 部门的输入         const std::string & _department
-           *                  3. 输出窗口接口：QTextBrowser*& _systemOutput
+           *                  4.全局时钟系统的输入 QDateTime*& _timer
+           *                  5. 输出窗口接口：QTextBrowser*& _systemOutput
           *------------------------------------------------------------------------------------------------------*/
           void QTEmployeeAskPremit(
                     const std::string& _userID,
                     const std::string& _userName,
                     const std::string& _department,
+                    QDateTime*& _timer,
+                    QTextBrowser*& _systemOutput
+          );
+
+          /*------------------------------------------------------------------------------------------------------
+           *  Interface类为QTWidget层输入检查员工的操作权限
+           * @name:QTEmployeeCheckPremittion
+           * @function：在数据库中写入申请信息等待管理员进行决断
+           * @param:
+           *                  1. 用户ID的输入  const std::string& _userID
+           *                  2. 用户姓名的输入    const std::string& _userName
+           *                  3. 部门的输入         const std::string & _department
+           *                  4. 注册并录入人脸的开关启用 : QPushButton *&_TrainningSetInput,
+           *                  5.全局时钟系统的输入 QDateTime*& _timer
+           *                  6 将数据库中的权限信息写入到屏幕上 :QTextBrowser*& _privliedgeStatus
+           *                  7. 输出窗口接口：QTextBrowser*& _systemOutput
+          *------------------------------------------------------------------------------------------------------*/
+          void QTEmployeeCheckPremittion(
+                    const std::string& _userID,
+                    const std::string& _userName,
+                    const std::string& _department,
+                    QPushButton *&_TrainningSetInput,
+                    QDateTime*& _timer,
+                    QTextBrowser*& _privliedgeStatus,
                     QTextBrowser*& _systemOutput
           );
 
