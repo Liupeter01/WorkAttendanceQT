@@ -188,7 +188,7 @@ bool DBProcess::storeAskPremitRecord2DB(
           return this->dbInsert(this->m_Insert_table_askpremit + employeeNumber + "," +
                     "\"" + _name + "\"" + "," +
                     "\"" + _department + "\"" + "," +
-                    "\"" + "申请权限" + "\"" + ","
+                    "\"" + "权限申请中..." + "\"" + ","
                     "\"" + _timer->currentDateTime().toString("yyyy-MM-dd hh:mm:ss").toLocal8Bit().constData() + "\"" + ")"
           );
 }
@@ -201,6 +201,7 @@ bool DBProcess::storeAskPremitRecord2DB(
 *                3. 部门 ：  const std::string& _department
 *
 * @retValue : 返回许可权限 std::string
+* @Correction: 2022-8-3 修复SELECT查询返回值可能为空的清空
 *------------------------------------------------------------------------------------------------------*/
 std::string DBProcess::checkPremitRecordFromDB(
           const  std::string& employeeNumber,
@@ -214,5 +215,8 @@ std::string DBProcess::checkPremitRecordFromDB(
                     "  AND UserName =  " + "\"" + _name + "\"" +
                     "  AND Department = " + "\"" + _department + "\""
           );
+          if (!isPriviledgePremit.size()) {                                                                             //申请的信息根本不存在
+                    return std::string();                                                                                       
+          }
           return std::string(isPriviledgePremit[0][0].c_str());
 }

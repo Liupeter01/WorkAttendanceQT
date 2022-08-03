@@ -142,6 +142,7 @@ protected:
           *                3. 部门 ：  const std::string& _department
           *
           * @retValue : 返回许可权限 std::string
+          * @Correction: 2022-8-3 修复SELECT查询返回值可能为空的清空
           *------------------------------------------------------------------------------------------------------*/
           std::string checkPremitRecordFromDB(
                     const  std::string& employeeNumber,

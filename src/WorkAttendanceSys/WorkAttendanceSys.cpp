@@ -275,6 +275,8 @@ void WorkAttendanceSys::employeeAskPremitInterface()
                     this->m_globalTimer,                                                                                             //加载全局计时器
                     this->ui_sys->SystemStatusInfo                                                                             //输出窗口
           );
+          this->ui_sys->UserID->clear();                                                           //清空ID的输入
+          this->ui_sys->NameInput->clear();                                                     //清空名字的输入
 }
 
 /*------------------------------------------------------------------------------------------------------
@@ -294,6 +296,16 @@ void WorkAttendanceSys::employeeCheckPremittion()
                     this->ui_sys->PremissionStatus,                                                                             //输出权限状态接口
                     this->ui_sys->SystemStatusInfo                                                                             //输出窗口
           );
+}
+
+/*------------------------------------------------------------------------------------------------------
+ * 槽函数类别---访问管理部门系统
+ * @name : employeeCheckPremittion
+ * @funtion : 访问管理部门系统
+ *------------------------------------------------------------------------------------------------------*/
+void WorkAttendanceSys::managementAdminOnly()
+{
+
 }
 
 /*------------------------------------------------------------------------------------------------------
@@ -324,6 +336,9 @@ void WorkAttendanceSys::connectSlotSet()
           
           /*查询新用户的权限是否通过*/
           QObject::connect(this->ui_sys->checkPremittion, SIGNAL(clicked()), this, SLOT(employeeCheckPremittion()));        //检查注册权限是否通过
+
+          /*开启访问管理部门系统*/
+          QObject::connect(this->ui_sys->AdminOnly, SIGNAL(clicked()), this, SLOT(managementAdminOnly()));                 //开启访问管理部门系统*
 }
 
 /*------------------------------------------------------------------------------------------------------
