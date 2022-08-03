@@ -136,8 +136,8 @@ private:
           std::string m_SelectDepartment = "SELECT Department FROM departmenttable";
 
 private:
-          QTime* m_globalTimer = nullptr;                      //全局时钟系统
-          Ui::WorkAttendanceSys *ui_sys;                        //人脸系统主系统
-          Ui::WorkAttendanceAdmin* ui_admin;              //人脸系统ADMIN界面
+          QDateTime* m_globalTimer = nullptr;                  //全局时钟系统
+          Ui::WorkAttendanceSys *ui_sys;                           //人脸系统主系统
+          Ui::WorkAttendanceAdmin* ui_admin = nullptr;  //人脸系统ADMIN界面
           std::vector<std::thread> m_threadPool;
 };

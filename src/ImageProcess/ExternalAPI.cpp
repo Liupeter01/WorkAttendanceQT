@@ -3,19 +3,19 @@
 /*------------------------------为外部函数提供的ExternalAPI--------------------------------*/
 /*------------------------------------------------------------------------------------------------------
  * 启动视频的显示线程(与外部GUI连接)
- * @name:  startVideoDisplay
+ * @name:  startVideoDisplayThread
  * @function: 实时摄像头图像+人脸检测+人脸识别输出显示接口
  * @param: 输出窗口接口：QTextBrowser*& _systemOutput
  * @retValue: QImage &
  *------------------------------------------------------------------------------------------------------*/
-QImage& ImageProcess::startVideoDisplay(QTextBrowser*& _systemOutput)
+QImage& ImageProcess::startVideoDisplayThread(QTextBrowser*& _systemOutput)
 {
-          return this->realTimeFacialDisplay(_systemOutput);
+          return this->VideoDisplayThread(_systemOutput);
 }
 
 /*------------------------------------------------------------------------------------------------------
- * 启动人脸注册函数(与外部GUI连接)
- * @name:  startVideoRegister
+ * 启动人脸的训练集输入函数(与外部GUI连接)
+ * @name:  startImageTranningSetInput
  * @function: 开启当前视频拍摄，启动人脸训练程序
  * @param:  1.视频开关 std::atomic<bool> &
  *                  2.输出窗口接口：QTextBrowser*& _systemOutput
@@ -24,7 +24,7 @@ QImage& ImageProcess::startVideoDisplay(QTextBrowser*& _systemOutput)
  *
  * @Correction: 2022-7-24 添加函数参数修复防止线程无法正确的停止运转
 *------------------------------------------------------------------------------------------------------*/
-void  ImageProcess::startVideoRegister(
+void  ImageProcess::startImageTranningSetInput(
           std::atomic<bool>& _videoFlag,
           QTextBrowser*& _systemOutput,
           QProgressBar*& _processBar,
@@ -32,7 +32,7 @@ void  ImageProcess::startVideoRegister(
 )
 {
           this->m_threadPool.emplace_back(
-                    &ImageProcess::videoSyncFacialTranning, this, 
+                    &ImageProcess::ImageTranningSetInput, this,
                     std::ref(_videoFlag), std::ref(_systemOutput),
                     std::ref(_processBar),_displayNumber
           );
@@ -48,7 +48,7 @@ void  ImageProcess::startVideoRegister(
 *------------------------------------------------------------------------------------------------------*/
 std::string& ImageProcess::startResnetModelTranning(QTextBrowser*& _systemOutput)
 {
-          this->m_threadMatrixRes = std::async(&ImageProcess::modelSetTranning, this, std::ref(_systemOutput));
+          this->m_threadMatrixRes = std::async(&ImageProcess::ResnetModelTranning, this, std::ref(_systemOutput));
           this->m_threadMatrixRes.wait();
           return   this->m_threadMatrixRes.get();
 }
@@ -64,7 +64,7 @@ std::string& ImageProcess::startResnetModelTranning(QTextBrowser*& _systemOutput
 *------------------------------------------------------------------------------------------------------*/
 bool  ImageProcess::startFacialRecognize(const std::string _dbMatrix,QTextBrowser*& _systemOutput)
 {
-          this->m_threadStatusRes = std::async(&ImageProcess::facialRecognize, this, std::ref(_dbMatrix), std::ref(_systemOutput));
+          this->m_threadStatusRes = std::async(&ImageProcess::FacialRecognize, this, std::ref(_dbMatrix), std::ref(_systemOutput));
           this->m_threadStatusRes.wait();
           return   this->m_threadStatusRes.get();
 }

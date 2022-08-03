@@ -1,4 +1,4 @@
-#include<QtCore/qtimer.h>
+#include<QtCore/qdatetime.h>
 #include"MYSQL.h"
 
 class DBProcess : public MySQL {
@@ -23,6 +23,20 @@ protected:
           * @RetValue : double
           *------------------------------------------------------------------------------------------------------*/
           double initTrainningSimilarity();
+
+          /*------------------------------------------------------------------------------------------------------
+          * @DBProcess考勤系统获取管理员设定的早上迟到的时间
+          * @name :  getMorningShiftTime
+          * @funtion : 获取管理员设定的早上迟到的时间
+          *------------------------------------------------------------------------------------------------------*/
+          QTime getMorningShiftTime();
+
+          /*------------------------------------------------------------------------------------------------------
+          * @DBProcess考勤系统获取管理员设定的下午早退的时间
+          * @name :  getNightshiftTime
+          * @funtion : 获取管理员设定的下午早退的时间
+          *------------------------------------------------------------------------------------------------------*/
+          QTime getNightshiftTime();
 
 protected:
           /*----------------------WorkAttendanceSys考勤系统数据库操作-------------------------*/
@@ -75,13 +89,13 @@ protected:
           * @name: storeAttendanceRecord2DB
           * @param 1. 员工号： const  std::string& employeeNumber
           *                2. 部门 ：  const std::string& _department
-          *                3.全局时钟系统的输入 QTime*& _timer
+          *                3.全局时钟系统的输入 QDateTime*& _timer
           * 
           *------------------------------------------------------------------------------------------------------*/
           bool storeAttendanceRecord2DB(
                     const  std::string& employeeNumber,
                     const std::string& _department,
-                    QTime*& _timer
+                    QDateTime*& _timer
           );
 
           /*------------------------------------------------------------------------------------------------------
@@ -89,13 +103,13 @@ protected:
           * @name: storeSignOutRecord2DB
           * @param 1. 员工号： const  std::string& employeeNumber
           *                2. 部门 ：  const std::string& _department
-          *                3.全局时钟系统的输入 QTime*& _timer
+          *                3.全局时钟系统的输入 QDateTime*& _timer
           * 
           *------------------------------------------------------------------------------------------------------*/
           bool storeSignOutRecord2DB(
                     const  std::string& employeeNumber,
                     const std::string& _department,
-                    QTime*& _timer
+                    QDateTime*& _timer
           );
 
 private:
@@ -103,10 +117,15 @@ private:
           /*-------------------------------MYSQL INSERT指令-----------------------------*/
           const std::string m_Insert_table_employee = "INSERT INTO employee VALUES(";
           const std::string m_Insert_table_facematrixstorge = "INSERT INTO facematrixstorge  VALUES(";
+          const std::string m_Insert_table_attendence = "INSERT INTO attendence  VALUES(";
+          const std::string m_Insert_table_signout = "INSERT INTO signout  VALUES(";
 
           /*-------------------------------MYSQL SELECT指令-----------------------------*/
           const std::string m_SelectTrainningSetting = "SELECT TrainningSetting FROM admintable";             //TrainningSetting的设定
           const std::string m_SelectTrainningSimilarity = "SELECT TrainningSimilarity FROM admintable";   //TrainningSimilarity的设定
+          const std::string m_SelectMorningShiftTime = "SELECT MorningShiftTime FROM admintable";         //MorningShiftTime的设定
+          const std::string m_SelectNightshiftTime = "SELECT NightshiftTime FROM admintable";               //NightshiftTime的设定
+
           const std::string m_SelectMatrixString = "SELECT faceMatrix FROM facematrixstorge WHERE UserID = "; //搜索人脸矩阵
           const std::string m_SelectEmployeeString = "SELECT UserName FROM employee WHERE UserID = ";        //搜索人名矩阵
 

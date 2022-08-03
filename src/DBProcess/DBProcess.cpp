@@ -35,6 +35,28 @@ double DBProcess::initTrainningSimilarity()
           return std::atof(dbRes[0][0].c_str());                                                                                                     //返回TranningSimilarity
 }
 
+/*------------------------------------------------------------------------------------------------------
+* @DBProcess考勤系统获取管理员设定的早上迟到的时间
+* @name :  getMorningShiftTime
+* @funtion : 获取管理员设定的早上迟到的时间
+*------------------------------------------------------------------------------------------------------*/
+QTime DBProcess::getMorningShiftTime()
+{
+          std::vector<std::vector<std::string>> dbRes = this->dbSelect(this->m_SelectMorningShiftTime);   //从数据库中获取MorningShiftTime
+          return QTime::fromString(dbRes[0][0].c_str());
+}
+
+/*------------------------------------------------------------------------------------------------------
+* @DBProcess考勤系统获取管理员设定的下午早退的时间
+* @name :  getNightshiftTime
+* @funtion : 获取管理员设定的下午早退的时间
+*------------------------------------------------------------------------------------------------------*/
+QTime DBProcess::getNightshiftTime()
+{
+          std::vector<std::vector<std::string>> dbRes = this->dbSelect(this->m_SelectNightshiftTime);   //从数据库中获取NightshiftTime
+          return QTime::fromString(dbRes[0][0].c_str());
+}
+
 /*----------------------WorkAttendanceSys考勤系统数据库操作-------------------------*/
 /*------------------------------------------------------------------------------------------------------
  * 将人脸信息从数据库中先提取并验证是否存在
@@ -58,7 +80,7 @@ std::string  DBProcess::readFaceRecordFromDB(
                     this->m_SelectEmployeeString + employeeNumber + " AND Department = " + "\"" + _department + "\""
           );
 
-          if (std::string(isUserExist[0][0].c_str()) != _userName) {                                                                                                    //存在当前的员工
+          if (!isUserExist.size() || std::string(isUserExist[0][0].c_str()) != _userName) {                                                                   //存在当前的员工
                     return std::string();                                                                                                                                                       //员工为空
           }
           std::vector<std::vector<std::string>> dbRes = this->dbSelect(this->m_SelectMatrixString + employeeNumber);   //搜索人脸矩阵
@@ -105,16 +127,17 @@ bool DBProcess::updateFaceRecord2DB(
 * @name: storeAttendanceRecord2DB
 * @param 1. 员工号： const  std::string& employeeNumber
 *                2. 部门 ：  const std::string& _department
-*                3.全局时钟系统的输入 QTime*& _timer
+*                3.全局时钟系统的输入 QDateTime*& _timer
 * 
 *------------------------------------------------------------------------------------------------------*/
 bool DBProcess::storeAttendanceRecord2DB(
           const  std::string& employeeNumber,
           const std::string& _department,
-          QTime*& _timer
+          QDateTime*& _timer
 )
 {
-          return true;
+          return this->dbInsert(m_Insert_table_attendence + employeeNumber + "," + "\"" + _department + "\"" +"," 
+                    + "\"" + _timer->currentDateTime().toString("yyyy-MM-dd hh:mm:ss").toLocal8Bit().constData() + "\"" + ")");
 }
 
 /*------------------------------------------------------------------------------------------------------
@@ -122,14 +145,15 @@ bool DBProcess::storeAttendanceRecord2DB(
 * @name: storeSignOutRecord2DB
 * @param 1. 员工号： const  std::string& employeeNumber
 *                2. 部门 ：  const std::string& _department
-*                3.全局时钟系统的输入 QTime*& _timer
+*                3.全局时钟系统的输入 QDateTime*& _timer
 *
 *------------------------------------------------------------------------------------------------------*/
 bool DBProcess::storeSignOutRecord2DB(
           const  std::string& employeeNumber,
           const std::string& _department,
-           QTime*& _timer
+          QDateTime*& _timer
 )
 {
-          return true;
+          return this->dbInsert(m_Insert_table_signout+ employeeNumber + "," + "\"" + _department + "\"" + ","
+                    + "\"" + _timer->currentDateTime().toString("yyyy-MM-dd hh:mm:ss").toLocal8Bit().constData() + "\"" + ")");
 }

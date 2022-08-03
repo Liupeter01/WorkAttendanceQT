@@ -496,9 +496,9 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>470</y>
+     <y>500</y>
      <width>231</width>
-     <height>241</height>
+     <height>231</height>
     </rect>
    </property>
    <property name="font">
@@ -562,11 +562,11 @@
     </rect>
    </property>
   </widget>
-  <widget class="QLCDNumber" name="lcdNumber">
+  <widget class="QLCDNumber" name="lcdclock">
    <property name="geometry">
     <rect>
      <x>30</x>
-     <y>220</y>
+     <y>290</y>
      <width>211</width>
      <height>51</height>
     </rect>
@@ -881,9 +881,9 @@
    <property name="geometry">
     <rect>
      <x>30</x>
-     <y>350</y>
+     <y>400</y>
      <width>54</width>
-     <height>41</height>
+     <height>51</height>
     </rect>
    </property>
    <property name="font">
@@ -901,9 +901,9 @@
    <property name="geometry">
     <rect>
      <x>80</x>
-     <y>400</y>
+     <y>450</y>
      <width>151</width>
-     <height>41</height>
+     <height>31</height>
     </rect>
    </property>
   </widget>
@@ -911,9 +911,9 @@
    <property name="geometry">
     <rect>
      <x>30</x>
-     <y>410</y>
+     <y>450</y>
      <width>54</width>
-     <height>21</height>
+     <height>31</height>
     </rect>
    </property>
    <property name="font">
@@ -930,9 +930,9 @@
    <property name="geometry">
     <rect>
      <x>80</x>
-     <y>350</y>
+     <y>410</y>
      <width>151</width>
-     <height>41</height>
+     <height>31</height>
     </rect>
    </property>
   </widget>
@@ -940,7 +940,7 @@
    <property name="geometry">
     <rect>
      <x>30</x>
-     <y>310</y>
+     <y>380</y>
      <width>54</width>
      <height>21</height>
     </rect>
@@ -960,9 +960,9 @@
    <property name="geometry">
     <rect>
      <x>80</x>
-     <y>300</y>
+     <y>370</y>
      <width>151</width>
-     <height>41</height>
+     <height>31</height>
     </rect>
    </property>
   </widget>
@@ -970,9 +970,9 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>280</y>
+     <y>350</y>
      <width>231</width>
-     <height>181</height>
+     <height>141</height>
     </rect>
    </property>
    <property name="font">
@@ -987,13 +987,23 @@
     <string>身份认证：</string>
    </property>
   </widget>
+  <widget class="QLCDNumber" name="lcddate">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>230</y>
+     <width>231</width>
+     <height>51</height>
+    </rect>
+   </property>
+  </widget>
   <zorder>groupBox_8</zorder>
   <zorder>groupBox_3</zorder>
   <zorder>groupBox_2</zorder>
   <zorder>groupBox</zorder>
   <zorder>VideoDisplay</zorder>
   <zorder>calendarWidget</zorder>
-  <zorder>lcdNumber</zorder>
+  <zorder>lcdclock</zorder>
   <zorder>groupBox_4</zorder>
   <zorder>groupBox_5</zorder>
   <zorder>groupBox_6</zorder>
@@ -1005,6 +1015,7 @@
   <zorder>NameInput</zorder>
   <zorder>id_label</zorder>
   <zorder>UserID</zorder>
+  <zorder>lcddate</zorder>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources>

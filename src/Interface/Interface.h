@@ -55,12 +55,17 @@ public:
            *  QLCDNumber图层的时限显示函数
            * @name: QTsetLabelImage
            * @function：将QTimer类型作为事件数据类型传入到容器QLCDNumber中
-           * @param 1.数据显示数据类型 QLCDNumber*& _qlcd
-           *                2.全局时钟系统的输入 QTime*& _timer
+           * @param 1.date数据类型 QLCDNumber*& _date
+           *                2.时间数据类型 QLCDNumber*& _realTimeClock
+           *                3.全局时钟系统的输入 QDateTime*& _timer
            * 
            *  @Correction: 2022-8-2 引入全局的时钟系统
           *-----------------------------------------------------------------------------------------------------*/
-          void QTsetLcdTimer(QLCDNumber*& _qlcd, QTime*& _timer);
+          void QTsetLcdTimer(
+                    QLCDNumber*& _date,
+                    QLCDNumber*& _realTimeClock,
+                    QDateTime*& _timer
+          );
 
           /*-------------------------------QTWidget层对外的操作接口----------------------------------*/
           /*------------------------------------------------------------------------------------------------------
@@ -146,14 +151,14 @@ public:
            *                  1. 用户ID的输入  const std::string& _userID
            *                  2. 用户姓名的输入    const std::string& _userName
            *                  3. 部门的输入         const std::string & _department
-           *                  4.全局时钟系统的输入 QTime*& _timer
+           *                  4.全局时钟系统的输入 QDateTime*& _timer
            *                  5. 输出窗口接口：QTextBrowser*& _systemOutput
           *------------------------------------------------------------------------------------------------------*/
           void QTEmployeeAttendance(
                     const std::string& _userID,
                     const std::string& _userName,
                     const std::string& _department,
-                    QTime *& _timer,
+                    QDateTime*& _timer,
                     QTextBrowser*& _systemOutput
           );
 
@@ -167,14 +172,14 @@ public:
            *                  1. 用户ID的输入  const std::string& _userID
            *                  2. 用户姓名的输入    const std::string& _userName
            *                  3. 部门的输入         const std::string & _department
-           *                  4.全局时钟系统的输入 QTime*& _timer
+           *                  4.全局时钟系统的输入 QDateTime*& _timer
            *                  5. 输出窗口接口：QTextBrowser*& _systemOutput
           *------------------------------------------------------------------------------------------------------*/
           void QTEmployeeSignOut(
                     const std::string& _userID,
                     const std::string& _userName,
                     const std::string& _department,
-                    QTime*& _timer,
+                    QDateTime*& _timer,
                     QTextBrowser*& _systemOutput
           );
 

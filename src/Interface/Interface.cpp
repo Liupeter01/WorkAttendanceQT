@@ -30,19 +30,28 @@ void Interface::QTsetLabelImage(QImage& _qimage, QLabel*& _qlabel)
  *  QLCDNumber图层的时限显示函数
  * @name: QTsetLabelImage
  * @function：将QTimer类型作为事件数据类型传入到容器QLCDNumber中
- * @param 1.数据显示数据类型 QLCDNumber*& _qlcd
- *                2.全局时钟系统的输入 QTime*& _timer
- * 
- * @Correction: 2022-8-2 引入全局的时钟系统
+ * @param 1.date数据类型 QLCDNumber*& _date
+ *                2.时间数据类型 QLCDNumber*& _realTimeClock
+ *                3.全局时钟系统的输入 QDateTime*& _timer
+ *
+ *  @Correction: 2022-8-2 引入全局的时钟系统
 *-----------------------------------------------------------------------------------------------------*/
-void  Interface::QTsetLcdTimer(QLCDNumber*& _qlcd, QTime*& _timer)
+void Interface::QTsetLcdTimer(
+          QLCDNumber*& _date,
+          QLCDNumber*& _realTimeClock,
+          QDateTime*& _timer
+)
 {
-          _qlcd->setDigitCount(10);                                                //设置晶体管控件QLCDNumber能显示的位数
-          _qlcd->setMode(QLCDNumber::Dec);                            //设置显示的模式为十进制
-          _qlcd->setSegmentStyle(QLCDNumber::Flat);               //设置显示方式
+          _date->setDigitCount(10);                                                //设置晶体管控件QLCDNumber能显示的位数
+          _date->setMode(QLCDNumber::Dec);                            //设置显示的模式为十进制
+          _date->setSegmentStyle(QLCDNumber::Flat);               //设置显示方式
+          _realTimeClock->setDigitCount(10);                                                //设置晶体管控件QLCDNumber能显示的位数
+          _realTimeClock->setMode(QLCDNumber::Dec);                            //设置显示的模式为十进制
+          _realTimeClock->setSegmentStyle(QLCDNumber::Flat);               //设置显示方式
           while (!this->m_videoFlag)
           {
-                    _qlcd->display(_timer->currentTime().toString("hh:mm:ss"));
+                    _date->display(_timer->currentDateTime().toString("yyyy-MM-dd"));
+                    _realTimeClock->display(_timer->currentDateTime().toString("hh:mm:ss"));
           }
 }
 
@@ -85,7 +94,7 @@ void Interface::QTtranningSetInput(
           int _displayNumber
 )
 {
-
+          this->startImageTranningSetInput(_videoFlag, _systemOutput, _processBar, _displayNumber);
 }
 
 /*------------------------------------------------------------------------------------------------------
@@ -118,7 +127,7 @@ void Interface::QTignoreImage()
 void Interface::QTVideoOutput(QLabel*& _qlabel, QTextBrowser*& _systemOutput)
 {
           while (!m_videoFlag) {
-                    this->QTsetLabelImage(this->startVideoDisplay(_systemOutput), _qlabel);                       //适配控件分辨率
+                    this->QTsetLabelImage(this->startVideoDisplayThread(_systemOutput), _qlabel);                       //适配控件分辨率
           }
           _qlabel->clear();
 }
@@ -166,14 +175,14 @@ void Interface::QTResnetTranning(
  *                  1. 用户ID的输入  const std::string& _userID
  *                  2. 用户姓名的输入    const std::string& _userName
  *                  3. 部门的输入         const std::string & _department
- *                  4.全局时钟系统的输入 QTime*& _timer
+ *                  4.全局时钟系统的输入 QDateTime*& _timer
  *                  5. 输出窗口接口：QTextBrowser*& _systemOutput
 *------------------------------------------------------------------------------------------------------*/
 void Interface::QTEmployeeAttendance(
           const std::string& _userID,
           const std::string& _userName,
           const std::string& _department,
-          QTime*& _timer,
+          QDateTime*& _timer,
           QTextBrowser*& _systemOutput
 )
 {
@@ -223,14 +232,14 @@ void Interface::QTEmployeeAttendance(
  *                  1. 用户ID的输入  const std::string& _userID
  *                  2. 用户姓名的输入    const std::string& _userName
  *                  3. 部门的输入         const std::string & _department
- *                  4.全局时钟系统的输入 QTime*& _timer
+ *                  4.全局时钟系统的输入 QDateTime*& _timer
  *                  5. 输出窗口接口：QTextBrowser*& _systemOutput
 *------------------------------------------------------------------------------------------------------*/
 void Interface::QTEmployeeSignOut(
           const std::string& _userID,
           const std::string& _userName,
           const std::string& _department,
-          QTime*& _timer,
+          QDateTime*& _timer,
           QTextBrowser*& _systemOutput
 )
 {

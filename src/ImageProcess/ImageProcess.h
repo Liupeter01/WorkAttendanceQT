@@ -65,16 +65,16 @@ protected:
 
           /*------------------------------------------------------------------------------------------------------
            * 启动视频的显示线程(与外部GUI连接)
-           * @name:  startVideoDisplay
+           * @name:  startVideoDisplayThread
            * @function: 实时摄像头图像+人脸检测+人脸识别输出显示接口
            * @param: 输出窗口接口：QTextBrowser*& _systemOutput
            * @retValue: QImage &
           *------------------------------------------------------------------------------------------------------*/
-          QImage& startVideoDisplay(QTextBrowser*& _systemOutput);
+          QImage& startVideoDisplayThread(QTextBrowser*& _systemOutput);
 
           /*------------------------------------------------------------------------------------------------------
-           * 启动人脸注册函数(与外部GUI连接)
-           * @name:  startVideoRegister
+           * 启动人脸的训练集输入函数(与外部GUI连接)
+           * @name:  startImageTranningSetInput
            * @function: 开启当前视频拍摄，启动人脸训练程序
            * @param:  1.视频开关 std::atomic<bool> &
            *                  2.输出窗口接口：QTextBrowser*& _systemOutput
@@ -83,7 +83,7 @@ protected:
            *
            * @Correction: 2022-7-24 添加函数参数修复防止线程无法正确的停止运转
           *------------------------------------------------------------------------------------------------------*/
-          void  startVideoRegister(
+          void  startImageTranningSetInput(
                     std::atomic<bool>& _videoFlag,
                     QTextBrowser*& _systemOutput,
                     QProgressBar*& _processBar,
@@ -115,16 +115,16 @@ private:
           /*-------------------------------为内部函数提供的IxternalAPI------------------------------*/
           /*------------------------------------------------------------------------------------------------------
            * 实时摄像头图像+人脸检测+人脸识别输出显示接口
-           * @name: realTimeFacialDisplay
+           * @name: VideoDisplayThread
            * @function：其他的功能调用通过与该程序连接的线程进行操作
            * @param : 输出窗口接口：QTextBrowser*& _systemOutput
            * @retValue: QImage &
           *------------------------------------------------------------------------------------------------------*/
-          QImage& realTimeFacialDisplay(QTextBrowser*& _systemOutput);
+          QImage& VideoDisplayThread(QTextBrowser*& _systemOutput);
 
           /*------------------------------------------------------------------------------------------------------
            * 启动人脸训练集图片的输入函数
-           * @name:  videoSyncFacialTranning
+           * @name:  ImageTranningSetInput
            * @function: 开启当前视频拍摄，启动人脸训练集图片的输入
            * @param:  1.视频开关 std::atomic<bool> &
            *                  2.输出窗口接口：QTextBrowser*& _systemOutput
@@ -133,7 +133,7 @@ private:
            *
            * @Correction: 2022-7-24 添加函数参数修复防止线程无法正确的停止运转
           *------------------------------------------------------------------------------------------------------*/
-          void videoSyncFacialTranning(
+          void ImageTranningSetInput(
                     std::atomic<bool>& _videoFlag,
                     QTextBrowser*& _systemOutput,
                     QProgressBar*& _processBar,
@@ -142,24 +142,24 @@ private:
 
           /*------------------------------------------------------------------------------------------------------
            * 启动人脸注册运行训练程序
-           * @name:  modelSetTranning
+           * @name:  ResnetModelTranning
            * @function: 输入的训练集训练开关
            * @param:  输出窗口接口：QTextBrowser*& _systemOutput
            * 
            * @retValue：返回训练好的特征向量字符串  std::string &
           *------------------------------------------------------------------------------------------------------*/
-          std::string& modelSetTranning(QTextBrowser*& _systemOutput);
+          std::string& ResnetModelTranning(QTextBrowser*& _systemOutput);
 
           /*------------------------------------------------------------------------------------------------------
            * 启动人脸识别程序
-           * @name:   facialRecognize
+           * @name:   FacialRecognize
            * @function:  启动人脸登录之后，运行训练程序
            * @param:  1.人脸特征向量字符串接口： const std::string _dbMatrix
            *                  2.输出窗口接口：QTextBrowser*& _systemOutput
            *
            * @retValue: 返回识别是否成功  bool 
           *------------------------------------------------------------------------------------------------------*/
-          bool facialRecognize(const std::string _dbMatrix, QTextBrowser*& _systemOutput);
+          bool FacialRecognize(const std::string _dbMatrix, QTextBrowser*& _systemOutput);
 
 private:
           /*-----------------------------ImageProcess的初始化的函数接口----------------------------*/

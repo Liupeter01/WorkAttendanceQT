@@ -3,7 +3,7 @@
 WorkAttendanceSys::WorkAttendanceSys(QWidget* parent)
           : QDialog(parent), Interface(),
           ui_sys(new Ui::WorkAttendanceSys),
-          m_globalTimer(new QTime)
+          m_globalTimer(new QDateTime)
 {
           ui_sys->setupUi(this);
           this->connectSlotSet();                                            //设置信号槽
@@ -17,12 +17,12 @@ WorkAttendanceSys::~WorkAttendanceSys()
 {
           this->QTcloseVideo();                                            //关闭视频
           delete m_globalTimer;                                            //关闭时钟系统
-          this->deleteSysUi();                                                //关闭UI显示系统
           for (auto& i : this->m_threadPool) {                      //关闭其他的线程
                     if (i.joinable()) {
                               i.join();
                     }
           }
+          this->deleteSysUi();                                                //关闭UI显示系统
 }
 
 /*------------------------WorkAttendanceSys考勤系统初始化-----------------------------*/
@@ -50,8 +50,12 @@ void WorkAttendanceSys::initButtonSetting()
 *------------------------------------------------------------------------------------------------------*/
 void  WorkAttendanceSys::initWorkAttendanceSys()
 {
-          this->m_threadPool.emplace_back(&Interface::QTVideoOutput, this, std::ref(this->ui_sys->VideoDisplay), std::ref(this->ui_sys->SystemStatusInfo));
-          this->m_threadPool.emplace_back(&Interface::QTsetLcdTimer, this, std::ref(this->ui_sys->lcdNumber), std::ref(this->m_globalTimer));
+          this->m_threadPool.emplace_back(&Interface::QTVideoOutput, this, 
+                    std::ref(this->ui_sys->VideoDisplay), std::ref(this->ui_sys->SystemStatusInfo)
+          );
+          this->m_threadPool.emplace_back(&Interface::QTsetLcdTimer, this, 
+                    std::ref(this->ui_sys->lcddate), std::ref(this->ui_sys->lcdclock),std::ref(this->m_globalTimer)
+          );
 }
 
 /*------------------------------------------------------------------------------------------------------
@@ -184,11 +188,24 @@ void WorkAttendanceSys::tranningSetInputFromVideo()                             
                     this->ui_sys->InitTranning->setEnabled(true);                        //？启用训练按钮
                     this->ui_sys->InitTranning->update();                                     //？更新训练按钮状态
           }();
-          this->startVideoRegister(
+          this->QTtranningSetInput(
                     this->m_videoFlag,
                     this->ui_sys->SystemStatusInfo,
                     this->ui_sys->progressBar,
-                    0);
+                    0
+          );
+          [=]() {
+                    this->ui_sys->TakePicture->setDisabled(true);                        //禁用拍照摁键
+                    this->ui_sys->TakePicture->update();                                      //更新拍照摁键状态
+                    this->ui_sys->ConfirmTranningSet->setDisabled(true);          //禁用保存摁键
+                    this->ui_sys->ConfirmTranningSet->update();                        //更新保存摁键状态
+                    this->ui_sys->IgnoreTranningSet->setDisabled(true);             //禁用舍弃摁键
+                    this->ui_sys->IgnoreTranningSet->update();                           //更新舍弃摁键状态
+                    this->ui_sys->InitTranning->setDisabled(true);                       //禁用训练按钮
+                    this->ui_sys->InitTranning->update();                                     //更新训练按钮状态
+                    this->ui_sys->UserID->clear();                                                //清空ID的输入
+                    this->ui_sys->NameInput->clear();                                          //清空名字的输入
+          }();
 }
 
 /*------------------------------------------------------------------------------------------------------

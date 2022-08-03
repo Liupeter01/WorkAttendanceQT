@@ -48,17 +48,18 @@ inline QImage& ImageProcess::mat2Qimage(const cv::Mat& mat)
 inline void ImageProcess::printOnTextBroswer(QTextBrowser*& _systemOutput, const QString _qstring)
 {
           _systemOutput->insertPlainText(_qstring);
+          _systemOutput->update();                                                   //增加更新函数
 }
 
 /*-------------------------------为内部函数提供的IxternalAPI------------------------------*/
 /*------------------------------------------------------------------------------------------------------
  * 实时摄像头图像+人脸检测+人脸识别输出显示接口
- * @name: realTimeFacialDisplay
+ * @name: VideoDisplayThread
  * @function：其他的功能调用通过与该程序连接的线程进行操作
  * @param : 输出窗口接口：QTextBrowser*& _systemOutput
  * @retValue: QImage &
- *------------------------------------------------------------------------------------------------------*/
-QImage& ImageProcess::realTimeFacialDisplay(QTextBrowser*& _systemOutput)
+*------------------------------------------------------------------------------------------------------*/
+QImage& ImageProcess::VideoDisplayThread(QTextBrowser*& _systemOutput)
 {
           [=]() {               //条件变量设置：可能需要等待其他模块的信号，才可以继续进行执行
                     std::unique_lock<std::mutex> _lckg(this->m_videoDisplaySync);
@@ -75,7 +76,7 @@ QImage& ImageProcess::realTimeFacialDisplay(QTextBrowser*& _systemOutput)
 
 /*------------------------------------------------------------------------------------------------------
  * 启动人脸训练集图片的输入函数
- * @name:  videoSyncFacialTranning
+ * @name:  ImageTranningSetInput
  * @function: 开启当前视频拍摄，启动人脸训练集图片的输入
  * @param:  1.视频开关 std::atomic<bool> &
  *                  2.输出窗口接口：QTextBrowser*& _systemOutput
@@ -84,11 +85,12 @@ QImage& ImageProcess::realTimeFacialDisplay(QTextBrowser*& _systemOutput)
  *
  * @Correction: 2022-7-24 添加函数参数修复防止线程无法正确的停止运转
 *------------------------------------------------------------------------------------------------------*/
-void ImageProcess::videoSyncFacialTranning(
-          std::atomic<bool>& _videoFlag, 
+void ImageProcess::ImageTranningSetInput(
+          std::atomic<bool>& _videoFlag,
           QTextBrowser*& _systemOutput,
-          QProgressBar* &_processBar,
-          int _displayNumber)
+          QProgressBar*& _processBar,
+          int _displayNumber
+)
 {
           while (!_videoFlag)
           {
@@ -142,14 +144,13 @@ void ImageProcess::videoSyncFacialTranning(
 
 /*------------------------------------------------------------------------------------------------------
  * 启动人脸注册运行训练程序
- * @name:  modelSetTranning
- * @function: 启动人脸注册之后，运行训练程序
- * @param:  
- *                  1. 输出窗口接口：QTextBrowser*& _systemOutput
- * 
- * @retValue: 返回训练好的特征向量字符串  std::string &
+ * @name:  ResnetModelTranning
+ * @function: 输入的训练集训练开关
+ * @param:  输出窗口接口：QTextBrowser*& _systemOutput
+ *
+ * @retValue：返回训练好的特征向量字符串  std::string &
 *------------------------------------------------------------------------------------------------------*/
-std::string& ImageProcess::modelSetTranning(QTextBrowser*& _systemOutput)
+std::string& ImageProcess::ResnetModelTranning(QTextBrowser*& _systemOutput)
 {
           this->m_copidMatrix = this->resnetTrainning();                        //计算人脸模型
           this->convertMatrixToString(this->m_copidMatrix, this->m_copiedMatrixString);
@@ -165,7 +166,7 @@ std::string& ImageProcess::modelSetTranning(QTextBrowser*& _systemOutput)
  *
  * @retValue: 返回识别是否成功  bool
 *------------------------------------------------------------------------------------------------------*/
-bool  ImageProcess::facialRecognize(const std::string _dbMatrix,QTextBrowser*& _systemOutput)
+bool  ImageProcess::FacialRecognize(const std::string _dbMatrix,QTextBrowser*& _systemOutput)
 {
           std::string stringMatrix(_dbMatrix);                                            //临时存储stringMatrix
           dlib::matrix<float, 0, 1> convertMatrix;                                      //临时存储convertMatrix
