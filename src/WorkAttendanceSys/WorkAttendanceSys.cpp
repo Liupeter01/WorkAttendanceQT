@@ -3,11 +3,13 @@
 WorkAttendanceSys::WorkAttendanceSys(QWidget* parent)
           : QDialog(parent), Interface(),
           ui_sys(new Ui::WorkAttendanceSys),
-          m_globalTimer(new QDateTime)
+          ui_admin(new Ui::WorkAttendanceAdmin),
+          m_globalTimer(new QDateTime),
+          m_qDialog(new QDialog)
 {
           ui_sys->setupUi(this);
           this->connectSlotSet();                                            //设置信号槽
-          this->initDepartmentSetting();
+          this->initDepartmentComboBox();                         //考勤系统初始化下拉框
           this->initWorkAttendanceSys();                              //初始化常驻程序
           this->initProcessBarSetting();                                 //初始化进度条
           this->initButtonSetting();                                        //禁用摁键
@@ -16,6 +18,7 @@ WorkAttendanceSys::WorkAttendanceSys(QWidget* parent)
 WorkAttendanceSys::~WorkAttendanceSys()
 {
           this->QTcloseVideo();                                            //关闭视频
+          delete m_qDialog;
           delete m_globalTimer;                                            //关闭时钟系统
           for (auto& i : this->m_threadPool) {                      //关闭其他的线程
                     if (i.joinable()) {
@@ -23,6 +26,7 @@ WorkAttendanceSys::~WorkAttendanceSys()
                     }
           }
           this->deleteSysUi();                                                //关闭UI显示系统
+          this->deleteAdminUi();                                          //关闭ADMIN的UI显示系统
 }
 
 /*------------------------WorkAttendanceSys考勤系统初始化-----------------------------*/
@@ -39,12 +43,14 @@ void WorkAttendanceSys::initButtonSetting()
           this->ui_sys->InitTranning->setDisabled(true);                        //默认禁用 开启训练按钮
           this->ui_sys->AdminOnly->setDisabled(true);                         //默认禁用 访问管理部门按钮
           this->ui_sys->TranningSetInput->setDisabled(true);                //默认禁用 注册并录入人脸按钮
+          this->ui_sys->CloseVideo->setDisabled(true);                         //默认禁用 关闭视频网络的按钮
           this->ui_sys->TakePicture->update();                                       //更新拍照摁键状态
           this->ui_sys->ConfirmTranningSet->update();                         //更新
           this->ui_sys->IgnoreTranningSet->update();                            //更新
           this->ui_sys->InitTranning->update();                                      //更新
           this->ui_sys->AdminOnly->update();                                       //更新
           this->ui_sys->TranningSetInput->update();                              //更新
+          this->ui_sys->CloseVideo->update();                                       //更新
 }
 
 /*------------------------------------------------------------------------------------------------------
@@ -64,14 +70,14 @@ void  WorkAttendanceSys::initWorkAttendanceSys()
 
 /*------------------------------------------------------------------------------------------------------
 * @WorkAttendanceSys考勤系统初始化下拉框
-* @name :  initDepartmentSetting
+* @name :   initDepartmentComboBox
 * @funtion : 初始化下拉框用于部门的选择
 *------------------------------------------------------------------------------------------------------*/
-void WorkAttendanceSys::initDepartmentSetting()
+void WorkAttendanceSys::initDepartmentComboBox()
 {
-          std::vector<std::vector<std::string>> dbRes = this->dbSelect(m_SelectDepartment);       //从数据库中获取部门
+          std::vector<std::string> dbRes = this->initDepartmentSetting();                                       //从数据库中获取部门
           for (int i = 0; i < dbRes.size(); ++i) {
-                    ui_sys->comboBox->addItem(QString::fromLocal8Bit(dbRes[i][0].c_str()));                  //将设置的部门信息加入下拉选项
+                    ui_sys->comboBox->addItem(QString::fromLocal8Bit(dbRes[i].c_str()));            //将设置的部门信息加入下拉选项
           }
 }
 
@@ -298,14 +304,28 @@ void WorkAttendanceSys::employeeCheckPremittion()
           );
 }
 
+/*------------------------WorkAttendanceSys考勤系统管理员系统-----------------------------*/
 /*------------------------------------------------------------------------------------------------------
- * 槽函数类别---访问管理部门系统
- * @name : employeeCheckPremittion
+ * 槽函数类别---登录管理部门系统设定
+ * @name : adminManagementLogin
  * @funtion : 访问管理部门系统
  *------------------------------------------------------------------------------------------------------*/
-void WorkAttendanceSys::managementAdminOnly()
+void WorkAttendanceSys::adminManagementLogin()
 {
-
+          this->ui_sys->AdminOnly->setDisabled(true);                                                               //关闭访问管理部门系统按钮
+          this->ui_sys->AdminOnly->update();
+          this->ui_sys->CloseVideo->setDisabled(true);                                                                //关闭视频和识别网络按钮
+          this->ui_sys->CloseVideo->update();
+          this->disableTranningButton();                                                                                        //禁用训练相关的按钮程序
+          this->QTAdminManagementLogin(
+                    this->ui_sys->UserID->toPlainText().toLocal8Bit().constData(),                         //UserID
+                    this->ui_sys->NameInput->toPlainText().toLocal8Bit().constData(),                   //UserName
+                    this->ui_sys->comboBox->currentText().toLocal8Bit().constData(),                    //Department
+                    this->ui_sys->AdminOnly,                                                                                     //访问管理部门系统按钮
+                    this->ui_sys->CloseVideo,                                                                                     //视频和识别网络按钮
+                    this->m_globalTimer,                                                                                             //加载全局计时器
+                    this->ui_sys->SystemStatusInfo                                                                             //输出窗口
+          );
 }
 
 /*------------------------------------------------------------------------------------------------------
@@ -337,8 +357,8 @@ void WorkAttendanceSys::connectSlotSet()
           /*查询新用户的权限是否通过*/
           QObject::connect(this->ui_sys->checkPremittion, SIGNAL(clicked()), this, SLOT(employeeCheckPremittion()));        //检查注册权限是否通过
 
-          /*开启访问管理部门系统*/
-          QObject::connect(this->ui_sys->AdminOnly, SIGNAL(clicked()), this, SLOT(managementAdminOnly()));                 //开启访问管理部门系统*
+          /*开启管理部门系统登录验证*/
+          QObject::connect(this->ui_sys->AdministerLogin, SIGNAL(clicked()), this, SLOT(adminManagementLogin()));         //启动管理部门系统登录验证
 }
 
 /*------------------------------------------------------------------------------------------------------
@@ -362,13 +382,22 @@ void WorkAttendanceSys::disableTranningButton()
 }
 
 /*------------------------------------------------------------------------------------------------------
- * 删除打开普通和ADMIN系统UI
+ * 删除打开普通UI
  * @name : deleteSysUi
- * @funtion : 删除打开普通和ADMIN系统UI
+ * @funtion : 删除打开普通UI
  *------------------------------------------------------------------------------------------------------*/
 void WorkAttendanceSys::deleteSysUi()
 {
           delete ui_sys;                                              //删除普通系统
+}
+
+/*------------------------------------------------------------------------------------------------------
+ * 删除ADMIN系统UI
+ * @name : deleteSysUi
+ * @funtion : 删除ADMIN系统UI
+ *------------------------------------------------------------------------------------------------------*/
+void WorkAttendanceSys::deleteAdminUi()
+{
           if (this->ui_admin != nullptr) {                  //删除ADMIN系统
                     delete this->ui_admin;
           }

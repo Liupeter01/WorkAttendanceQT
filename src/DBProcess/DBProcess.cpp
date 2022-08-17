@@ -10,7 +10,23 @@ DBProcess::~DBProcess()
           
 }
 
-/*------------------------WorkAttendanceSys考勤系统初始化-----------------------------*/
+/*------------------------WorkAttendanceSys考勤系统初始化--------------------------------*/
+/*------------------------------------------------------------------------------------------------------
+ * @DBProcess考勤系统系统部门设定initDepartmentSetting
+ * @name :  initDepartmentSetting
+ * @funtion : 初始化系统部门设定DepartmentSetting
+ * @RetValue : 返回部门的信息 std::vector<std::string>
+ *------------------------------------------------------------------------------------------------------*/
+std::vector<std::string> DBProcess::initDepartmentSetting()
+{
+          std::vector<std::vector<std::string>> dbRes = this->dbSelect(m_SelectDepartment);       //从数据库中获取部门
+          std::vector<std::string> _departmentSetting;                                                                       //部门信息数据集
+          for (int i = 0; i < dbRes.size(); ++i) {
+                    _departmentSetting.push_back(dbRes[i][0].c_str());
+          }
+          return _departmentSetting;
+}
+
 /*------------------------------------------------------------------------------------------------------
 * @WorkAttendanceSys考勤系统训练集数量设定TranningSetting
 * @name :  initTranningSetting
@@ -122,6 +138,33 @@ bool DBProcess::updateFaceRecord2DB(
           return true;
 }
 
+/*---------------------WorkAttendanceSys考勤系统考勤信息操作-------------------------*/
+/*------------------------------------------------------------------------------------------------------
+* 将员工是否在今日存在重复的打卡记录
+* @name: readDuplicateRecordFromDB
+* @param 1. 员工号： const  std::string& employeeNumber
+*                2. 部门 ：  const std::string& _department
+*                3. 选择的签到表： const AttendanceTable _table
+*                4.全局时钟系统的输入 QDateTime*& _timer
+* 
+*@retValue: 存在：返回为true 
+                     不存在：返回为false
+*------------------------------------------------------------------------------------------------------*/
+bool  DBProcess::readDuplicateRecordFromDB(
+          const  std::string& employeeNumber,
+          const std::string& _department,
+          const AttendanceTable _table,
+          QDateTime*& _timer
+)
+{
+          std::vector<std::vector<std::string>> isExist = this->dbSelect(
+                    (_table == AttendanceTable::ATTENDANCE ? this->m_SelectDuplicateAttendence : this->m_SelectDuplicateSignOut) +
+                    employeeNumber + " AND Department = " + "\"" + _department + "\"" +
+                    " AND MorningshiftTime LIKE " + "\"" + _timer->currentDateTime().toString("yyyy-MM-dd").toLocal8Bit().constData() + " %" + "\""
+          );
+          return isExist.size() ? true : false;
+}
+
 /*------------------------------------------------------------------------------------------------------
 * 将员工上班打卡的信息记录在数据库中
 * @name: storeAttendanceRecord2DB
@@ -219,4 +262,23 @@ std::string DBProcess::checkPremitRecordFromDB(
                     return std::string();                                                                                       
           }
           return std::string(isPriviledgePremit[0][0].c_str());
+}
+
+/*---------------------WorkAttendanceSys考勤系统管理员操作---------------------*/
+/*------------------------------------------------------------------------------------------------------
+* 查询系统管理员的权限
+* @name: readAdminPriviledgeFromDB
+* @param 1. 员工号： const  std::string& employeeNumber
+*                2. 姓名 ：  const std::string& _name
+*                3. 部门 ：  const std::string& _department
+*
+* @retValue : 返回是否查到 bool
+*------------------------------------------------------------------------------------------------------*/
+bool DBProcess::readAdminPriviledgeFromDB(
+          const  std::string& employeeNumber,
+          const std::string& _userName,
+          const std::string& _department
+)
+{
+          return true;
 }

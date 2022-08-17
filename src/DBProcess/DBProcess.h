@@ -1,6 +1,11 @@
 #include<QtCore/qdatetime.h>
 #include"MYSQL.h"
 
+enum class AttendanceTable{
+          ATTENDANCE,                             //签到表
+          SIGNOUT                                      //签退表
+};
+
 class DBProcess : public MySQL {
 public:
           DBProcess();
@@ -8,6 +13,14 @@ public:
           
 protected:
           /*------------------------WorkAttendanceSys考勤系统初始化-----------------------------*/
+         /*------------------------------------------------------------------------------------------------------
+          * @DBProcess考勤系统系统部门设定initDepartmentSetting
+          * @name :  initDepartmentSetting
+          * @funtion : 初始化系统部门设定DepartmentSetting
+          * @RetValue : 返回部门的信息 std::vector<std::string>
+          *------------------------------------------------------------------------------------------------------*/
+          std::vector<std::string> initDepartmentSetting();
+
           /*------------------------------------------------------------------------------------------------------
           * @DBProcess考勤系统训练集数量设定TranningSetting
           * @name :  initTranningSetting
@@ -86,6 +99,22 @@ protected:
 
           /*---------------------WorkAttendanceSys考勤系统考勤信息操作-------------------------*/
           /*------------------------------------------------------------------------------------------------------
+          * 将员工是否在今日存在重复的打卡记录
+          * @name: readDuplicateRecordFromDB
+          * @param 1. 员工号： const  std::string& employeeNumber
+          *                2. 部门 ：  const std::string& _department
+          *                3. 选择的签到表： const AttendanceTable _table
+          *                4.全局时钟系统的输入 QDateTime*& _timer
+          *
+          *------------------------------------------------------------------------------------------------------*/
+          bool  readDuplicateRecordFromDB(
+                    const  std::string& employeeNumber,
+                    const std::string& _department,
+                    const AttendanceTable _table,
+                    QDateTime*& _timer
+          );
+
+          /*------------------------------------------------------------------------------------------------------
           * 将员工上班打卡的信息记录在数据库中
           * @name: storeAttendanceRecord2DB
           * @param 1. 员工号： const  std::string& employeeNumber
@@ -150,8 +179,23 @@ protected:
                     const std::string& _department
           );
 
+          /*---------------------WorkAttendanceSys考勤系统管理员操作---------------------*/
+          /*------------------------------------------------------------------------------------------------------
+          * 查询系统管理员的权限
+          * @name: readAdminPriviledgeFromDB
+          * @param 1. 员工号： const  std::string& employeeNumber
+          *                2. 姓名 ：  const std::string& _name
+          *                3. 部门 ：  const std::string& _department
+          *
+          * @retValue : 返回是否查到 bool
+          *------------------------------------------------------------------------------------------------------*/
+          bool readAdminPriviledgeFromDB(
+                    const  std::string& employeeNumber,
+                    const std::string& _userName,
+                    const std::string& _department
+          );
+
 private:
-          /*------------------DBPROCESS 的 MYSQL操作指令-------------------------*/
           /*-------------------------------MYSQL INSERT指令-----------------------------*/
           const std::string m_Insert_table_employee = "INSERT INTO employee VALUES(";
           const std::string m_Insert_table_facematrixstorge = "INSERT INTO facematrixstorge  VALUES(";
@@ -160,6 +204,7 @@ private:
           const std::string m_Insert_table_askpremit = "INSERT INTO askpremit VALUES(";
 
           /*-------------------------------MYSQL SELECT指令-----------------------------*/
+          const std::string m_SelectDepartment = "SELECT Department FROM departmenttable";                    //读取考勤系统的部门设定
           const std::string m_SelectTrainningSetting = "SELECT TrainningSetting FROM admintable";             //TrainningSetting的设定
           const std::string m_SelectTrainningSimilarity = "SELECT TrainningSimilarity FROM admintable";   //TrainningSimilarity的设定
           const std::string m_SelectMorningShiftTime = "SELECT MorningShiftTime FROM admintable";         //MorningShiftTime的设定
@@ -169,6 +214,11 @@ private:
           const std::string m_SelectEmployeeString = "SELECT UserName FROM employee WHERE UserID = ";        //搜索人名矩阵
 
           const std::string m_SelectAskpremit = "SELECT AuthoritySet FROM askpremit WHERE UserID = ";              //搜索审批的权限
+
+          const std::string m_SelectDuplicateAttendence = "SELECT * FROM  attendence WHERE UserID = ";            //搜索今日的重复签到
+          const std::string m_SelectDuplicateSignOut = "SELECT * FROM signout WHERE UserID = ";                       //搜索今日的重复签退
+
+          //const std::string m_SelectAdminTablePrmittion = "SELECT UserID FROM admintable WHERE "
 
 private:
           IN std::string m_connSetting;                     //数据连接参数

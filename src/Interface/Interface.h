@@ -225,6 +225,29 @@ public:
                     QTextBrowser*& _systemOutput
           );
 
+          /*------------------------------------------------------------------------------------------------------
+           *  Interface类为QTWidget层管理员账户权限认证系统
+           * @name: QTAdminManagementLogin
+           * @function：管理员账户权限认证系统
+           * @param:
+           *                  1. 用户ID的输入  const std::string& _userID
+           *                  2. 用户姓名的输入    const std::string& _userName
+           *                  3. 部门的输入         const std::string & _department
+           *                  4. 访问管理部门系统的开关启用 : QPushButton*& _adminUI
+           *                  5. 关闭视频和识别网络的开关启用 : QPushButton*& _closeVideo
+           *                  6.全局时钟系统的输入 QDateTime*& _timer
+           *                  7. 输出窗口接口：QTextBrowser*& _systemOutput
+          *------------------------------------------------------------------------------------------------------*/
+          void QTAdminManagementLogin(
+                    const std::string& _userID,
+                    const std::string& _userName,
+                    const std::string& _department,
+                    QPushButton*& _adminUI,
+                    QPushButton*& _closeVideo,
+                    QDateTime*& _timer,
+                    QTextBrowser*& _systemOutput
+          );
+
 protected:
           std::atomic<bool> m_videoFlag = false;                      //视频开关
 };

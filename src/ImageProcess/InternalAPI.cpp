@@ -186,8 +186,8 @@ bool  ImageProcess::FacialRecognize(const std::string _dbMatrix,QTextBrowser*& _
           }();
           this->resetRectSyncStatus();                                                                                                                               //取消人脸位置的就绪状态
           this->m_faceLandmark = this->getFaceLandmark(this->m_copiedImage, this->m_copiedfaceRect);            //获取特征点的数据结构
-          return this->compareFaceMatrix(
-                    convertMatrix,                                                                                               //返回人脸矩阵是否满足参数条件
+          return this->compareFaceMatrix(                                                                                                                       //对比人脸矩阵是否匹配 
+                    convertMatrix,                                                                                                                                           //返回人脸矩阵是否满足参数条件
                     this->resnetEncodingCalc(this->m_copiedImage, this->m_faceLandmark)
           );
 }
