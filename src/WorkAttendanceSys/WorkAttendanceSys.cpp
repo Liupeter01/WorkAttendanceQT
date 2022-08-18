@@ -4,11 +4,14 @@ WorkAttendanceSys::WorkAttendanceSys(QWidget* parent)
           : QDialog(parent), Interface(),
           ui_sys(new Ui::WorkAttendanceSys),
           ui_admin(new Ui::WorkAttendanceAdmin),
-          m_globalTimer(new QDateTime),
-          m_qDialog(new QDialog)
+          m_globalTimer(new QDateTime)
 {
           ui_sys->setupUi(this);
-          this->connectSlotSet();                                            //设置信号槽
+          setWindowFlags(Qt::WindowMinimizeButtonHint | Qt::WindowCloseButtonHint); // 设置最大化关闭
+          setFixedSize(1180, 744);                                            // 禁止改变窗口大小
+          this->initAdminUi();                                                  //初始化ADMIN UI层
+          this->initSysConnectSlot();                                      //设置Sys信号槽
+          this->initAdminConnectSlot();                                 //设置Admin信号槽
           this->initDepartmentComboBox();                         //考勤系统初始化下拉框
           this->initWorkAttendanceSys();                              //初始化常驻程序
           this->initProcessBarSetting();                                 //初始化进度条
@@ -25,8 +28,10 @@ WorkAttendanceSys::~WorkAttendanceSys()
                               i.join();
                     }
           }
+          if (this->ui_admin != nullptr) {                             //删除ADMIN UI系统
+                    delete this->ui_admin;
+          }
           this->deleteSysUi();                                                //关闭UI显示系统
-          this->deleteAdminUi();                                          //关闭ADMIN的UI显示系统
 }
 
 /*------------------------WorkAttendanceSys考勤系统初始化-----------------------------*/
@@ -77,7 +82,8 @@ void WorkAttendanceSys::initDepartmentComboBox()
 {
           std::vector<std::string> dbRes = this->initDepartmentSetting();                                       //从数据库中获取部门
           for (int i = 0; i < dbRes.size(); ++i) {
-                    ui_sys->comboBox->addItem(QString::fromLocal8Bit(dbRes[i].c_str()));            //将设置的部门信息加入下拉选项
+                    this->ui_sys->comboBox->addItem(QString::fromLocal8Bit(dbRes[i].c_str()));            //将设置的部门信息加入下拉选项
+                    this->ui_admin->comboBox->addItem(QString::fromLocal8Bit(dbRes[i].c_str()));      //将设置的部门信息加入下拉选项
           }
 }
 
@@ -306,34 +312,102 @@ void WorkAttendanceSys::employeeCheckPremittion()
 
 /*------------------------WorkAttendanceSys考勤系统管理员系统-----------------------------*/
 /*------------------------------------------------------------------------------------------------------
- * 槽函数类别---登录管理部门系统设定
+ * 槽函数类别---登录管理部门系统身份验证函数
  * @name : adminManagementLogin
- * @funtion : 访问管理部门系统
+ * @funtion : 登录管理部门的权限验证系统
+ * @Correction: 2022-8-18 该函数需要设定为槽函数
  *------------------------------------------------------------------------------------------------------*/
 void WorkAttendanceSys::adminManagementLogin()
 {
-          this->ui_sys->AdminOnly->setDisabled(true);                                                               //关闭访问管理部门系统按钮
-          this->ui_sys->AdminOnly->update();
-          this->ui_sys->CloseVideo->setDisabled(true);                                                                //关闭视频和识别网络按钮
-          this->ui_sys->CloseVideo->update();
+          [=]() {
+                    this->ui_sys->SignIn->setDisabled(true);                                                                       //禁用人脸签到按钮
+                    this->ui_sys->Logout->setDisabled(true);                                                                      //禁用人脸签退按钮
+                    this->ui_sys->AciqurePremit->setDisabled(true);                                                         //禁用新员工申请权限按钮
+                    this->ui_sys->checkPremittion->setDisabled(true);                                                       //禁用查询权限按钮
+                    this->ui_sys->SignIn->update();                                                                                      //更新
+                    this->ui_sys->Logout->update();                                                                                     //更新
+                    this->ui_sys->AciqurePremit->update();                                                                         //更新
+                    this->ui_sys->checkPremittion->update();                                                                       //更新
+          };
+
           this->disableTranningButton();                                                                                        //禁用训练相关的按钮程序
           this->QTAdminManagementLogin(
                     this->ui_sys->UserID->toPlainText().toLocal8Bit().constData(),                         //UserID
                     this->ui_sys->NameInput->toPlainText().toLocal8Bit().constData(),                   //UserName
                     this->ui_sys->comboBox->currentText().toLocal8Bit().constData(),                    //Department
+                    this->ui_sys->AdministerLogin,                                                                             //登录管理部门系统按钮
                     this->ui_sys->AdminOnly,                                                                                     //访问管理部门系统按钮
                     this->ui_sys->CloseVideo,                                                                                     //视频和识别网络按钮
                     this->m_globalTimer,                                                                                             //加载全局计时器
                     this->ui_sys->SystemStatusInfo                                                                             //输出窗口
           );
+          [=]() {
+                    this->ui_sys->AdministerLogin->setEnabled(true);                                                        //启用登录管理部门系统
+                    this->ui_sys->SignIn->setEnabled(true);                                                                       //禁用人脸签到按钮
+                    this->ui_sys->Logout->setEnabled(true);                                                                      //禁用人脸签退按钮
+                    this->ui_sys->AciqurePremit->setEnabled(true);                                                         //禁用新员工申请权限按钮
+                    this->ui_sys->checkPremittion->setEnabled(true);                                                       //禁用查询权限按钮
+                    this->ui_sys->AdministerLogin->update();                                                                     //更新
+                    this->ui_sys->SignIn->update();                                                                                      //更新
+                    this->ui_sys->Logout->update();                                                                                     //更新
+                    this->ui_sys->AciqurePremit->update();                                                                         //更新
+                    this->ui_sys->checkPremittion->update();                                                                       //更新
+          };
 }
 
 /*------------------------------------------------------------------------------------------------------
- * 信号槽的设置程序
- * @name : connectSlotSet
+ * 槽函数类别---登录管理部门系统的UI界面
+ * @name : adminManagementLogin
+ * @funtion : 访问管理部门系统UI界面
+ * @Correction: 2022-8-18 该函数需要设定为槽函数
+ *------------------------------------------------------------------------------------------------------*/
+void WorkAttendanceSys::adminManagementUI()
+{
+          this->initAdminUi();                                                                        //用于防止ADMIN UI重复打开所导致的问题
+          m_qDialog->show();                                                                        //显示QDialog的窗口
+          this->ui_sys->AdminOnly->setDisabled(true);                              //禁用 访问管理部门按钮
+          this->ui_sys->CloseVideo->setDisabled(true);                               //禁用 关闭视频网络的按钮
+          this->ui_sys->AdminOnly->update();                                             //更新 访问管理部门按钮
+          this->ui_sys->CloseVideo->update();                                              //更新 关闭视频网络的按钮
+}
+
+/*---------------------WorkAttendanceAdmin管理员系统按钮槽函数----------------------*/
+/*------------------------------------------------------------------------------------------------------
+ * 槽函数类别---显示相应的统计信息
+ * @name : adminManagementLogin
+ * @funtion : 显示相应的统计信息打卡记录和图表显示
+ *------------------------------------------------------------------------------------------------------*/
+void WorkAttendanceSys::displayStatisticsInfo()
+{
+          this->QTAdminStatisticsInterface(
+                    this->ui_sys->UserID->toPlainText().toLocal8Bit().constData(),                         //UserID
+                    this->ui_sys->NameInput->toPlainText().toLocal8Bit().constData(),                   //UserName
+                    this->ui_sys->comboBox->currentText().toLocal8Bit().constData(),                    //Department
+                    this->ui_admin->AttendenceTable,                                                                        //签到记录AttendenceTable
+                    this->ui_admin->SignOutTable,                                                                              //签退记录SignOutTable
+                    this->ui_admin->LeftTime->dateTime(),                                                               //时间的左界限
+                    this->ui_admin->RightTime->dateTime(),                                                              //时间的右界限
+                    this->m_globalTimer,                                                                                             //加载全局计时器
+                    this->ui_admin->SystemStatusInfo                                                                        //输出窗口
+          );
+}
+
+/*------------------------------------------------------------------------------------------------------
+ * 槽函数类别---关闭WorkAttendanceAdmin系统的UI系统
+ * @name : closeAdminUI
+ * @funtion : 关闭WorkAttendanceAdmin系统的UI系统
+ *------------------------------------------------------------------------------------------------------*/
+void WorkAttendanceSys::closeAdminUI()
+{
+          this->deleteAdminUi();
+}
+
+/*------------------------------------------------------------------------------------------------------
+ * WorkAttendanceSys信号槽的设置程序
+ * @name : initSysConnectSlot
  * @funtion : 设置空间和函数的捆绑关系
  *------------------------------------------------------------------------------------------------------*/
-void WorkAttendanceSys::connectSlotSet()
+void WorkAttendanceSys::initSysConnectSlot()
 {
           /*当经过管理人员审批之后开启积累训练的进度条*/
           QObject::connect(this->ui_sys->TranningSetInput, SIGNAL(clicked()), this, SLOT(tranningSetInputFromVideo()));    //人脸训练功能模块
@@ -359,6 +433,21 @@ void WorkAttendanceSys::connectSlotSet()
 
           /*开启管理部门系统登录验证*/
           QObject::connect(this->ui_sys->AdministerLogin, SIGNAL(clicked()), this, SLOT(adminManagementLogin()));         //启动管理部门系统登录验证
+          QObject::connect(this->ui_sys->AdminOnly, SIGNAL(clicked()), this, SLOT(adminManagementUI()));                      //开启管理员页面
+}
+
+/*------------------------------------------------------------------------------------------------------
+ * WorkAttendanceAdmin信号槽的设置程序
+ * @name : initSysConnectSlot
+ * @funtion : 设置空间和函数的捆绑关系
+ *------------------------------------------------------------------------------------------------------*/
+void WorkAttendanceSys::initAdminConnectSlot()
+{
+          /*显示ADMIN系统的统计信息---包含打卡记录和图表*/
+          QObject::connect(this->ui_admin->DisplayStatistics, SIGNAL(clicked()), this, SLOT(displayStatisticsInfo()));          //初始化显示信息事件
+
+           /*ADMIN系统的退出功能绑定*/
+          QObject::connect(this->ui_admin->QuitSys, SIGNAL(clicked()), this, SLOT(closeAdminUI()));                                 //ADMIN系统的退出功能
 }
 
 /*------------------------------------------------------------------------------------------------------
@@ -398,7 +487,24 @@ void WorkAttendanceSys::deleteSysUi()
  *------------------------------------------------------------------------------------------------------*/
 void WorkAttendanceSys::deleteAdminUi()
 {
-          if (this->ui_admin != nullptr) {                  //删除ADMIN系统
-                    delete this->ui_admin;
+          if (this->m_qDialog != nullptr) {                              //删除QDialog类型
+                    delete this->m_qDialog;
+                    this->m_qDialog = nullptr;                             //赋值初始值准备下次分配
+          }
+}
+
+/*------------------------------------------------------------------------------------------------------
+ * 初始化ADMIN系统UI
+ * @name : deleteSysUi
+ * @funtion : 初始化ADMIN系统UI(或者重新分配UI)
+ *------------------------------------------------------------------------------------------------------*/
+void WorkAttendanceSys::initAdminUi()
+{
+          if (this->m_qDialog == nullptr) {                                                                       //当前的QDialog被释放 
+                    this->m_qDialog = new QDialog();                                                           //重新分配内存
+                    this->ui_admin->setupUi(m_qDialog);                                                       //为QDialog加载真正的UI文件
+                    this->m_qDialog->setWindowFlags(Qt::WindowMinimizeButtonHint); // 设置禁止最大化
+                    this->m_qDialog->setFixedSize(1180, 744);                                            // 禁止改变窗口大小
+                    this->initAdminConnectSlot();                                                                 //重置WorkAttendanceAdmin信号槽的设置程序
           }
 }

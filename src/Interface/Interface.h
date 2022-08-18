@@ -35,6 +35,40 @@ public:
           }
 };
 
+/*------------------------------------------------------------------------------------------------------
+ * 无效的QRadio输入或者多重QRadio的输入
+ * @name:class ThrowInvalidQRadio
+* @function：无效的QRadio或多重QRadio输入
+*------------------------------------------------------------------------------------------------------*/
+class ThrowInvalidQRadio{
+public:
+          /*------------------------------------------------------------------------------------------------------
+          * 无效的QRadio或多重QRadio输入
+          * @name: what
+          * @RetValue:  std::string返回字符串
+          *------------------------------------------------------------------------------------------------------*/
+          std::string what() {
+                    return std::string("无效的QRadio或多重QRadio输入");
+          }
+};
+
+/*------------------------------------------------------------------------------------------------------
+ * 输入的DateTime无效
+ * @name:class InvalidDateTime 
+* @function：左边的日期大于右边的日期
+*------------------------------------------------------------------------------------------------------*/
+class InvalidDateTime {
+public:
+          /*------------------------------------------------------------------------------------------------------
+          * 无效的QRadio或多重QRadio输入
+          * @name: what
+          * @RetValue:  std::string返回字符串
+          *------------------------------------------------------------------------------------------------------*/
+          std::string what() {
+                    return std::string("左边的日期大于右边的日期");
+          }
+};
+
 class Interface :public DBProcess, public ImageProcess {
 public:
           Interface();
@@ -67,7 +101,7 @@ public:
                     QDateTime*& _timer
           );
 
-          /*-------------------------------QTWidget层对外的操作接口----------------------------------*/
+          /*-----------------------QTWidget层WorkAttendenceSys的操作接口------------------------*/
           /*------------------------------------------------------------------------------------------------------
            *  Interface类为QTWidget层提供的视频关闭函数
            * @name: QTcloseVideo
@@ -233,17 +267,47 @@ public:
            *                  1. 用户ID的输入  const std::string& _userID
            *                  2. 用户姓名的输入    const std::string& _userName
            *                  3. 部门的输入         const std::string & _department
-           *                  4. 访问管理部门系统的开关启用 : QPushButton*& _adminUI
-           *                  5. 关闭视频和识别网络的开关启用 : QPushButton*& _closeVideo
-           *                  6.全局时钟系统的输入 QDateTime*& _timer
-           *                  7. 输出窗口接口：QTextBrowser*& _systemOutput
+           *                  4. 登录管理部门系统  QPushButton*& _AdministerLogin,
+           *                  5. 访问管理部门系统的开关启用 : QPushButton*& _adminUI
+           *                  6. 关闭视频和识别网络的开关启用 : QPushButton*& _closeVideo
+           *                  7.全局时钟系统的输入 QDateTime*& _timer
+           *                  8. 输出窗口接口：QTextBrowser*& _systemOutput
           *------------------------------------------------------------------------------------------------------*/
           void QTAdminManagementLogin(
                     const std::string& _userID,
                     const std::string& _userName,
                     const std::string& _department,
+                    QPushButton*& _AdministerLogin,
                     QPushButton*& _adminUI,
                     QPushButton*& _closeVideo,
+                    QDateTime*& _timer,
+                    QTextBrowser*& _systemOutput
+          );
+
+          /*---------------------QTWidget层WorkAttendenceAdmin的操作接口----------------------*/
+          /*------------------------------------------------------------------------------------------------------
+           *  Interface类为QTWidget层管理员账户提供的记录查询接口
+           * @name: QTAdminStatisticsInterface
+           * @function：管理员账户提供的记录查询接口
+           * @param:
+           *                  1. 用户ID的输入  const std::string& _userID
+           *                  2. 用户姓名的输入    const std::string& _userName
+           *                  3. 部门的输入         const std::string & _department
+           *                  4. 签到按钮: QRadioButton *& _attdenceTable
+           *                  5. 签退按钮: QRadioButton*& _signoutTable
+           *                  6. 左部输入时钟 :   const QDateTime _lefttimer
+           *                  7. 右部输入时钟： const QDateTime _righttimer
+           *                  8.全局时钟系统的输入 QDateTime*& _timer
+           *                  9. 输出窗口接口：QTextBrowser*& _systemOutput
+          *------------------------------------------------------------------------------------------------------*/
+          void QTAdminStatisticsInterface(
+                    const std::string& _userID,
+                    const std::string& _userName,
+                    const std::string& _department,
+                    QRadioButton*& _attdenceTable,
+                    QRadioButton*& _signoutTable,
+                    const QDateTime _lefttimer,
+                    const QDateTime _righttimer,
                     QDateTime*& _timer,
                     QTextBrowser*& _systemOutput
           );

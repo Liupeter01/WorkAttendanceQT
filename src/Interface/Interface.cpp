@@ -55,7 +55,7 @@ void Interface::QTsetLcdTimer(
           }
 }
 
-/*-------------------------------QTWidget层对外的操作接口----------------------------------*/
+/*----------------------QTWidget层WorkAttendenceSys的操作接口-------------------------*/
 /*------------------------------------------------------------------------------------------------------
  *  Interface类为QTWidget层提供的视频关闭函数
  * @name: QTcloseVideo
@@ -411,15 +411,17 @@ void Interface::QTEmployeeCheckPremittion(
  *                  1. 用户ID的输入  const std::string& _userID
  *                  2. 用户姓名的输入    const std::string& _userName
  *                  3. 部门的输入         const std::string & _department
- *                  4. 访问管理部门系统的开关启用 : QPushButton*& _adminUI
- *                  5. 关闭视频和识别网络的开关启用 : QPushButton*& _closeVideo
- *                  6.全局时钟系统的输入 QDateTime*& _timer
- *                  7. 输出窗口接口：QTextBrowser*& _systemOutput
+ *                  4. 登录管理部门系统  QPushButton*& _AdministerLogin,
+ *                  5. 访问管理部门系统的开关启用 : QPushButton*& _adminUI
+ *                  6. 关闭视频和识别网络的开关启用 : QPushButton*& _closeVideo
+ *                  7.全局时钟系统的输入 QDateTime*& _timer
+ *                  8. 输出窗口接口：QTextBrowser*& _systemOutput
 *------------------------------------------------------------------------------------------------------*/
 void Interface::QTAdminManagementLogin(
           const std::string& _userID,
           const std::string& _userName,
           const std::string& _department,
+          QPushButton*& _AdministerLogin,
           QPushButton*& _adminUI,
           QPushButton*& _closeVideo,
           QDateTime*& _timer,
@@ -441,8 +443,10 @@ void Interface::QTAdminManagementLogin(
                                         QString::fromLocal8Bit("管理员") +QString::fromLocal8Bit(_userName.c_str()) +
                                         QString::fromLocal8Bit("登录成功! 可以访问管理部门系统\n")
                               );
+                              _AdministerLogin->setDisabled(true);         //禁用登录管理部门系统
                               _adminUI->setEnabled(true);                       //登陆成功允许访问管理UI界面
                               _closeVideo->setEnabled(true);                    //允许使用管理员功能
+                              _AdministerLogin->update();                       //禁用
                               _adminUI->update();                                     //禁用
                               _closeVideo->update();                                 //禁用
                     }
@@ -468,6 +472,57 @@ void Interface::QTAdminManagementLogin(
                     _systemOutput->insertPlainText(
                               QString::fromLocal8Bit("[") + _timer->currentDateTime().toString("yyyy-MM-dd hh:mm:ss") + QString::fromLocal8Bit("]:") +
                               QString::fromLocal8Bit(_userName.c_str()) + QString::fromLocal8Bit("系统中没有查询到当前管理员信息! \n")
+                    );
+          }
+}
+
+/*---------------------QTWidget层WorkAttendenceAdmin的操作接口----------------------*/
+/*------------------------------------------------------------------------------------------------------
+ *  Interface类为QTWidget层管理员账户提供的记录查询接口
+ * @name: QTAdminStatisticsInterface
+ * @function：管理员账户提供的记录查询接口
+ * @param:
+ *                  1. 用户ID的输入  const std::string& _userID
+ *                  2. 用户姓名的输入    const std::string& _userName
+ *                  3. 部门的输入         const std::string & _department
+ *                  4. 签到按钮: QRadioButton *& _attdenceTable
+ *                  5. 签退按钮: QRadioButton*& _signoutTable
+ *                  6. 左部输入时钟 :   const QDateTime _lefttimer
+ *                  7. 右部输入时钟： const QDateTime _righttimer
+ *                  8.全局时钟系统的输入 QDateTime*& _timer
+ *                  9. 输出窗口接口：QTextBrowser*& _systemOutput
+*------------------------------------------------------------------------------------------------------*/
+void Interface::QTAdminStatisticsInterface(
+          const std::string& _userID,
+          const std::string& _userName,
+          const std::string& _department,
+          QRadioButton*& _attdenceTable,
+          QRadioButton*& _signoutTable,
+          const QDateTime _lefttimer,
+          const QDateTime _righttimer,
+          QDateTime*& _timer,
+          QTextBrowser*& _systemOutput
+)
+{
+          try
+          {
+                    if (_attdenceTable->isChecked() && _signoutTable->isChecked()) {      //检查单选按钮是否都被勾选
+                              throw ThrowInvalidQRadio();
+                    }
+                    if (_lefttimer > _righttimer){                                                                 //左边的日期大于右边的日期
+                              throw   InvalidDateTime();
+                    }
+          }
+          catch (const ThrowInvalidQRadio&) {
+                    _systemOutput->insertPlainText(
+                              QString::fromLocal8Bit("[") + _timer->currentDateTime().toString("yyyy-MM-dd hh:mm:ss") + QString::fromLocal8Bit("]:") +
+                              QString::fromLocal8Bit("当前单选框选择非法，请重新操作\n")
+                    );
+          }
+          catch (const InvalidDateTime&) {
+                    _systemOutput->insertPlainText(
+                              QString::fromLocal8Bit("[") + _timer->currentDateTime().toString("yyyy-MM-dd hh:mm:ss") + QString::fromLocal8Bit("]:") +
+                              QString::fromLocal8Bit("当前时间范围输入非法，请重新操作\n")
                     );
           }
 }
