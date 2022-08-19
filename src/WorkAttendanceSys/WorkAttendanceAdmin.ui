@@ -33,7 +33,7 @@
    <property name="title">
     <string>打卡记录：</string>
    </property>
-   <widget class="QTableView" name="tableView_2">
+   <widget class="QTableView" name="AttendenceRecord">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -98,8 +98,8 @@
    <widget class="QPushButton" name="DisplayStatistics">
     <property name="geometry">
      <rect>
-      <x>360</x>
-      <y>20</y>
+      <x>350</x>
+      <y>30</y>
       <width>141</width>
       <height>101</height>
      </rect>
@@ -111,7 +111,7 @@
    <widget class="QDateTimeEdit" name="LeftTime">
     <property name="geometry">
      <rect>
-      <x>90</x>
+      <x>70</x>
       <y>140</y>
       <width>151</width>
       <height>31</height>
@@ -134,7 +134,7 @@
    <widget class="QDateTimeEdit" name="RightTime">
     <property name="geometry">
      <rect>
-      <x>270</x>
+      <x>240</x>
       <y>140</y>
       <width>151</width>
       <height>31</height>
@@ -157,9 +157,9 @@
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>250</x>
+      <x>223</x>
       <y>140</y>
-      <width>54</width>
+      <width>61</width>
       <height>31</height>
      </rect>
     </property>
@@ -177,7 +177,7 @@
    <widget class="QLabel" name="id_label">
     <property name="geometry">
      <rect>
-      <x>10</x>
+      <x>0</x>
       <y>140</y>
       <width>71</width>
       <height>31</height>
@@ -197,7 +197,7 @@
    <widget class="QComboBox" name="comboBox">
     <property name="geometry">
      <rect>
-      <x>90</x>
+      <x>70</x>
       <y>100</y>
       <width>151</width>
       <height>31</height>
@@ -213,7 +213,7 @@
    <widget class="QTextEdit" name="NameInput">
     <property name="geometry">
      <rect>
-      <x>90</x>
+      <x>70</x>
       <y>60</y>
       <width>151</width>
       <height>31</height>
@@ -229,7 +229,7 @@
    <widget class="QLabel" name="id_label_2">
     <property name="geometry">
      <rect>
-      <x>30</x>
+      <x>20</x>
       <y>20</y>
       <width>54</width>
       <height>31</height>
@@ -249,7 +249,7 @@
    <widget class="QTextEdit" name="UserID">
     <property name="geometry">
      <rect>
-      <x>90</x>
+      <x>70</x>
       <y>20</y>
       <width>151</width>
       <height>31</height>
@@ -265,7 +265,7 @@
    <widget class="QLabel" name="name_label">
     <property name="geometry">
      <rect>
-      <x>40</x>
+      <x>30</x>
       <y>60</y>
       <width>54</width>
       <height>31</height>
@@ -285,7 +285,7 @@
    <widget class="QLabel" name="label_2">
     <property name="geometry">
      <rect>
-      <x>40</x>
+      <x>30</x>
       <y>100</y>
       <width>54</width>
       <height>31</height>
@@ -304,8 +304,8 @@
    <widget class="QRadioButton" name="SignOutTable">
     <property name="geometry">
      <rect>
-      <x>260</x>
-      <y>90</y>
+      <x>240</x>
+      <y>100</y>
       <width>89</width>
       <height>16</height>
      </rect>
@@ -317,7 +317,7 @@
    <widget class="QRadioButton" name="AttendenceTable">
     <property name="geometry">
      <rect>
-      <x>260</x>
+      <x>240</x>
       <y>50</y>
       <width>89</width>
       <height>16</height>
@@ -327,14 +327,27 @@
      <string>签到记录</string>
     </property>
    </widget>
+   <widget class="QCheckBox" name="isTimeEnabled">
+    <property name="geometry">
+     <rect>
+      <x>400</x>
+      <y>150</y>
+      <width>111</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>是否选择时间</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QPushButton" name="QuitSys">
    <property name="geometry">
     <rect>
-     <x>1020</x>
-     <y>630</y>
-     <width>141</width>
-     <height>101</height>
+     <x>660</x>
+     <y>680</y>
+     <width>501</width>
+     <height>41</height>
     </rect>
    </property>
    <property name="text">
@@ -345,9 +358,9 @@
    <property name="geometry">
     <rect>
      <x>650</x>
-     <y>200</y>
+     <y>500</y>
      <width>521</width>
-     <height>181</height>
+     <height>151</height>
     </rect>
    </property>
    <property name="font">
@@ -367,11 +380,296 @@
       <x>10</x>
       <y>20</y>
       <width>501</width>
-      <height>151</height>
+      <height>121</height>
      </rect>
     </property>
    </widget>
   </widget>
+  <widget class="QGroupBox" name="groupBox_4">
+   <property name="geometry">
+    <rect>
+     <x>650</x>
+     <y>200</y>
+     <width>521</width>
+     <height>101</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Times New Roman</family>
+     <pointsize>10</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="title">
+    <string>签到系统参数设置：</string>
+   </property>
+   <widget class="QPushButton" name="CommitParam">
+    <property name="geometry">
+     <rect>
+      <x>410</x>
+      <y>20</y>
+      <width>101</width>
+      <height>71</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>设置系统参数</string>
+    </property>
+   </widget>
+   <widget class="QDateTimeEdit" name="LateTimeSet">
+    <property name="geometry">
+     <rect>
+      <x>290</x>
+      <y>20</y>
+      <width>111</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="dateTime">
+     <datetime>
+      <hour>9</hour>
+      <minute>0</minute>
+      <second>0</second>
+      <year>2020</year>
+      <month>1</month>
+      <day>1</day>
+     </datetime>
+    </property>
+    <property name="displayFormat">
+     <string>hh:mm:ss</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="id_label_3">
+    <property name="geometry">
+     <rect>
+      <x>220</x>
+      <y>20</y>
+      <width>71</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Times New Roman</family>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>迟到时间：</string>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="TranningSimilarity">
+    <property name="geometry">
+     <rect>
+      <x>110</x>
+      <y>60</y>
+      <width>101</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Times New Roman</family>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+   </widget>
+   <widget class="QLabel" name="id_label_4">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>20</y>
+      <width>101</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Times New Roman</family>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>训练集数设定：</string>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="TranningSet">
+    <property name="geometry">
+     <rect>
+      <x>110</x>
+      <y>20</y>
+      <width>101</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Times New Roman</family>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+   </widget>
+   <widget class="QLabel" name="name_label_2">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>60</y>
+      <width>111</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Times New Roman</family>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>训练相似度：</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="id_label_5">
+    <property name="geometry">
+     <rect>
+      <x>220</x>
+      <y>60</y>
+      <width>71</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Times New Roman</family>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>早退时间：</string>
+    </property>
+   </widget>
+   <widget class="QDateTimeEdit" name="LeaveEarilyTimeSet">
+    <property name="geometry">
+     <rect>
+      <x>290</x>
+      <y>60</y>
+      <width>111</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="dateTime">
+     <datetime>
+      <hour>17</hour>
+      <minute>0</minute>
+      <second>0</second>
+      <year>2020</year>
+      <month>1</month>
+      <day>1</day>
+     </datetime>
+    </property>
+    <property name="time">
+     <time>
+      <hour>17</hour>
+      <minute>0</minute>
+      <second>0</second>
+     </time>
+    </property>
+    <property name="displayFormat">
+     <string>hh:mm:ss</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QGroupBox" name="groupBox_7">
+   <property name="geometry">
+    <rect>
+     <x>650</x>
+     <y>660</y>
+     <width>521</width>
+     <height>71</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Times New Roman</family>
+     <pointsize>10</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="title">
+    <string>系统操作</string>
+   </property>
+  </widget>
+  <widget class="QGroupBox" name="groupBox_8">
+   <property name="geometry">
+    <rect>
+     <x>650</x>
+     <y>310</y>
+     <width>521</width>
+     <height>181</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Times New Roman</family>
+     <pointsize>10</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="title">
+    <string>新员工审批窗口</string>
+   </property>
+   <widget class="QTableView" name="newEmployee">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>20</y>
+      <width>361</width>
+      <height>151</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="Accept">
+    <property name="geometry">
+     <rect>
+      <x>400</x>
+      <y>40</y>
+      <width>101</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>通过申请</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="Denied">
+    <property name="geometry">
+     <rect>
+      <x>400</x>
+      <y>110</y>
+      <width>101</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>拒绝申请</string>
+    </property>
+   </widget>
+  </widget>
+  <zorder>groupBox_7</zorder>
+  <zorder>groupBox_5</zorder>
+  <zorder>groupBox_6</zorder>
+  <zorder>groupBox_2</zorder>
+  <zorder>QuitSys</zorder>
+  <zorder>groupBox_3</zorder>
+  <zorder>groupBox_4</zorder>
+  <zorder>groupBox_8</zorder>
  </widget>
  <resources/>
  <connections/>

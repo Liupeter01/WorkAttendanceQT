@@ -3,6 +3,7 @@
 #include "ui_WorkAttendanceAdmin.h"
 #include <QtWidgets/QDialog>
 #include"../Interface/Interface.h"
+#include"../DataDisplay/TableViewDisplay.h"
 
 class WorkAttendanceSys : public QDialog, public Interface
 {
@@ -30,10 +31,10 @@ private:
 
           /*------------------------------------------------------------------------------------------------------
           * @WorkAttendanceSys考勤系统初始化下拉框
-          * @name :   initDepartmentComboBox
+          * @name :   initSysDeptComboBox
           * @funtion : 初始化下拉框用于部门的选择
           *------------------------------------------------------------------------------------------------------*/
-          void initDepartmentComboBox();
+          void initSysDeptComboBox();
 
           /*------------------------------------------------------------------------------------------------------
           * @WorkAttendanceSys考勤系统进度条初始化
@@ -149,6 +150,13 @@ private slots:
           void displayStatisticsInfo();
 
           /*------------------------------------------------------------------------------------------------------
+           * 槽函数类别---设置系统参数
+           * @name : adminParamSetting
+           * @funtion : 显示相应的统计信息打卡记录和图表显示
+           *------------------------------------------------------------------------------------------------------*/
+          void adminParamSetting();
+
+          /*------------------------------------------------------------------------------------------------------
            * 槽函数类别---关闭WorkAttendanceAdmin系统的UI系统
            * @name : closeAdminUI
            * @funtion : 关闭WorkAttendanceAdmin系统的UI系统
@@ -163,13 +171,6 @@ private:
            * @funtion : 设置空间和函数的捆绑关系
            *------------------------------------------------------------------------------------------------------*/
           void initSysConnectSlot();
-
-          /*------------------------------------------------------------------------------------------------------
-           * WorkAttendanceAdmin信号槽的设置程序
-           * @name : initSysConnectSlot
-           * @funtion : 设置空间和函数的捆绑关系
-           *------------------------------------------------------------------------------------------------------*/
-          void initAdminConnectSlot();
 
           /*------------------------------------------------------------------------------------------------------
            * 禁用训练相关的按钮程序
@@ -188,18 +189,40 @@ private:
 private:
           /*------------------------WorkAttendanceSys考勤系统管理员系统-----------------------------*/
           /*------------------------------------------------------------------------------------------------------
-           * 删除ADMIN系统UI
-           * @name : deleteSysUi
-           * @funtion : 删除ADMIN系统UI
+           * WorkAttendanceAdmin信号槽的设置程序
+           * @name : initSysConnectSlot
+           * @funtion : 设置空间和函数的捆绑关系
            *------------------------------------------------------------------------------------------------------*/
-          void deleteAdminUi();
+          void initAdminConnectSlot();
+
+          /*------------------------------------------------------------------------------------------------------
+          * @WorkAttendanceAdmin考勤系统初始化下拉框
+          * @name :   initSysDeptComboBox
+          * @funtion : 初始化下拉框用于部门的选择
+          *------------------------------------------------------------------------------------------------------*/
+          void initAdminDeptComboBox();
+
+          /*------------------------------------------------------------------------------------------------------
+          * @WorkAttendanceAdmin考勤系统初始化管理系统的参数
+          * @name :    initAdminParamSetting
+          * @funtion : 初始化管理系统的参数
+          *------------------------------------------------------------------------------------------------------*/
+          void initAdminParamSetting();
 
           /*------------------------------------------------------------------------------------------------------
            * 初始化ADMIN系统UI
            * @name : deleteSysUi
            * @funtion : 初始化ADMIN系统UI(或者重新分配UI)
+           * @Correction: 2022-8-19 由于QDialog的重新内存分配需要重置Admin UI信号槽的设置
            *------------------------------------------------------------------------------------------------------*/
           void initAdminUi();
+
+          /*------------------------------------------------------------------------------------------------------
+           * 删除ADMIN系统UI
+           * @name : deleteSysUi
+           * @funtion : 删除ADMIN系统UI
+           *------------------------------------------------------------------------------------------------------*/
+          void deleteAdminUi();
 
 private:
           /*------------------WorkAttendanceSys考勤系统MYSQL操作指令-------------------------*/
@@ -208,6 +231,7 @@ private:
 private:
           QDateTime* m_globalTimer = nullptr;                  //全局时钟系统
           QDialog* m_qDialog = nullptr;
+          DataDisplay* m_dataDisplay = nullptr;                 //DataDisplay
           Ui::WorkAttendanceSys *ui_sys = nullptr;            //人脸系统主系统
           Ui::WorkAttendanceAdmin* ui_admin = nullptr;  //人脸系统ADMIN界面
           std::vector<std::thread> m_threadPool;

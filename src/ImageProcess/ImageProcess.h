@@ -12,6 +12,8 @@
 #include<QtWidgets/qprogressbar.h>
 #include<QtWidgets/qpushbutton.h>
 #include<QtWidgets/qradiobutton.h>
+#include<QtWidgets/qcheckbox.h>
+#include<QtGui/qstandarditemmodel.h>
 
 /*------------------------------------------------------------------------------------------------------
  * 控制ImageProcess层的拍照控制状态机

@@ -146,6 +146,29 @@ protected:
                     QDateTime*& _timer
           );
 
+          /*------------------------------------------------------------------------------------------------------
+          * 以二元组的方式将数据库中的数据进行读取
+          * @name: readAttendenceRecord
+          * @param 1. 员工号： const  std::string& employeeNumber
+          *                2. 姓名： const  std::string& _name
+          *                3. 部门 ：  const std::string& _department
+          *                4. 左部时间： const QDateTime _leftTimer
+          *                5. 右部时间： const QDateTime _rightTimer
+          *                6. 选择签到签退记录：AttendanceTable tableSelect
+          *                7. 是否选择时间: bool _isTimeEnabled
+          *
+          * @retValue:  返回一个二元组的集合 std::vector<std::vector<std::string>>
+          *------------------------------------------------------------------------------------------------------*/
+          std::vector<std::vector<std::string>> readAttendenceRecord(
+                    const  std::string& employeeNumber,
+                    const  std::string& _name,
+                    const std::string& _department,
+                    const QDateTime _leftTimer,
+                    const QDateTime _rightTimer,
+                    AttendanceTable tableSelect,
+                    bool _isTimeEnabled
+          );
+
           /*---------------------WorkAttendanceSys考勤系统新员工申请操作---------------------*/
           /*------------------------------------------------------------------------------------------------------
           * 将新员工的注册信息向系统管理员进行权限申请
@@ -218,6 +241,8 @@ private:
           const std::string m_SelectDuplicateAttendence = "SELECT * FROM  attendence WHERE UserID = ";            //搜索今日的重复签到
           const std::string m_SelectDuplicateSignOut = "SELECT * FROM signout WHERE UserID = ";                       //搜索今日的重复签退
 
+          const std::string m_SelectStaticsAttendenceData = "SELECT * FROM attendence WHERE ";                           //搜索签到表中的数据
+          const std::string m_SelectStaticsSignoutData = "SELECT * FROM signout WHERE ";                                      //搜索签退表中的数据
           //const std::string m_SelectAdminTablePrmittion = "SELECT UserID FROM admintable WHERE "
 
 private:

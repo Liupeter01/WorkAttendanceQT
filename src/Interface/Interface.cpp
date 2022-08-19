@@ -339,6 +339,10 @@ void  Interface::QTEmployeeAskPremit(
                               throw  InvalidInput();                                                                                                                       //无效的登录信息输入
                     }
                     this->storeAskPremitRecord2DB(_userID, _userName, _department, _timer);                             //申请访问权限
+                    _systemOutput->insertPlainText(
+                              QString::fromLocal8Bit("[") + _timer->currentDateTime().toString("yyyy-MM-dd hh:mm:ss") + QString::fromLocal8Bit("]:") +
+                              QString::fromLocal8Bit("新员工权限申请成功，请等待管理员的审批\n")
+                    );
           }
           catch (const InvalidInput&) {
                     _systemOutput->insertPlainText(
@@ -487,10 +491,11 @@ void Interface::QTAdminManagementLogin(
  *                  3. 部门的输入         const std::string & _department
  *                  4. 签到按钮: QRadioButton *& _attdenceTable
  *                  5. 签退按钮: QRadioButton*& _signoutTable
- *                  6. 左部输入时钟 :   const QDateTime _lefttimer
- *                  7. 右部输入时钟： const QDateTime _righttimer
- *                  8.全局时钟系统的输入 QDateTime*& _timer
- *                  9. 输出窗口接口：QTextBrowser*& _systemOutput
+ *                  6. 是否选择时间: QCheckBox *& _isTimeEnabled
+ *                  7. 左部输入时钟 :   const QDateTime _lefttimer
+ *                  8. 右部输入时钟： const QDateTime _righttimer
+ *                  9.全局时钟系统的输入 QDateTime*& _timer
+ *                  10. 输出窗口接口：QTextBrowser*& _systemOutput
 *------------------------------------------------------------------------------------------------------*/
 void Interface::QTAdminStatisticsInterface(
           const std::string& _userID,
@@ -498,6 +503,7 @@ void Interface::QTAdminStatisticsInterface(
           const std::string& _department,
           QRadioButton*& _attdenceTable,
           QRadioButton*& _signoutTable,
+          QCheckBox *&  _isTimeEnabled,
           const QDateTime _lefttimer,
           const QDateTime _righttimer,
           QDateTime*& _timer,
@@ -509,9 +515,22 @@ void Interface::QTAdminStatisticsInterface(
                     if (_attdenceTable->isChecked() && _signoutTable->isChecked()) {      //检查单选按钮是否都被勾选
                               throw ThrowInvalidQRadio();
                     }
-                    if (_lefttimer > _righttimer){                                                                 //左边的日期大于右边的日期
-                              throw   InvalidDateTime();
+                    if (!_attdenceTable->isChecked() && !_signoutTable->isChecked()) {      //检查单选按钮是否都没被勾选
+                              throw ThrowInvalidQRadio();
                     }
+                    if (_isTimeEnabled->isChecked()) {                                                         //是否选择时间
+                              if (_lefttimer > _righttimer) {                                                          //左边的日期大于右边的日期
+                                        throw   InvalidDateTime();
+                              }
+                    }
+                   std::vector<std::vector<std::string>> recordRes = this->readAttendenceRecord(                           //读取记录二元组
+                             _userID, _userName, _department, _lefttimer, _righttimer,
+                              _attdenceTable->isChecked() ? AttendanceTable::ATTENDANCE : AttendanceTable::SIGNOUT,
+                              _isTimeEnabled->isChecked()
+                    );
+                   for (int i = 0; i < recordRes.size(); ++i) {                                                                                       //遍历二元组集合中二元组数量
+                              
+                   }
           }
           catch (const ThrowInvalidQRadio&) {
                     _systemOutput->insertPlainText(
@@ -525,4 +544,30 @@ void Interface::QTAdminStatisticsInterface(
                               QString::fromLocal8Bit("当前时间范围输入非法，请重新操作\n")
                     );
           }
+          catch (const EmptyMatrixString&) {
+                    _systemOutput->insertPlainText(
+                              QString::fromLocal8Bit("[") + _timer->currentDateTime().toString("yyyy-MM-dd hh:mm:ss") + QString::fromLocal8Bit("]:") +
+                              QString::fromLocal8Bit(_userName.c_str()) + QString::fromLocal8Bit("系统中没有查询到当前用户信息! \n")
+                    );
+          }
+}
+
+/*------------------------------------------------------------------------------------------------------
+ *  Interface类为QTWidget层管理员账户提供的设置系统参数
+ * @name: QTAdminParamSettingInterface
+ * @function：管理员账户提供的记录查询接口
+ * @param:
+ *                  1.训练集数设定：const std::string& _TranningSet,
+ *                  2.训练相似度：const std::string& _TranningSimilarity,
+ *                  3.迟到时间：const std::string& _LateTimeSet,
+ *                  4.早退时间：const std::string& _LeaveEarilyTimeSet
+*------------------------------------------------------------------------------------------------------*/
+void Interface::QTAdminParamSettingInterface(
+          const std::string& _TranningSet,
+          const std::string& _TranningSimilarity,
+          const std::string& _LateTimeSet,
+          const std::string& _LeaveEarilyTimeSet
+)
+{
+
 }

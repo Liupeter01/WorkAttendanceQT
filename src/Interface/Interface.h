@@ -295,10 +295,11 @@ public:
            *                  3. 部门的输入         const std::string & _department
            *                  4. 签到按钮: QRadioButton *& _attdenceTable
            *                  5. 签退按钮: QRadioButton*& _signoutTable
-           *                  6. 左部输入时钟 :   const QDateTime _lefttimer
-           *                  7. 右部输入时钟： const QDateTime _righttimer
-           *                  8.全局时钟系统的输入 QDateTime*& _timer
-           *                  9. 输出窗口接口：QTextBrowser*& _systemOutput
+           *                  6. 是否选择时间: QCheckBox *& _isTimeEnabled
+           *                  7. 左部输入时钟 :   const QDateTime _lefttimer
+           *                  8. 右部输入时钟： const QDateTime _righttimer
+           *                  9.全局时钟系统的输入 QDateTime*& _timer
+           *                  10. 输出窗口接口：QTextBrowser*& _systemOutput
           *------------------------------------------------------------------------------------------------------*/
           void QTAdminStatisticsInterface(
                     const std::string& _userID,
@@ -306,10 +307,28 @@ public:
                     const std::string& _department,
                     QRadioButton*& _attdenceTable,
                     QRadioButton*& _signoutTable,
+                    QCheckBox*& _isTimeEnabled,
                     const QDateTime _lefttimer,
                     const QDateTime _righttimer,
                     QDateTime*& _timer,
                     QTextBrowser*& _systemOutput
+          );
+
+          /*------------------------------------------------------------------------------------------------------
+           *  Interface类为QTWidget层管理员账户提供的设置系统参数
+           * @name: QTAdminParamSettingInterface
+           * @function：管理员账户提供的记录查询接口
+           * @param:
+           *                  1.训练集数设定：const std::string& _TranningSet,
+           *                  2.训练相似度：const std::string& _TranningSimilarity,
+           *                  3.迟到时间：const std::string& _LateTimeSet,
+           *                  4.早退时间：const std::string& _LeaveEarilyTimeSet
+          *------------------------------------------------------------------------------------------------------*/
+          void QTAdminParamSettingInterface(
+                    const std::string& _TranningSet,
+                    const std::string& _TranningSimilarity,
+                    const std::string& _LateTimeSet,
+                    const std::string& _LeaveEarilyTimeSet
           );
 
 protected:

@@ -211,6 +211,49 @@ bool DBProcess::storeSignOutRecord2DB(
           );
 }
 
+/*------------------------------------------------------------------------------------------------------
+* 以二元组的方式将数据库中的数据进行读取
+* @name: readAttendenceRecord
+* @param 1. 员工号： const  std::string& employeeNumber
+*                2. 姓名： const  std::string& _name
+*                3. 部门 ：  const std::string& _department
+*                4. 左部时间： const QDateTime _leftTimer
+*                5. 右部时间： const QDateTime _rightTimer
+*                6. 选择签到签退记录：AttendanceTable tableSelect
+*                7. 是否选择时间: bool _isTimeEnabled
+*
+* @retValue:  返回一个二元组的集合 std::vector<std::vector<std::string>>
+*------------------------------------------------------------------------------------------------------*/
+std::vector<std::vector<std::string>> DBProcess::readAttendenceRecord(
+          const  std::string& employeeNumber,
+          const  std::string& _name,
+          const std::string& _department,
+          const QDateTime _leftTimer,
+          const QDateTime _rightTimer,
+          AttendanceTable tableSelect,
+          bool _isTimeEnabled
+)
+{
+          std::string stringQuery{                                                                                                                                               //初始字符串
+                   tableSelect == AttendanceTable::ATTENDANCE ? this->m_SelectStaticsAttendenceData : this->m_SelectStaticsSignoutData + " "
+          };
+          stringQuery = stringQuery + " Department = " + "\"" + _department + "\"";
+          if (employeeNumber.size()) {
+                    stringQuery = stringQuery + "  AND UserID = " + employeeNumber;
+          }
+          if (_name.size()) {
+                    stringQuery = stringQuery + " AND UserID = " + "(SELECT UserID FROM employee WHERE UserName = " + "\"" + _name + "\"" + ")";
+          }
+          if (_isTimeEnabled) {                                                                                                                                                 //是否选择时间
+                    stringQuery = stringQuery + " AND " +
+                              (tableSelect == AttendanceTable::ATTENDANCE ? "MorningShiftTime" : "NightShiftTime") +
+                              " BETWEEN " + "\'" + _leftTimer.toString("yyyy-MM-dd hh:mm:ss").toLocal8Bit().constData() + "\'"+ " AND " +
+                              "\'" + _rightTimer.toString("yyyy-MM-dd hh:mm:ss").toLocal8Bit().constData() + "\'" ;
+
+          }
+          return this->dbSelect(stringQuery);
+}
+
 /*---------------------WorkAttendanceSys考勤系统新员工申请操作---------------------*/
 /*------------------------------------------------------------------------------------------------------
 * 将新员工的注册信息向系统管理员进行权限申请
