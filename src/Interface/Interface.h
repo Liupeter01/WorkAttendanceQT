@@ -1,3 +1,4 @@
+#include"../DataDisplay/TableViewDisplay.h"
 #include"../ImageProcess/ImageProcess.h"
 #include"../DBProcess/DBProcess.h"
 
@@ -123,7 +124,8 @@ public:
           *@param:    1.视频开关 std::atomic<bool> &
           *                   2.输出窗口接口：QTextBrowser * &_systemOutput
           *                   3.进度条的输出接口：QProgressBar * &_processBar
-          *                   4.进度数值显示器 : int _displayNumber
+          *                   4.新员工申请权限入口 QPushButton *&_pushButton
+          *                   5.进度数值显示器 : int _displayNumber
           *
           *@Correction : 2022 - 7 - 24 添加函数参数修复防止线程无法正确的停止运转
           *-----------------------------------------------------------------------------------------------------*/
@@ -131,6 +133,7 @@ public:
                     std::atomic<bool>& _videoFlag,
                     QTextBrowser*& _systemOutput,
                     QProgressBar*& _processBar,
+                    QPushButton*& _pushButton,
                     int _displayNumber
           );
 
@@ -165,13 +168,15 @@ public:
            *                  1. 用户ID的输入  const std::string& _userID
            *                  2. 用户姓名的输入    const std::string& _userName
            *                  3. 部门的输入         const std::string & _department
-           *                  3. 输出窗口接口：QTextBrowser*& _systemOutput
+           *                  4. 注册并录入人脸 QPushButton *&signin
+           *                  5.输出窗口接口：QTextBrowser*& _systemOutput
            * 
           *------------------------------------------------------------------------------------------------------*/
           void QTResnetTranning(
                     const std::string& _userID,
                     const std::string& _userName,
                     const std::string& _department,
+                    QPushButton*& signin,
                     QTextBrowser*& _systemOutput
           );
 
@@ -267,16 +272,18 @@ public:
            *                  1. 用户ID的输入  const std::string& _userID
            *                  2. 用户姓名的输入    const std::string& _userName
            *                  3. 部门的输入         const std::string & _department
-           *                  4. 登录管理部门系统  QPushButton*& _AdministerLogin,
-           *                  5. 访问管理部门系统的开关启用 : QPushButton*& _adminUI
-           *                  6. 关闭视频和识别网络的开关启用 : QPushButton*& _closeVideo
-           *                  7.全局时钟系统的输入 QDateTime*& _timer
-           *                  8. 输出窗口接口：QTextBrowser*& _systemOutput
+           *                  4. 当前成功登陆的管理员ID std::string & _currentAdmin,
+           *                  5. 登录管理部门系统  QPushButton*& _AdministerLogin,
+           *                  6. 访问管理部门系统的开关启用 : QPushButton*& _adminUI
+           *                  7. 关闭视频和识别网络的开关启用 : QPushButton*& _closeVideo
+           *                  8.全局时钟系统的输入 QDateTime*& _timer
+           *                  9. 输出窗口接口：QTextBrowser*& _systemOutput
           *------------------------------------------------------------------------------------------------------*/
           void QTAdminManagementLogin(
                     const std::string& _userID,
                     const std::string& _userName,
                     const std::string& _department,
+                    std::string& _currentAdmin,
                     QPushButton*& _AdministerLogin,
                     QPushButton*& _adminUI,
                     QPushButton*& _closeVideo,
@@ -299,7 +306,8 @@ public:
            *                  7. 左部输入时钟 :   const QDateTime _lefttimer
            *                  8. 右部输入时钟： const QDateTime _righttimer
            *                  9.全局时钟系统的输入 QDateTime*& _timer
-           *                  10. 输出窗口接口：QTextBrowser*& _systemOutput
+           *                  10. 控制Table表格类的封装数据类型 DataDisplay   DataDisplay* m_dataDisplay
+           *                  11. 输出窗口接口：QTextBrowser*& _systemOutput
           *------------------------------------------------------------------------------------------------------*/
           void QTAdminStatisticsInterface(
                     const std::string& _userID,
@@ -311,7 +319,61 @@ public:
                     const QDateTime _lefttimer,
                     const QDateTime _righttimer,
                     QDateTime*& _timer,
+                    DataDisplay* _dataDisplay,
                     QTextBrowser*& _systemOutput
+          );
+
+          /*------------------------------------------------------------------------------------------------------
+           *  Interface类为QTWidget层管理员账户显示新员工清单
+           * @name: QTGetNewEmployeeInterface
+           * @param :  控制Table表格类的封装数据类型 DataDisplay   DataDisplay* m_dataDisplay
+           * @function：管理员账户提供的记录查询接口
+          *------------------------------------------------------------------------------------------------------*/
+          void QTGetNewEmployeeInterface(DataDisplay* _dataDisplay);
+
+          /*------------------------------------------------------------------------------------------------------
+           *  Interface类为QTWidget层管理员账户显示新员工清单
+           * @name: QTGetNewEmployeeInterface
+           * @param :      1.是否通过 bool status
+           *                       2.表格视图：QTableView *& _newEmployeeTable
+           *                       3.全局时钟系统的输入 QDateTime*& _timer
+           *                       4.输出窗口接口：QTextBrowser*& _systemOutput
+           *
+           * @function：管理员账户提供的记录查询接口
+          *------------------------------------------------------------------------------------------------------*/
+          void QTDeniedAndApprove(
+                    bool status,
+                    QTableView*& _newEmployeeTable,
+                    QDateTime*& _timer,
+                    QTextBrowser*& _systemOutput
+          );
+
+          /*------------------------------------------------------------------------------------------------------
+           *  Interface类为QTWidget层管理员账户提供的出勤率计算系统
+           * @name: QTAdminAttendenceRateCalc
+           * @function：管理员账户提供的出勤率计算系统
+           * @param: 1. 员工号： const  std::string& employeeNumber
+          *                  2. 姓名： const  std::string& _name
+          *                  3. 部门 ：  const std::string& _department
+          *                  4. 左部时间： QDateTime _leftTimer
+          *                  5. 右部时间： QDateTime _rightTimer
+          *                  6.全局时钟系统的输入 QDateTime*& _timer
+          *                  7. 选择签到签退记录：AttendanceTable tableSelect
+          *                  8. 是否选择时间: bool _isTimeEnabled
+           *                 9. 总人数：double &_total
+           *                 10. 迟到上班/早退下班人数：double &_late
+           *                 11. 正常人数：double& normal
+          *------------------------------------------------------------------------------------------------------*/
+          void QTAdminAttendenceRateCalc(
+                    const std::string& _userID,
+                    const std::string& _userName,
+                    const std::string& _department,
+                    QDateTime _leftTimer,
+                    QDateTime _rightTimer,
+                    QDateTime*& _timer,
+                    AttendanceTable tableSelect,
+                    bool _isTimeEnabled,
+                    double& _total, double& _late, double& normal
           );
 
           /*------------------------------------------------------------------------------------------------------
@@ -323,12 +385,18 @@ public:
            *                  2.训练相似度：const std::string& _TranningSimilarity,
            *                  3.迟到时间：const std::string& _LateTimeSet,
            *                  4.早退时间：const std::string& _LeaveEarilyTimeSet
+           *                  5.已经登陆的ADMIN ID：const std::string & _loggedUserID
+           *                  6.全局时钟系统的输入 QDateTime*& _timer
+           *                  7. 输出窗口接口：QTextBrowser*& _systemOutput
           *------------------------------------------------------------------------------------------------------*/
           void QTAdminParamSettingInterface(
                     const std::string& _TranningSet,
                     const std::string& _TranningSimilarity,
                     const std::string& _LateTimeSet,
-                    const std::string& _LeaveEarilyTimeSet
+                    const std::string& _LeaveEarilyTimeSet,
+                    const std::string& _loggedUserID,
+                    QDateTime*& _timer,
+                    QTextBrowser*& _systemOutput
           );
 
 protected:

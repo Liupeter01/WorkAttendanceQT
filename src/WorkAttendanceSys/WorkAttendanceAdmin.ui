@@ -64,7 +64,7 @@
    <property name="title">
     <string>图表显示：</string>
    </property>
-   <widget class="QGraphicsView" name="graphicsView">
+   <widget class="QtCharts::QChartView" name="graphicsView">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -122,7 +122,7 @@
       <hour>9</hour>
       <minute>0</minute>
       <second>0</second>
-      <year>2020</year>
+      <year>2022</year>
       <month>1</month>
       <day>1</day>
      </datetime>
@@ -145,7 +145,7 @@
       <hour>17</hour>
       <minute>0</minute>
       <second>0</second>
-      <year>2020</year>
+      <year>2022</year>
       <month>1</month>
       <day>1</day>
      </datetime>
@@ -639,7 +639,7 @@
     <property name="geometry">
      <rect>
       <x>400</x>
-      <y>40</y>
+      <y>80</y>
       <width>101</width>
       <height>41</height>
      </rect>
@@ -652,13 +652,26 @@
     <property name="geometry">
      <rect>
       <x>400</x>
-      <y>110</y>
+      <y>130</y>
       <width>101</width>
       <height>41</height>
      </rect>
     </property>
     <property name="text">
      <string>拒绝申请</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="getNewEmployee">
+    <property name="geometry">
+     <rect>
+      <x>400</x>
+      <y>30</y>
+      <width>101</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>读取新员工</string>
     </property>
    </widget>
   </widget>
@@ -671,6 +684,13 @@
   <zorder>groupBox_4</zorder>
   <zorder>groupBox_8</zorder>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QtCharts::QChartView</class>
+   <extends>QGraphicsView</extends>
+   <header location="global">qchartview.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

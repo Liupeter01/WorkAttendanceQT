@@ -94,9 +94,9 @@ std::vector<std::vector<std::string>> MySQL::dbSelect(const std::string op)
 /*------------------------------------------------------------------------------------------------------
 * 数据库的统计查询个数函数
 * @name:    dbGetCoun
-* @param: 数据库操作const std::string& op
+* @param: 数据库操作const std::string op
 *------------------------------------------------------------------------------------------------------*/
-size_t MySQL::dbGetCount(const std::string& op)
+size_t MySQL::dbGetCount(const std::string op)
 {
           if (mysql_query(this->m_mysql, op.c_str())) {
                     return 0;
@@ -105,7 +105,7 @@ size_t MySQL::dbGetCount(const std::string& op)
           if (res == NULL) {
                     return 0;
           }
-          return mysql_num_fields(res);
+          return mysql_num_fields(res) - 1;
 }
 
 /*------------------------------------------------------------------------------------------------------

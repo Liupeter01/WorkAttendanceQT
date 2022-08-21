@@ -85,6 +85,7 @@ bool ModelTrain::externalInput(
 * @retValue:  返回一个初次保存的人脸的128D的人脸特征向量的平均值用于
 * 
 * @Correction: 2022-7-29 增加了对于多张人脸训练模型容器为空的异常检测
+*                        2022-8-21 修复多次训练人脸模型时没有清空缓存的问题
 *------------------------------------------------------------------------------------------------------*/
 dlib::matrix<float, 0, 1> ModelTrain::resnetTrainning()
 {
@@ -101,6 +102,8 @@ dlib::matrix<float, 0, 1> ModelTrain::resnetTrainning()
                     for (dlib::matrix<float, 0, 1>::iterator it = faceMatrixArray[0].begin(); it != faceMatrixArray[0].end(); ++it) {
                               (*it) /= (float)(faceMatrixArray.size());
                     }
+                    this->m_imageArr.erase(this->m_imageArr.begin(), this->m_imageArr.end());       //清空
+                    this->m_imageArr.clear();
                     return  faceMatrixArray.at(0);
           }
           catch (const EmptyVector&) {

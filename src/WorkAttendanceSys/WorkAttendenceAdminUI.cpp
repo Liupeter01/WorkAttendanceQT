@@ -44,7 +44,48 @@ void WorkAttendanceSys::displayStatisticsInfo()
                     this->ui_admin->LeftTime->dateTime(),                                                               //时间的左界限
                     this->ui_admin->RightTime->dateTime(),                                                              //时间的右界限
                     this->m_globalTimer,                                                                                             //加载全局计时器
+                    this->m_dataDisplay,                                                                                              //DataDisplay
                     this->ui_admin->SystemStatusInfo                                                                        //输出窗口
+          );
+}
+
+/*------------------------------------------------------------------------------------------------------
+ * 槽函数类别---显示新员工表格
+ * @name : displayNewEmployeeList
+ * @funtion : 显示新员工表格
+ *------------------------------------------------------------------------------------------------------*/
+void WorkAttendanceSys::displayNewEmployeeList()
+{
+          this->QTGetNewEmployeeInterface(this->m_dataDisplay);                //显示新员工表格
+}
+
+/*------------------------------------------------------------------------------------------------------
+ * 槽函数类别---通过员工申请
+ * @name : ApproveEmployee
+ * @funtion : 通过员工申请
+ *------------------------------------------------------------------------------------------------------*/
+void WorkAttendanceSys::approveEmployee()
+{
+          this->QTDeniedAndApprove(
+                    true,
+                    this->ui_admin->newEmployee,
+                    this->m_globalTimer,
+                    this->ui_admin->SystemStatusInfo
+          );
+}
+
+/*------------------------------------------------------------------------------------------------------
+ * 槽函数类别---驳回员工申请
+ * @name : deniedEmployee
+ * @funtion : 驳回员工申请
+ *------------------------------------------------------------------------------------------------------*/
+void WorkAttendanceSys::deniedEmployee()
+{
+          this->QTDeniedAndApprove(
+                    false, 
+                    this->ui_admin->newEmployee,
+                    this->m_globalTimer,
+                    this->ui_admin->SystemStatusInfo
           );
 }
 
@@ -59,7 +100,10 @@ void WorkAttendanceSys::adminParamSetting()
                     this->ui_admin->TranningSet->toPlainText().toLocal8Bit().constData(),                                                    //训练集数设定
                     this->ui_admin->TranningSimilarity->toPlainText().toLocal8Bit().constData(),                                         //训练相似度
                     this->ui_admin->LateTimeSet->dateTime().toString("hh:mm:ss").toLocal8Bit().constData(),
-                    this->ui_admin->LeaveEarilyTimeSet->dateTime().toString("hh:mm:ss").toLocal8Bit().constData()
+                    this->ui_admin->LeaveEarilyTimeSet->dateTime().toString("hh:mm:ss").toLocal8Bit().constData(),
+                    this->m_currentAdmin,                                                                                          //传入当前的登录的管理员ID
+                    this->m_globalTimer,                                                                                             //加载全局计时器
+                    this->ui_admin->SystemStatusInfo                                                                        //输出窗口
           );
 }
 
@@ -67,6 +111,7 @@ void WorkAttendanceSys::adminParamSetting()
  * 槽函数类别---关闭WorkAttendanceAdmin系统的UI系统
  * @name : closeAdminUI
  * @funtion : 关闭WorkAttendanceAdmin系统的UI系统
+ * @Correction: 解决点击一次按钮同时触发两次的情况
  *------------------------------------------------------------------------------------------------------*/
 void WorkAttendanceSys::closeAdminUI()
 {
@@ -83,17 +128,27 @@ void WorkAttendanceSys::closeAdminUI()
 
 /*------------------------------------------------------------------------------------------------------
  * WorkAttendanceAdmin信号槽的设置程序
- * @name : initSysConnectSlot
- * @funtion : 设置空间和函数的捆绑关系
+ * @name :initAdminConnectSlot
+ * @funtion : 关闭WorkAttendanceAdmin系统的UI系统
+ * @Correction: 2022-8-20 解决点击一次按钮同时触发两次的情况
  *------------------------------------------------------------------------------------------------------*/
 void WorkAttendanceSys::initAdminConnectSlot()
 {
           /*显示ADMIN系统的统计信息---包含打卡记录和图表*/
-          QObject::connect(this->ui_admin->DisplayStatistics, SIGNAL(clicked()), this, SLOT(displayStatisticsInfo()));          //初始化显示信息事件
+          QObject::connect(this->ui_admin->DisplayStatistics, SIGNAL(clicked()), this, SLOT(displayStatisticsInfo()),Qt::UniqueConnection);          //初始化显示信息事件
 
            /*ADMIN系统的退出功能绑定*/
-          QObject::connect(this->ui_admin->QuitSys, SIGNAL(clicked()), this, SLOT(closeAdminUI()));                                 //ADMIN系统的退出功能
+          QObject::connect(this->ui_admin->QuitSys, SIGNAL(clicked()), this, SLOT(closeAdminUI()), Qt::UniqueConnection);                                 //ADMIN系统的退出功能
 
           /*ADMIN系统的签到参数设置绑定*/
-          QObject::connect(this->ui_admin->CommitParam, SIGNAL(clicked()), this, SLOT(adminParamSetting()));                                                //ADMIN系统的设置系统参数功能
+          QObject::connect(this->ui_admin->CommitParam, SIGNAL(clicked()), this, SLOT(adminParamSetting()), Qt::UniqueConnection);               //ADMIN系统的设置系统参数功能
+          
+          /*获取新员工表*/
+          QObject::connect(this->ui_admin->getNewEmployee, SIGNAL(clicked()), this, SLOT(displayNewEmployeeList()));              
+
+          /*通过新员工申请*/
+          QObject::connect(this->ui_admin->Accept, SIGNAL(clicked()), this, SLOT(approveEmployee()));
+
+         /*驳回新员工申请*/
+          QObject::connect(this->ui_admin->Denied, SIGNAL(clicked()), this, SLOT(deniedEmployee()));
 }

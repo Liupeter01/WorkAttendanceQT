@@ -48,6 +48,7 @@ void WorkAttendanceSys::initTranningProcess()
                     this->ui_sys->UserID->document()->toPlainText().toLocal8Bit().constData(),        //UserID
                     this->ui_sys->NameInput->document()->toPlainText().toLocal8Bit().constData(),  //UserName
                     this->ui_sys->comboBox->currentText().toLocal8Bit().constData(),                        //Department
+                    this->ui_sys->TranningSetInput,
                     this->ui_sys->SystemStatusInfo                                                                                  //输出窗口
           );
 }
@@ -110,19 +111,14 @@ void WorkAttendanceSys::tranningSetInputFromVideo()                             
                     this->m_videoFlag,
                     this->ui_sys->SystemStatusInfo,
                     this->ui_sys->progressBar,
+                    this->ui_sys->AciqurePremit,
                     0
           );
           [=]() {
-                    this->ui_sys->TakePicture->setDisabled(true);                        //禁用拍照摁键
+                    this->ui_sys->TakePicture->setEnabled(true);                         //启用拍照摁键
                     this->ui_sys->TakePicture->update();                                      //更新拍照摁键状态
-                    this->ui_sys->ConfirmTranningSet->setDisabled(true);          //禁用保存摁键
-                    this->ui_sys->ConfirmTranningSet->update();                        //更新保存摁键状态
-                    this->ui_sys->IgnoreTranningSet->setDisabled(true);             //禁用舍弃摁键
-                    this->ui_sys->IgnoreTranningSet->update();                           //更新舍弃摁键状态
-                    this->ui_sys->InitTranning->setDisabled(true);                       //禁用训练按钮
-                    this->ui_sys->InitTranning->update();                                     //更新训练按钮状态
-                    this->ui_sys->UserID->clear();                                                //清空ID的输入
-                    this->ui_sys->NameInput->clear();                                          //清空名字的输入
+                    this->ui_sys->InitTranning->setEnabled(true);                        //？启用训练按钮
+                    this->ui_sys->InitTranning->update();                                     //？更新训练按钮状态
           }();
 }
 
@@ -237,12 +233,14 @@ void WorkAttendanceSys::adminManagementLogin()
                     this->ui_sys->UserID->toPlainText().toLocal8Bit().constData(),                         //UserID
                     this->ui_sys->NameInput->toPlainText().toLocal8Bit().constData(),                   //UserName
                     this->ui_sys->comboBox->currentText().toLocal8Bit().constData(),                    //Department
+                    this->m_currentAdmin,                                                                                         //当前登录的管理员
                     this->ui_sys->AdministerLogin,                                                                             //登录管理部门系统按钮
                     this->ui_sys->AdminOnly,                                                                                     //访问管理部门系统按钮
                     this->ui_sys->CloseVideo,                                                                                     //视频和识别网络按钮
                     this->m_globalTimer,                                                                                             //加载全局计时器
                     this->ui_sys->SystemStatusInfo                                                                             //输出窗口
           );
+
           [=]() {
                     this->ui_sys->AdministerLogin->setEnabled(true);                                                        //启用登录管理部门系统
                     this->ui_sys->SignIn->setEnabled(true);                                                                       //禁用人脸签到按钮
@@ -281,32 +279,33 @@ void WorkAttendanceSys::adminManagementUI()
  * WorkAttendanceSys信号槽的设置程序
  * @name : initSysConnectSlot
  * @funtion : 设置空间和函数的捆绑关系
+ * @Correction: 2022-8-20 解决点击一次按钮同时触发两次的情况
  *------------------------------------------------------------------------------------------------------*/
 void WorkAttendanceSys::initSysConnectSlot()
 {
           /*当经过管理人员审批之后开启积累训练的进度条*/
-          QObject::connect(this->ui_sys->TranningSetInput, SIGNAL(clicked()), this, SLOT(tranningSetInputFromVideo()));    //人脸训练功能模块
-          QObject::connect(this->ui_sys->TakePicture, SIGNAL(clicked()), this, SLOT(takePictureFromVideo()));                      //开启拍照模块
-          QObject::connect(this->ui_sys->ConfirmTranningSet, SIGNAL(clicked()), this, SLOT(savePictureForTranning()));      //保存人脸
-          QObject::connect(this->ui_sys->IgnoreTranningSet, SIGNAL(clicked()), this, SLOT(ignorePictureForTranning()));      //舍弃人脸
+          QObject::connect(this->ui_sys->TranningSetInput, SIGNAL(clicked()), this, SLOT(tranningSetInputFromVideo()), Qt::UniqueConnection);    //人脸训练功能模块
+          QObject::connect(this->ui_sys->TakePicture, SIGNAL(clicked()), this, SLOT(takePictureFromVideo()), Qt::UniqueConnection);                      //开启拍照模块
+          QObject::connect(this->ui_sys->ConfirmTranningSet, SIGNAL(clicked()), this, SLOT(savePictureForTranning()), Qt::UniqueConnection);      //保存人脸
+          QObject::connect(this->ui_sys->IgnoreTranningSet, SIGNAL(clicked()), this, SLOT(ignorePictureForTranning()), Qt::UniqueConnection);      //舍弃人脸
 
           /*当训练的进度条已满之后，可以开启Resnet网络训练*/
-          QObject::connect(this->ui_sys->InitTranning, SIGNAL(clicked()), this, SLOT(initTranningProcess()));                         //开启残差神经网络
+          QObject::connect(this->ui_sys->InitTranning, SIGNAL(clicked()), this, SLOT(initTranningProcess()), Qt::UniqueConnection);                         //开启残差神经网络
 
           /*用户的登录登出功能*/
-          QObject::connect(this->ui_sys->SignIn, SIGNAL(clicked()), this, SLOT(employeeAttendanceInterface()));                   //开启签到程序
-          QObject::connect(this->ui_sys->Logout, SIGNAL(clicked()), this, SLOT(employeeSignalOutInterface()));                    //开启签退程序
+          QObject::connect(this->ui_sys->SignIn, SIGNAL(clicked()), this, SLOT(employeeAttendanceInterface()), Qt::UniqueConnection);                   //开启签到程序
+          QObject::connect(this->ui_sys->Logout, SIGNAL(clicked()), this, SLOT(employeeSignalOutInterface()), Qt::UniqueConnection);                    //开启签退程序
 
           /*关闭系统的核心功能*/
-          QObject::connect(this->ui_sys->CloseVideo, SIGNAL(clicked()), this, SLOT(closeVideoStream()));                              //关闭视频流
+          QObject::connect(this->ui_sys->CloseVideo, SIGNAL(clicked()), this, SLOT(closeVideoStream()), Qt::UniqueConnection);                              //关闭视频流
 
           /*用户申请注册权限*/
-          QObject::connect(this->ui_sys->AciqurePremit, SIGNAL(clicked()), this, SLOT(employeeAskPremitInterface()));        //向管理员账户申请注册权限
+          QObject::connect(this->ui_sys->AciqurePremit, SIGNAL(clicked()), this, SLOT(employeeAskPremitInterface()), Qt::UniqueConnection);        //向管理员账户申请注册权限
 
           /*查询新用户的权限是否通过*/
-          QObject::connect(this->ui_sys->checkPremittion, SIGNAL(clicked()), this, SLOT(employeeCheckPremittion()));        //检查注册权限是否通过
+          QObject::connect(this->ui_sys->checkPremittion, SIGNAL(clicked()), this, SLOT(employeeCheckPremittion()), Qt::UniqueConnection);        //检查注册权限是否通过
 
           /*开启管理部门系统登录验证*/
-          QObject::connect(this->ui_sys->AdministerLogin, SIGNAL(clicked()), this, SLOT(adminManagementLogin()));         //启动管理部门系统登录验证
-          QObject::connect(this->ui_sys->AdminOnly, SIGNAL(clicked()), this, SLOT(adminManagementUI()));                      //开启管理员页面
+          QObject::connect(this->ui_sys->AdministerLogin, SIGNAL(clicked()), this, SLOT(adminManagementLogin()), Qt::UniqueConnection);         //启动管理部门系统登录验证
+          QObject::connect(this->ui_sys->AdminOnly, SIGNAL(clicked()), this, SLOT(adminManagementUI()), Qt::UniqueConnection);                      //开启管理员页面
 }

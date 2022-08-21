@@ -168,11 +168,13 @@ void WorkAttendanceSys::initAdminUi()
                     this->m_qDialog->setFixedSize(1180, 744);                                            // 禁止改变窗口大小
                     this->initAdminConnectSlot();                                                                 //重置WorkAttendanceAdmin信号槽的设置程序
           }
+          this->initAdminParamSetting();                                                                            //初始化管理员签到系统参数设置
           if (this->m_dataDisplay == nullptr) {                                                                   //当前的 DataDisplay被释放 
                     this->m_dataDisplay = new DataDisplay(                                                  //重新分配内存
                               this->m_qDialog, 
                               this->ui_admin->AttendenceRecord,
-                              this->ui_admin->newEmployee
+                              this->ui_admin->newEmployee,
+                              this->ui_admin->graphicsView
                     );    
           }
 }

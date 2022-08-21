@@ -3,7 +3,6 @@
 #include "ui_WorkAttendanceAdmin.h"
 #include <QtWidgets/QDialog>
 #include"../Interface/Interface.h"
-#include"../DataDisplay/TableViewDisplay.h"
 
 class WorkAttendanceSys : public QDialog, public Interface
 {
@@ -150,6 +149,27 @@ private slots:
           void displayStatisticsInfo();
 
           /*------------------------------------------------------------------------------------------------------
+           * 槽函数类别---显示新员工表格
+           * @name : displayNewEmployeeList
+           * @funtion : 显示新员工表格
+           *------------------------------------------------------------------------------------------------------*/
+          void displayNewEmployeeList();
+
+          /*------------------------------------------------------------------------------------------------------
+           * 槽函数类别---通过员工申请
+           * @name : ApproveEmployee
+           * @funtion : 通过员工申请
+           *------------------------------------------------------------------------------------------------------*/
+          void approveEmployee();
+
+          /*------------------------------------------------------------------------------------------------------
+           * 槽函数类别---驳回员工申请
+           * @name : deniedEmployee
+           * @funtion : 驳回员工申请
+           *------------------------------------------------------------------------------------------------------*/
+          void deniedEmployee();
+
+          /*------------------------------------------------------------------------------------------------------
            * 槽函数类别---设置系统参数
            * @name : adminParamSetting
            * @funtion : 显示相应的统计信息打卡记录和图表显示
@@ -169,6 +189,7 @@ private:
            * WorkAttendanceSys信号槽的设置程序
            * @name : initSysConnectSlot
            * @funtion : 设置空间和函数的捆绑关系
+           * @Correction: 2022-8-20 解决点击一次按钮同时触发两次的情况
            *------------------------------------------------------------------------------------------------------*/
           void initSysConnectSlot();
 
@@ -190,8 +211,9 @@ private:
           /*------------------------WorkAttendanceSys考勤系统管理员系统-----------------------------*/
           /*------------------------------------------------------------------------------------------------------
            * WorkAttendanceAdmin信号槽的设置程序
-           * @name : initSysConnectSlot
-           * @funtion : 设置空间和函数的捆绑关系
+           * @name :initAdminConnectSlot
+           * @funtion : 关闭WorkAttendanceAdmin系统的UI系统
+           * @Correction: 2022-8-20 解决点击一次按钮同时触发两次的情况
            *------------------------------------------------------------------------------------------------------*/
           void initAdminConnectSlot();
 
@@ -232,6 +254,7 @@ private:
           QDateTime* m_globalTimer = nullptr;                  //全局时钟系统
           QDialog* m_qDialog = nullptr;
           DataDisplay* m_dataDisplay = nullptr;                 //DataDisplay
+          std::string m_currentAdmin;                                  //当前登录的ADMIN
           Ui::WorkAttendanceSys *ui_sys = nullptr;            //人脸系统主系统
           Ui::WorkAttendanceAdmin* ui_admin = nullptr;  //人脸系统ADMIN界面
           std::vector<std::thread> m_threadPool;

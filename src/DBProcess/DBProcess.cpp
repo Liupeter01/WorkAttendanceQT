@@ -28,6 +28,18 @@ std::vector<std::string> DBProcess::initDepartmentSetting()
 }
 
 /*------------------------------------------------------------------------------------------------------
+ * @DBProcess考勤系统系统通过用户ID读取用户名
+ * @name :   getUserNameFromUserID
+ * @funtion : 通过用户ID读取用户名
+ * @RetValue : 返回用户名的信息 std::string
+ *------------------------------------------------------------------------------------------------------*/
+std::string DBProcess::getUserNameFromUserID(const std::string& _userID)
+{
+          std::vector<std::vector<std::string>> dbRes = this->dbSelect(this->m_SelectUserName + _userID);
+          return std::string(dbRes[0][0].c_str());
+}
+
+/*------------------------------------------------------------------------------------------------------
 * @WorkAttendanceSys考勤系统训练集数量设定TranningSetting
 * @name :  initTranningSetting
 * @funtion : 初始化训练集数量设定TranningSetting
@@ -307,21 +319,160 @@ std::string DBProcess::checkPremitRecordFromDB(
           return std::string(isPriviledgePremit[0][0].c_str());
 }
 
-/*---------------------WorkAttendanceSys考勤系统管理员操作---------------------*/
+/*------------------------WorkAttendanceSys考勤系统管理员操作-------------------------*/
 /*------------------------------------------------------------------------------------------------------
-* 查询系统管理员的权限
-* @name: readAdminPriviledgeFromDB
-* @param 1. 员工号： const  std::string& employeeNumber
-*                2. 姓名 ：  const std::string& _name
-*                3. 部门 ：  const std::string& _department
-*
-* @retValue : 返回是否查到 bool
+* 在admim UI中将系统参数更新在
+* @name: updateAdminParam2DB
+* @param 1.训练集数设定：const std::string& _TranningSet,
+*                2.训练相似度：const std::string& _TranningSimilarity,
+*                3.迟到时间：const std::string& _LateTimeSet,
+*                4.早退时间：const std::string& _LeaveEarilyTimeSet
+*                5.已经登陆的ADMIN ID：const std::string & _loggedUserID
+* 
+*@Correction: 2022-8-20 修复时间需要使用单引号进行标识的bug
 *------------------------------------------------------------------------------------------------------*/
-bool DBProcess::readAdminPriviledgeFromDB(
+bool DBProcess::updateAdminParam2DB(
+          const std::string& _TranningSet,
+          const std::string& _TranningSimilarity,
+          const std::string& _LateTimeSet,
+          const std::string& _LeaveEarilyTimeSet,
+          const std::string & _loggedUserID
+)
+{
+          return this->dbModify(
+                    this->m_UpdateAdminParam + " TrainningSetting = " + _TranningSet + "," +
+                    " TrainningSimilarity = " + _TranningSimilarity +"," +
+                    " MorningshiftTime = " + "\'" + _LateTimeSet + "\'" + "," +
+                    " NightshiftTime = " + "\'" + _LeaveEarilyTimeSet + "\'" + " WHERE UserID = " + _loggedUserID
+          );
+}
+
+/*------------------------------------------------------------------------------------------------------
+ *  用于在二元组集合中根据UserID查询用户姓名
+ * @name: queryUserNameFromID
+ * @function：管理员根据UserID查询用户名并将原本一个元组从四个元素扩展为五个元素
+ * @param:
+ *                  1.二元组集合：  std::vector<std::vector<std::string>>
+*------------------------------------------------------------------------------------------------------*/
+void DBProcess::queryUserNameFromID(std::vector<std::vector<std::string>>& _matrix)
+{
+          for (auto& i : _matrix) {                                                                                                                   //在二元组中插入一个姓名的列
+                    i.insert(i.begin() + 1, this->getUserNameFromUserID(i.at(0)));                                           //插入姓名
+          }
+}
+
+/*------------------------WorkAttendanceSys考勤系统管理员统计工具-------------------------*/
+/*------------------------------------------------------------------------------------------------------
+ *  在数据库中搜索员工总数
+ * @name: getEmployeeCount
+ * @function：在数据库中搜索员工总数
+ * @param:
+ *                  1. 员工号： const  std::string& employeeNumber
+*                   2. 姓名 ：  const std::string& _name
+*                   3. 部门 ：  const std::string& _department
+*------------------------------------------------------------------------------------------------------*/
+int DBProcess::getEmployeeCount(
           const  std::string& employeeNumber,
-          const std::string& _userName,
+          const  std::string& _name,
           const std::string& _department
 )
 {
-          return true;
+          std::string stringQuery = this->m_SelectEmployeeCount +  " WHERE Department = " + "\"" + _department + "\"";
+          if (employeeNumber.size()) {
+                    stringQuery = stringQuery + "  AND UserID = " + employeeNumber;
+          }
+          if (_name.size()) {
+                    stringQuery = stringQuery + " AND UserID = " + "(SELECT UserID FROM employee WHERE UserName = " + "\"" + _name + "\"" + ")";
+          }
+
+          return this->dbSelect(stringQuery).size();
+}
+
+/*------------------------------------------------------------------------------------------------------
+ *  在数据库中搜索当前最早的时间记录
+ * @name: getMinimiseTime
+ * @function：搜索当前最早的时间记录
+ * @param:.选择签到签退记录：：AttendanceTable _tableSelect
+*------------------------------------------------------------------------------------------------------*/
+QDateTime DBProcess::getMinimiseTime(AttendanceTable _tableSelect)
+{
+          std::vector<std::vector<std::string>> retRes = this->dbSelect(
+                    _tableSelect == AttendanceTable::ATTENDANCE ?
+                    this->m_SelectAttendenceMinTime : m_SelectSignOutMinTime
+          );
+          return QDateTime::fromString(QString::fromLocal8Bit(retRes[0][0].c_str()), QString::fromLocal8Bit("yyyy-MM-dd hh:mm:ss"));
+}
+
+/*------------------------------------------------------------------------------------------------------
+ *  在数据库中搜索当前表格中到岗的人员数量，并与日期形成映射
+ * @name: adminStatisticsOnDutyCount
+ * @function：管理员根据UserID查询用户名并将原本一个元组从四个元素扩展为五个元素
+ * @param:
+ *                  1. 员工号： const  std::string& employeeNumber
+*                   2. 姓名 ：  const std::string& _name
+*                   3. 部门 ：  const std::string& _department
+ *                  4.选择签到签退记录：：AttendanceTable _tableSelect
+ *                  5. 左部时间： const QDateTime _leftTimer
+*                   6. 右部时间： const QDateTime _rightTimer
+*                   7. 员工状态：const std::string _employeeStatus
+*------------------------------------------------------------------------------------------------------*/
+int DBProcess::adminStatisticsOnDutyCount(
+          const  std::string& employeeNumber,
+          const  std::string& _name,
+          const std::string& _department,
+          AttendanceTable _tableSelect,
+          const QDateTime _leftTimer,
+          const QDateTime _rightTimer,
+          const std::string _employeeStatus
+)
+{
+          std::string stringQuery = (_tableSelect == AttendanceTable::ATTENDANCE ?
+                    this->m_SelectAttendenceOnDutyCount : this->m_SelectSignOutOnDutyCount) +
+                    " BETWEEN " + "\'" + _leftTimer.toString("yyyy-MM-dd hh:mm:ss").toLocal8Bit().constData() + "\'" +
+                    "   AND " + "\'" + _rightTimer.toString("yyyy-MM-dd hh:mm:ss").toLocal8Bit().constData() + "\'" + "  AND  " +
+                    (_tableSelect == AttendanceTable::ATTENDANCE ? " islate = " : " isearly = ") +
+                    "\"" + _employeeStatus + "\"";
+
+          stringQuery = stringQuery + (_tableSelect == AttendanceTable::ATTENDANCE ? " AND attendence.Department = " : " AND signout.Department = ") + "\"" + _department + "\"";
+          if (employeeNumber.size()) {
+                    stringQuery = stringQuery + (_tableSelect == AttendanceTable::ATTENDANCE ? " AND attendence.UserID = " : " AND signout.UserID = ") + employeeNumber;
+          }
+          if (_name.size()) {
+                    stringQuery = stringQuery +
+                    (_tableSelect == AttendanceTable::ATTENDANCE ? " AND attendence.UserID = " : " AND signout.UserID = ")+
+                   "(SELECT UserID FROM employee WHERE UserName = " + "\"" + _name + "\"" + ")";
+          }
+          return this->dbSelect(stringQuery).size();
+}
+
+/*-----------------------WorkAttendanceSys考勤系统管理员新员工工具------------------------*/
+/*------------------------------------------------------------------------------------------------------
+ * 以二元组的方式将数据库中新员工数据进行读取
+ * @name: readAttendenceRecord
+ * @retValue:  返回一个二元组的集合 std::vector<std::vector<std::string>>
+ *------------------------------------------------------------------------------------------------------*/
+std::vector<std::vector<std::string>> DBProcess::readNewEmployeeRecord()
+{
+          return this->dbSelect(this->m_SelectNewEmployee);
+}
+
+/*------------------------------------------------------------------------------------------------------
+ * 更新二元组中指定员工的审批状态
+ * @name: updateNewEmployeeAuth
+ * @param : 1. 员工号： const  std::string& employeeNumber
+*                   2. 姓名 ：  const std::string& _name
+*                   3. 是否通过 bool status
+*
+ * @retValue:  bool
+ *------------------------------------------------------------------------------------------------------*/
+bool DBProcess::updateNewEmployeeAuth(
+          const  std::string& employeeNumber,
+          const  std::string& _name,
+          bool status
+)
+{
+          return this->dbModify(
+                    this->m_updateNewEmployee + "\"" + (status ? "申请通过" : "申请驳回") + "\"" +
+                    " WHERE UserID = " + employeeNumber + " AND UserName = " + "\"" + _name + "\""
+          );
 }

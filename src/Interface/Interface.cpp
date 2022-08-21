@@ -83,7 +83,8 @@ void Interface::QTtakePicture()
 *@param:    1.视频开关 std::atomic<bool> &
 *                   2.输出窗口接口：QTextBrowser * &_systemOutput
 *                   3.进度条的输出接口：QProgressBar * &_processBar
-*                   4.进度数值显示器 : int _displayNumber
+*                   4.新员工申请权限入口 QPushButton *&_pushButton
+*                   5.进度数值显示器 : int _displayNumber
 *
 *@Correction : 2022 - 7 - 24 添加函数参数修复防止线程无法正确的停止运转
 *-----------------------------------------------------------------------------------------------------*/
@@ -91,10 +92,13 @@ void Interface::QTtranningSetInput(
           std::atomic<bool>& _videoFlag,
           QTextBrowser*& _systemOutput,
           QProgressBar*& _processBar,
+          QPushButton*& _pushButton,
           int _displayNumber
 )
 {
+          _pushButton->setDisabled(true);
           this->startImageTranningSetInput(_videoFlag, _systemOutput, _processBar, _displayNumber);
+          _pushButton->setEnabled(true);
 }
 
 /*------------------------------------------------------------------------------------------------------
@@ -132,6 +136,7 @@ void Interface::QTVideoOutput(QLabel*& _qlabel, QTextBrowser*& _systemOutput)
           _qlabel->clear();
 }
 
+
 /*------------------------------------------------------------------------------------------------------
  *   Interface类为QTWidget层输入的训练集训练开关
  * @name: QTResnetTranning
@@ -140,15 +145,19 @@ void Interface::QTVideoOutput(QLabel*& _qlabel, QTextBrowser*& _systemOutput)
  *                  1. 用户ID的输入  const std::string& _userID
  *                  2. 用户姓名的输入    const std::string& _userName
  *                  3. 部门的输入         const std::string & _department
- *                  3. 输出窗口接口：QTextBrowser*& _systemOutput
+ *                  4. 注册并录入人脸 QPushButton *&signin
+ *                  5.输出窗口接口：QTextBrowser*& _systemOutput
+ *
 *------------------------------------------------------------------------------------------------------*/
 void Interface::QTResnetTranning(
-          const std::string & _userID,
-           const std::string & _userName,
-          const std::string & _department,
-          QTextBrowser * &_systemOutput
+          const std::string& _userID,
+          const std::string& _userName,
+          const std::string& _department,
+          QPushButton*& signin,
+          QTextBrowser*& _systemOutput
 )
 {
+          signin->setDisabled(true);
           std::string& r_faceMatrix(this->startResnetModelTranning(_systemOutput));       //获取人脸矩阵的右值
           if (this->storeFaceRecord2DB(_userID, _userName, _department, r_faceMatrix)){   //将数据存储入数据库
                     _systemOutput->insertPlainText(
@@ -162,6 +171,7 @@ void Interface::QTResnetTranning(
                               QString::fromLocal8Bit(_userName.c_str()) + QString::fromLocal8Bit("人脸信息存储失败!\n")
                     );
           }
+          signin->setEnabled(true);
 }
 
 
@@ -415,16 +425,18 @@ void Interface::QTEmployeeCheckPremittion(
  *                  1. 用户ID的输入  const std::string& _userID
  *                  2. 用户姓名的输入    const std::string& _userName
  *                  3. 部门的输入         const std::string & _department
- *                  4. 登录管理部门系统  QPushButton*& _AdministerLogin,
- *                  5. 访问管理部门系统的开关启用 : QPushButton*& _adminUI
- *                  6. 关闭视频和识别网络的开关启用 : QPushButton*& _closeVideo
- *                  7.全局时钟系统的输入 QDateTime*& _timer
- *                  8. 输出窗口接口：QTextBrowser*& _systemOutput
+ *                  4. 当前成功登陆的管理员ID std::string & _currentAdmin,
+ *                  5. 登录管理部门系统  QPushButton*& _AdministerLogin,
+ *                  6. 访问管理部门系统的开关启用 : QPushButton*& _adminUI
+ *                  7. 关闭视频和识别网络的开关启用 : QPushButton*& _closeVideo
+ *                  8.全局时钟系统的输入 QDateTime*& _timer
+ *                  9. 输出窗口接口：QTextBrowser*& _systemOutput
 *------------------------------------------------------------------------------------------------------*/
 void Interface::QTAdminManagementLogin(
           const std::string& _userID,
           const std::string& _userName,
           const std::string& _department,
+          std::string & _currentAdmin,
           QPushButton*& _AdministerLogin,
           QPushButton*& _adminUI,
           QPushButton*& _closeVideo,
@@ -447,6 +459,7 @@ void Interface::QTAdminManagementLogin(
                                         QString::fromLocal8Bit("管理员") +QString::fromLocal8Bit(_userName.c_str()) +
                                         QString::fromLocal8Bit("登录成功! 可以访问管理部门系统\n")
                               );
+                              _currentAdmin = _userID;                           //更新当前的管理员信息
                               _AdministerLogin->setDisabled(true);         //禁用登录管理部门系统
                               _adminUI->setEnabled(true);                       //登陆成功允许访问管理UI界面
                               _closeVideo->setEnabled(true);                    //允许使用管理员功能
@@ -495,7 +508,8 @@ void Interface::QTAdminManagementLogin(
  *                  7. 左部输入时钟 :   const QDateTime _lefttimer
  *                  8. 右部输入时钟： const QDateTime _righttimer
  *                  9.全局时钟系统的输入 QDateTime*& _timer
- *                  10. 输出窗口接口：QTextBrowser*& _systemOutput
+ *                  10. 控制Table表格类的封装数据类型 DataDisplay   DataDisplay* m_dataDisplay
+ *                  11. 输出窗口接口：QTextBrowser*& _systemOutput
 *------------------------------------------------------------------------------------------------------*/
 void Interface::QTAdminStatisticsInterface(
           const std::string& _userID,
@@ -503,10 +517,11 @@ void Interface::QTAdminStatisticsInterface(
           const std::string& _department,
           QRadioButton*& _attdenceTable,
           QRadioButton*& _signoutTable,
-          QCheckBox *&  _isTimeEnabled,
+          QCheckBox*& _isTimeEnabled,
           const QDateTime _lefttimer,
           const QDateTime _righttimer,
           QDateTime*& _timer,
+          DataDisplay* _dataDisplay,
           QTextBrowser*& _systemOutput
 )
 {
@@ -523,14 +538,27 @@ void Interface::QTAdminStatisticsInterface(
                                         throw   InvalidDateTime();
                               }
                     }
-                   std::vector<std::vector<std::string>> recordRes = this->readAttendenceRecord(                           //读取记录二元组
-                             _userID, _userName, _department, _lefttimer, _righttimer,
+                    //读取记录二元组
+                    std::vector<std::vector<std::string>> recordRes = this->readAttendenceRecord(
+                              _userID, _userName, _department, _lefttimer, _righttimer,
                               _attdenceTable->isChecked() ? AttendanceTable::ATTENDANCE : AttendanceTable::SIGNOUT,
                               _isTimeEnabled->isChecked()
                     );
-                   for (int i = 0; i < recordRes.size(); ++i) {                                                                                       //遍历二元组集合中二元组数量
-                              
-                   }
+
+                    /*输出给圆饼图的数据*/
+                    double _total(0.0f);                                                                                                        //总人数                                                                                  
+                    double _late(0.0f);                                                                                                          //迟到上班 / 早退下班人数
+                    double _normal (0.0f);                                                                                              // 正常人数
+
+                    this->QTAdminAttendenceRateCalc(                                                                           //计算饼图中的数据
+                              _userID, _userName, _department, _lefttimer, _righttimer, _timer,
+                              _attdenceTable->isChecked() ? AttendanceTable::ATTENDANCE : AttendanceTable::SIGNOUT,
+                              _isTimeEnabled->isChecked(),
+                              _total, _late, _normal
+                    );
+                   this->queryUserNameFromID(recordRes);                                                                             //在二元组集合中根据UserID查询用户姓名
+                   _dataDisplay->setAttendenceTableTuple(recordRes);                                                               //加入元组集合显示
+                   _dataDisplay->setChartViewData(_attdenceTable->isChecked(), _total, _late, _normal);  //显示当前状态下的饼图
           }
           catch (const ThrowInvalidQRadio&) {
                     _systemOutput->insertPlainText(
@@ -553,6 +581,104 @@ void Interface::QTAdminStatisticsInterface(
 }
 
 /*------------------------------------------------------------------------------------------------------
+ *  Interface类为QTWidget层管理员账户显示新员工清单
+ * @name: QTGetNewEmployeeInterface
+ * @param :  控制Table表格类的封装数据类型 DataDisplay   DataDisplay* m_dataDisplay
+ * @function：管理员账户提供的记录查询接口
+*------------------------------------------------------------------------------------------------------*/
+void Interface::QTGetNewEmployeeInterface(DataDisplay* _dataDisplay)
+{
+          std::vector<std::vector<std::string>> recordRes = this->readNewEmployeeRecord();
+          _dataDisplay->setNewEmployeeTableTuple(recordRes);                                                               //加入元组集合显示
+}
+
+/*------------------------------------------------------------------------------------------------------
+ *  Interface类为QTWidget层管理员账户显示新员工清单
+ * @name: QTGetNewEmployeeInterface
+ * @param :      1.是否通过 bool status
+ *                       2.表格视图：QTableView *& _newEmployeeTable
+ *                       3.全局时钟系统的输入 QDateTime*& _timer
+ *                       4.输出窗口接口：QTextBrowser*& _systemOutput
+ *
+ * @function：管理员账户提供的记录查询接口
+*------------------------------------------------------------------------------------------------------*/
+void Interface::QTDeniedAndApprove(
+          bool status, 
+          QTableView*& _newEmployeeTable,
+          QDateTime*& _timer,
+          QTextBrowser*& _systemOutput
+)
+{
+          QList<QModelIndex> list = _newEmployeeTable->selectionModel()->selectedIndexes();
+          if (list.isEmpty()) {                                                                                                                       //没有选中任何信息
+                    _systemOutput->insertPlainText(
+                              QString::fromLocal8Bit("[") + _timer->currentDateTime().toString("yyyy-MM-dd hh:mm:ss") + QString::fromLocal8Bit("]:") +
+                               QString::fromLocal8Bit("没有选择需要审批的员工! \n")
+                    );
+                    return;
+          }
+          for (auto i : list) {                                                                                                                       //遍历选中行
+                    auto UserID = _newEmployeeTable->model()->index(i.row(), 0).data();
+                    auto UserName = _newEmployeeTable->model()->index(i.row(), 1).data();
+                    this->updateNewEmployeeAuth(
+                              UserID.toString().toLocal8Bit().constData(), 
+                              UserName.toString().toLocal8Bit().constData(), 
+                              status
+                    );
+          }
+}
+
+/*------------------------------------------------------------------------------------------------------
+ *  Interface类为QTWidget层管理员账户提供的出勤率计算系统
+ * @name: QTAdminAttendenceRateCalc
+ * @function：管理员账户提供的出勤率计算系统
+ * @param: 1. 员工号： const  std::string& employeeNumber
+*                  2. 姓名： const  std::string& _name
+*                  3. 部门 ：  const std::string& _department
+*                  4. 左部时间： QDateTime _leftTimer
+*                  5. 右部时间： QDateTime _rightTimer
+*                  6.全局时钟系统的输入 QDateTime*& _timer
+*                  7. 选择签到签退记录：AttendanceTable tableSelect
+*                  8. 是否选择时间: bool _isTimeEnabled
+ *                 9. 总人数：double &_total
+ *                 10. 迟到上班/早退下班人数：double &_late
+ *                 11. 正常人数：double& normal
+*------------------------------------------------------------------------------------------------------*/
+void Interface::QTAdminAttendenceRateCalc(
+          const std::string& _userID,
+          const std::string& _userName,
+          const std::string& _department,
+          QDateTime _leftTimer,
+          QDateTime _rightTimer,
+          QDateTime*& _timer,
+          AttendanceTable tableSelect,
+          bool _isTimeEnabled,
+          double& _total, double& _late, double& normal
+)
+{
+          if (!_isTimeEnabled) 
+          {
+                     _leftTimer = getMinimiseTime(tableSelect);               //最早的时间
+                     _rightTimer = _timer->currentDateTime();                   //当前最新时间
+          }
+          auto daysCount = _leftTimer.daysTo(_rightTimer);                //计算时间差(计算天数)当前最新时间 - 最早的时间乘以员工总数
+          _total = static_cast<double>(
+                    (!daysCount ? 1.0f : daysCount) * this->getEmployeeCount(_userID, _userName, _department)  
+           );
+
+          _late = static_cast<double>(this->adminStatisticsOnDutyCount(
+                    _userID, _userName, _department,
+                    tableSelect, _leftTimer, _rightTimer,
+                    tableSelect == AttendanceTable::ATTENDANCE ? "员工迟到" : "员工早退"
+          ));
+          normal = static_cast<double>(this->adminStatisticsOnDutyCount(
+                    _userID, _userName, _department,
+                    tableSelect, _leftTimer, _rightTimer,
+                    tableSelect == AttendanceTable::ATTENDANCE ? "正常签到" : "正常签退"
+          ));
+}
+
+/*------------------------------------------------------------------------------------------------------
  *  Interface类为QTWidget层管理员账户提供的设置系统参数
  * @name: QTAdminParamSettingInterface
  * @function：管理员账户提供的记录查询接口
@@ -561,13 +687,32 @@ void Interface::QTAdminStatisticsInterface(
  *                  2.训练相似度：const std::string& _TranningSimilarity,
  *                  3.迟到时间：const std::string& _LateTimeSet,
  *                  4.早退时间：const std::string& _LeaveEarilyTimeSet
+ *                  5.已经登陆的ADMIN ID：const std::string & _loggedUserID
+ *                  6.全局时钟系统的输入 QDateTime*& _timer
+ *                  7. 输出窗口接口：QTextBrowser*& _systemOutput
 *------------------------------------------------------------------------------------------------------*/
 void Interface::QTAdminParamSettingInterface(
           const std::string& _TranningSet,
           const std::string& _TranningSimilarity,
           const std::string& _LateTimeSet,
-          const std::string& _LeaveEarilyTimeSet
+          const std::string& _LeaveEarilyTimeSet,
+          const std::string& _loggedUserID,
+          QDateTime*& _timer,
+          QTextBrowser*& _systemOutput
 )
 {
-
+          if (this->updateAdminParam2DB(_TranningSet, _TranningSimilarity, _LateTimeSet, _LeaveEarilyTimeSet, _loggedUserID))
+          {
+                    _systemOutput->insertPlainText(
+                              QString::fromLocal8Bit("[") + _timer->currentDateTime().toString("yyyy-MM-dd hh:mm:ss") + QString::fromLocal8Bit("]:") +
+                              QString::fromLocal8Bit("全局系统参数设定设置成功! \n")
+                    );
+          }
+          else
+          {
+                    _systemOutput->insertPlainText(
+                              QString::fromLocal8Bit("[") + _timer->currentDateTime().toString("yyyy-MM-dd hh:mm:ss") + QString::fromLocal8Bit("]:") +
+                              QString::fromLocal8Bit("全局系统参数设定设置失败! \n")
+                    );
+          }
 }
