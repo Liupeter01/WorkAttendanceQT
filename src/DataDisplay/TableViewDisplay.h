@@ -1,8 +1,9 @@
 #pragma once
-#include<QtWidgets/qtablewidget.h>
-#include<QtWidgets/qtableview.h>
+
 #include<QtGui/qstandarditemmodel.h>
 #include <QtCharts/QtCharts>
+#include<QtCharts/qpieseries.h>
+
 QT_CHARTS_USE_NAMESPACE
 
 class DataDisplay {
